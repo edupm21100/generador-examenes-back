@@ -11,33 +11,36 @@ import com.eduardo.examen_backend.repositories.RolRepository;
 public class RolService {
     private RolRepository rolRepository;
 
-        public RolService(RolRepository rolRepository){
+    public RolService(RolRepository rolRepository) {
         this.rolRepository = rolRepository;
     }
 
-    public Rol save(Rol rol){
+    public Rol save(Rol rol) {
         return rolRepository.save(rol);
     }
 
-    public List<Rol> findAll(){
+    public List<Rol> findAll() {
         return rolRepository.findAll();
     }
 
-    public Rol getById(Integer id_rol){
-        return rolRepository.findById(id_rol).get();
+    public Optional<Rol> getById(Integer id_rol) {
+        return rolRepository.findById(id_rol);
     }
 
-    public void deleteById(Integer id_rol){
-        rolRepository.deleteById(id_rol);
+    public boolean deleteById(Integer id_rol) {
+        return rolRepository.findById(id_rol).map(
+                rol -> {
+                    rolRepository.delete(rol);
+                    return true;
+                }).orElse(false);
     }
 
-    public Rol update(Rol rol){
-        Optional<Rol> rolBBDD = rolRepository.findById(rol.getId_rol());
-        Rol rolBD = rolBBDD.get();
-
-        rolBD.setNombre_rol(rol.getNombre_rol());
-        rolBD.setActivo(rol.isActivo());
-
-        return rolRepository.save(rolBD);
+    public Optional<Rol> update(Rol rol) {
+        return rolRepository.findById(rol.getId_rol()).map(
+                rolBD -> {
+                    rolBD.setNombre_rol(rol.getNombre_rol());
+                    rolBD.setActivo(rol.isActivo());
+                    return rolRepository.save(rolBD);
+                });
     }
 }

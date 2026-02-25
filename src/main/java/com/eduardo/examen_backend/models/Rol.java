@@ -17,17 +17,21 @@ public class Rol {
     private String nombre_rol;
     @Column(name = "activo")
     private boolean activo;
-    
+
     public Rol(String nombre_rol, boolean activo) {
         this.nombre_rol = nombre_rol;
         this.activo = activo;
     }
 
-    //CONSTRUCTOR VACIO POR GRACIA Y EXIGENCIA DEL MÉTODO HIBERNATE
-    public Rol(){}
+    // CONSTRUCTOR VACIO POR GRACIA Y EXIGENCIA DEL MÉTODO HIBERNATE
+    public Rol() {
+    }
 
+    // * * * * * * * * * * * *GETTERS & SETTERS* * * * * * * * * * * * * * *\\
+    public void setId_rol(Integer id_rol) {
+        this.id_rol = id_rol;
+    }
 
-//*   *   *   *   *   *   *   *   *   *   *    *GETTERS & SETTERS*   *   *   *   *   *   *   *   *   *   *   *   *   *   *\\
     public Integer getId_rol() {
         return id_rol;
     }
@@ -35,6 +39,7 @@ public class Rol {
     public String getNombre_rol() {
         return nombre_rol;
     }
+
     public void setNombre_rol(String nombre_rol) {
         this.nombre_rol = nombre_rol;
     }
@@ -42,10 +47,9 @@ public class Rol {
     public boolean isActivo() {
         return activo;
     }
+
     public void setActivo(boolean activo) {
         this.activo = activo;
     }
-
-    
 
 }

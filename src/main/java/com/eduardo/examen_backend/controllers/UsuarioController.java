@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.Optional;
 
-import com.eduardo.examen_backend.models.Usuario;
+import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.services.UsuarioService;
 
 import org.springframework.http.HttpStatus;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    private UsuarioService usuarioService;
+    private final UsuarioService usuarioService;
 
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
@@ -32,31 +32,36 @@ public class UsuarioController {
     // http://localhost:8080/usuarios
     // RECUERDA QUE SPRING SECURITY ESTÁ DESHABILITADO POR AHORA
     @PostMapping
-    public ResponseEntity<Usuario> save(@RequestBody Usuario usuario) {
-        return new ResponseEntity<>(usuarioService.save(usuario), HttpStatus.CREATED);
+    public ResponseEntity<UsuarioDTO> save(@RequestBody UsuarioDTO usuarioDTO) {
+        return new ResponseEntity<>(usuarioService.save(usuarioDTO), HttpStatus.CREATED);
     }
 
     // GET
     // http://localhost:8080/usuarios
     @GetMapping
-    public ResponseEntity<List<Usuario>> findAll() {
-        return ResponseEntity.ok(usuarioService.findAll());
+    public ResponseEntity<List<UsuarioDTO>> findAll() {
+        List<UsuarioDTO> usuarioDTOs = usuarioService.findAll();
+        if (usuarioDTOs.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(usuarioDTOs);
     }
 
     // GET
     // http://localhost:8080/usuarios/{id_usuario}
     @GetMapping("/{id_usuario}")
-    public ResponseEntity<Usuario> findById(@PathVariable Integer id_usuario) {
-        Optional<Usuario> usuarioOptional = usuarioService.getById(id_usuario);
-        return usuarioOptional.map(ResponseEntity::ok).orElseGet(
-                () -> ResponseEntity.notFound().build());
+    public ResponseEntity<UsuarioDTO> findById(@PathVariable Integer id_usuario) {
+        Optional<UsuarioDTO> usuarioOptionalDTO = usuarioService.getById(id_usuario);
+        return usuarioOptionalDTO.map(
+                ResponseEntity::ok).orElseGet(
+                        () -> ResponseEntity.notFound().build());
     }
 
     // PUT
     // http://localhost:8080/usuarios
     @PutMapping
-    public ResponseEntity<Usuario> update(@RequestBody Usuario usuario) {
-        return usuarioService.update(usuario).map(
+    public ResponseEntity<UsuarioDTO> update(@RequestBody UsuarioDTO usuarioDTO) {
+        return usuarioService.update(usuarioDTO).map(
                 ResponseEntity::ok).orElseGet(
                         () -> ResponseEntity.notFound().build());
     }

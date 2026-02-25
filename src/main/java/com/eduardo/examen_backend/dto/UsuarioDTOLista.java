@@ -1,6 +1,6 @@
 package com.eduardo.examen_backend.dto;
 
-public class UsuarioDTO {
+public class UsuarioDTOLista {
     private Integer id_usuario;
     private String nombre_usuario;
     private String apellido_usuario;
@@ -8,7 +8,7 @@ public class UsuarioDTO {
     private String contrasenha_usuario;
     private boolean activo;
 
-    public UsuarioDTO() {
+    public UsuarioDTOLista() {
     }
 
     public void setId_usuario(Integer id_usuario){

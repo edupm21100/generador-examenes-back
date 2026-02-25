@@ -3,6 +3,7 @@ package com.eduardo.examen_backend.controllers;
 import java.util.List;
 
 import java.util.Optional;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,14 +15,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eduardo.examen_backend.models.Rol;
+import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.services.RolService;
 
 @RestController
 @RequestMapping("/roles")
 public class RolController {
 
-    private RolService rolService;
+    private final RolService rolService;
 
     public RolController(RolService rolService) {
         this.rolService = rolService;
@@ -31,31 +32,36 @@ public class RolController {
     // http://localhost:8080/roles
     // RECUERDA QUE SPRING SECURITY ESTÁ DESHABILITADO POR AHORA
     @PostMapping
-    public ResponseEntity<Rol> save(@RequestBody Rol rol) {
-        return new ResponseEntity<>(rolService.save(rol), HttpStatus.CREATED);
+    public ResponseEntity<RolDTO> save(@RequestBody RolDTO rolDTO) {
+        return new ResponseEntity<>(rolService.save(rolDTO), HttpStatus.CREATED);
     }
 
     // GET
     // http://localhost:8080/roles
     @GetMapping
-    public ResponseEntity<List<Rol>> findAll() {
-        return ResponseEntity.ok(rolService.findAll());
+    public ResponseEntity<List<RolDTO>> findAll() {
+        List<RolDTO> rolDTOs = rolService.findAll();
+        if (rolDTOs.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(rolDTOs);
     }
 
     // GET
     // http://localhost:8080/roles/{id_rol}
     @GetMapping("/{id_rol}")
-    public ResponseEntity<Rol> findById(@PathVariable Integer id_rol) {
-        Optional<Rol> rolOptional = rolService.getById(id_rol);
-        return rolOptional.map(ResponseEntity::ok).orElseGet(
-                () -> ResponseEntity.notFound().build());
+    public ResponseEntity<RolDTO> findById(@PathVariable Integer id_rol) {
+        Optional<RolDTO> rolOptionalDTO = rolService.getById(id_rol);
+        return rolOptionalDTO.map(
+                ResponseEntity::ok).orElseGet(
+                        () -> ResponseEntity.notFound().build());
     }
 
     // PUT
     // http://localhost:8080/roles
     @PutMapping
-    public ResponseEntity<Rol> update(@RequestBody Rol rol) {
-        return rolService.update(rol).map(
+    public ResponseEntity<RolDTO> update(@RequestBody RolDTO rolDTO) {
+        return rolService.update(rolDTO).map(
                 ResponseEntity::ok).orElseGet(
                         () -> ResponseEntity.notFound().build());
     }

@@ -8,6 +8,10 @@ public class RolDTO {
     public RolDTO() {
     }
 
+    public void setId_rol(Integer id_rol) {
+        this.id_rol = id_rol;
+    }
+
     public Integer getId_rol() {
         return id_rol;
     }

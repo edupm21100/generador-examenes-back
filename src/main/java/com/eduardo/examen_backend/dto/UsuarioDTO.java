@@ -10,12 +10,14 @@ public class UsuarioDTO {
     private String correoUsuario;
     private String contrasenhaUsuario;
     private boolean activo;
+    // ATRIBUTO NECESARIO PARA ASIGNAR ROL
+    private Integer idRol;
 
     public UsuarioDTO() {
     }
 
-    //SETTER
-    public void setIdUsuario(Integer idUsuario){
+    // SETTER
+    public void setIdUsuario(Integer idUsuario) {
         this.idUsuario = idUsuario;
     }
 
@@ -29,7 +31,7 @@ public class UsuarioDTO {
         return nombreUsuario;
     }
 
-    //SETTER
+    // SETTER
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
     }
@@ -39,7 +41,7 @@ public class UsuarioDTO {
         return apellidoUsuario;
     }
 
-    //SETTER
+    // SETTER
     public void setApellidoUsuario(String apellidoUsuario) {
         this.apellidoUsuario = apellidoUsuario;
     }
@@ -49,7 +51,7 @@ public class UsuarioDTO {
         return correoUsuario;
     }
 
-    //SETTER
+    // SETTER
     public void setCorreoUsuario(String correoUsuario) {
         this.correoUsuario = correoUsuario;
     }
@@ -59,7 +61,7 @@ public class UsuarioDTO {
         return contrasenhaUsuario;
     }
 
-    //SETTER
+    // SETTER
     public void setContrasenhaUsuario(String contrasenhaUsuario) {
         this.contrasenhaUsuario = contrasenhaUsuario;
     }
@@ -69,9 +71,17 @@ public class UsuarioDTO {
         return activo;
     }
 
-    //SETTER
+    // SETTER
     public void setActivo(boolean activo) {
         this.activo = activo;
+    }
+
+    public Integer getIdRol() {
+        return idRol;
+    }
+
+    public void setIdRol(Integer idRol) {
+        this.idRol = idRol;
     }
 
 }

@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.eduardo.examen_backend.dto.RolDTO;
@@ -17,7 +16,7 @@ public class RolService {
     private RolRepository rolRepository;
     private final ModelMapper modelMapper;
 
-    public RolService(RolRepository rolRepository, @Qualifier("rolModelMapper") ModelMapper modelMapper) {
+    public RolService(RolRepository rolRepository, ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
         this.rolRepository = rolRepository;
     }

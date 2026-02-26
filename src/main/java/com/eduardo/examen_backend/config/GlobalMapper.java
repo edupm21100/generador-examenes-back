@@ -5,10 +5,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RolConfig {
+public class GlobalMapper {
 
-    @Bean(name = "rolModelMapper")
-    public ModelMapper ModelMapper() {
+    @Bean
+    public ModelMapper modelMapper() {
         return new ModelMapper();
     }
 

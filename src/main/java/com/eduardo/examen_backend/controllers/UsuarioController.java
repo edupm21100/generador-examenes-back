@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -41,9 +42,21 @@ public class UsuarioController {
     // GET
     // http://localhost:8080/usuarios
     @GetMapping
-    @JsonView(UsuarioViews.IndiscreetUser.class)
+    @JsonView(UsuarioViews.DiscreetUser.class)
     public ResponseEntity<List<UsuarioDTO>> findAll() {
         List<UsuarioDTO> usuarioDTOs = usuarioService.findAll();
+        if (usuarioDTOs.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(usuarioDTOs);
+    }
+
+    // GET usuarios por rol
+    // http://localhost:8080/usuarios/rolista/{idRol}
+    @GetMapping("/{idRol}/usuarios")
+    @JsonView(UsuarioViews.DiscreetUser.class)
+    public ResponseEntity<List<UsuarioDTO>> findByRol(@PathVariable Integer idRol) {
+        List<UsuarioDTO> usuarioDTOs = usuarioService.findByRol(idRol);
         if (usuarioDTOs.isEmpty()) {
             return ResponseEntity.noContent().build();
         }
@@ -63,6 +76,7 @@ public class UsuarioController {
     // PUT
     // http://localhost:8080/usuarios
     @PutMapping
+    @JsonView(UsuarioViews.DiscreetUser.class)
     public ResponseEntity<UsuarioDTO> update(@RequestBody UsuarioDTO usuarioDTO) {
         return usuarioService.update(usuarioDTO).map(
                 ResponseEntity::ok).orElseGet(
@@ -78,6 +92,5 @@ public class UsuarioController {
         }
         return ResponseEntity.notFound().build();
     }
-
 
 }

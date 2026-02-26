@@ -36,8 +36,8 @@ public class UsuarioService {
                 }).collect(Collectors.toList());
     }
 
-    public Optional<UsuarioDTO> getById(Integer id_usuario) {
-        return usuarioRepository.findById(id_usuario).map(
+    public Optional<UsuarioDTO> findById(Integer idUsuario) {
+        return usuarioRepository.findById(idUsuario).map(
                 usuarioDB -> {
                     return modelMapper.map(usuarioDB, UsuarioDTO.class);
                 });
@@ -58,8 +58,8 @@ public class UsuarioService {
                 });
     }
 
-    public boolean deleteById(Integer id_usuario) {
-        return usuarioRepository.findById(id_usuario).map(
+    public boolean deleteById(Integer idUsuario) {
+        return usuarioRepository.findById(idUsuario).map(
                 usuario -> {
                     usuarioRepository.delete(usuario);
                     return true;

@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import java.util.Optional;
 
 import com.eduardo.examen_backend.dto.UsuarioDTO;
+import com.eduardo.examen_backend.exception.NotFoundException;
 import com.eduardo.examen_backend.services.UsuarioService;
 import com.eduardo.examen_backend.views.UsuarioViews;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -51,13 +51,13 @@ public class UsuarioController {
     }
 
     // GET
-    // http://localhost:8080/usuarios/{id_usuario}
-    @GetMapping("/{id_usuario}")
-    public ResponseEntity<UsuarioDTO> findById(@PathVariable Integer id_usuario) {
-        Optional<UsuarioDTO> usuarioOptionalDTO = usuarioService.getById(id_usuario);
-        return usuarioOptionalDTO.map(
-                ResponseEntity::ok).orElseGet(
-                        () -> ResponseEntity.notFound().build());
+    // http://localhost:8080/usuarios/{idUsuario}
+    @GetMapping("/{idUsuario}")
+    @JsonView(UsuarioViews.IndiscreetUser.class)
+    public ResponseEntity<UsuarioDTO> findById(@PathVariable Integer idUsuario) {
+        UsuarioDTO usuarioDTO = usuarioService.findById(idUsuario).orElseThrow(
+                () -> new NotFoundException("Id: " + idUsuario + " no encontrado"));
+        return new ResponseEntity<>(usuarioDTO, HttpStatus.OK);
     }
 
     // PUT
@@ -70,13 +70,14 @@ public class UsuarioController {
     }
 
     // DELETE
-    // http://localhost:8080/usuarios/{id_usuario}
-    @DeleteMapping("/{id_usuario}")
-    public ResponseEntity<Void> deleteById(@PathVariable Integer id_usuario) {
-        if (usuarioService.deleteById(id_usuario)) {
+    // http://localhost:8080/usuarios/{idUsuario}
+    @DeleteMapping("/{idUsuario}")
+    public ResponseEntity<Void> deleteById(@PathVariable Integer idUsuario) {
+        if (usuarioService.deleteById(idUsuario)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
+
 
 }

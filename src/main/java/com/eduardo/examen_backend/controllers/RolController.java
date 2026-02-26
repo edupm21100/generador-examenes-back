@@ -2,8 +2,6 @@ package com.eduardo.examen_backend.controllers;
 
 import java.util.List;
 
-import java.util.Optional;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -16,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eduardo.examen_backend.dto.RolDTO;
+import com.eduardo.examen_backend.exception.NotFoundException;
 import com.eduardo.examen_backend.services.RolService;
+
 
 @RestController
 @RequestMapping("/roles")
@@ -48,13 +48,12 @@ public class RolController {
     }
 
     // GET
-    // http://localhost:8080/roles/{id_rol}
-    @GetMapping("/{id_rol}")
-    public ResponseEntity<RolDTO> findById(@PathVariable Integer id_rol) {
-        Optional<RolDTO> rolOptionalDTO = rolService.getById(id_rol);
-        return rolOptionalDTO.map(
-                ResponseEntity::ok).orElseGet(
-                        () -> ResponseEntity.notFound().build());
+    // http://localhost:8080/roles/{idRol}
+    @GetMapping("/{idRol}")
+    public ResponseEntity<RolDTO> findById(@PathVariable Integer idRol) {
+        RolDTO rolDTO = rolService.findById(idRol).orElseThrow(
+                () -> new NotFoundException("Id: " + idRol + " no encontrado"));
+        return new ResponseEntity<>(rolDTO, HttpStatus.OK);
     }
 
     // PUT
@@ -67,10 +66,10 @@ public class RolController {
     }
 
     // DELETE
-    // http://localhost:8080/roles/{id_rol}
-    @DeleteMapping("/{id_rol}")
-    public ResponseEntity<Void> deleteById(@PathVariable Integer id_rol) {
-        if (rolService.deleteById(id_rol)) {
+    // http://localhost:8080/roles/{idRol}
+    @DeleteMapping("/{idRol}")
+    public ResponseEntity<Void> deleteById(@PathVariable Integer idRol) {
+        if (rolService.deleteById(idRol)) {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();

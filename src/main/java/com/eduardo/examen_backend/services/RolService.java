@@ -34,7 +34,7 @@ public class RolService {
                 }).collect(Collectors.toList());
     }
 
-    public Optional<RolDTO> getById(Integer id_rol) {
+    public Optional<RolDTO> findById(Integer id_rol) {
         return rolRepository.findById(id_rol).map(
                 rolDB -> {
                     return modelMapper.map(rolDB, RolDTO.class);

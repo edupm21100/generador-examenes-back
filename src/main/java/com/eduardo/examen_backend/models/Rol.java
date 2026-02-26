@@ -12,14 +12,14 @@ import jakarta.persistence.Table;
 public class Rol {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_rol;
+    private Integer idRol;
     @Column(name = "nombre_rol")
-    private String nombre_rol;
+    private String nombreRol;
     @Column(name = "activo")
     private boolean activo;
 
-    public Rol(String nombre_rol, boolean activo) {
-        this.nombre_rol = nombre_rol;
+    public Rol(String nombreRol, boolean activo) {
+        this.nombreRol = nombreRol;
         this.activo = activo;
     }
 
@@ -28,20 +28,20 @@ public class Rol {
     }
 
     // * * * * * * * * * * * *GETTERS & SETTERS* * * * * * * * * * * * * * *\\
-    public void setId_rol(Integer id_rol) {
-        this.id_rol = id_rol;
+    public void setIdRol(Integer idRol) {
+        this.idRol = idRol;
     }
 
-    public Integer getId_rol() {
-        return id_rol;
+    public Integer getIdRol() {
+        return idRol;
     }
 
-    public String getNombre_rol() {
-        return nombre_rol;
+    public String getNombreRol() {
+        return nombreRol;
     }
 
-    public void setNombre_rol(String nombre_rol) {
-        this.nombre_rol = nombre_rol;
+    public void setNombreRol(String nombreRol) {
+        this.nombreRol = nombreRol;
     }
 
     public boolean isActivo() {

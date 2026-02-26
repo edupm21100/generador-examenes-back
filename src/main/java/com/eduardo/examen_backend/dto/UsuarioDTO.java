@@ -1,60 +1,75 @@
 package com.eduardo.examen_backend.dto;
 
+import com.eduardo.examen_backend.views.UsuarioViews;
+import com.fasterxml.jackson.annotation.JsonView;
+
 public class UsuarioDTO {
-    private Integer id_usuario;
-    private String nombre_usuario;
-    private String apellido_usuario;
-    private String correo_usuario;
-    private String contrasenha_usuario;
+    private Integer idUsuario;
+    private String nombreUsuario;
+    private String apellidoUsuario;
+    private String correoUsuario;
+    private String contrasenhaUsuario;
     private boolean activo;
 
     public UsuarioDTO() {
     }
 
-    public void setId_usuario(Integer id_usuario){
-        this.id_usuario = id_usuario;
+    //SETTER
+    public void setIdUsuario(Integer idUsuario){
+        this.idUsuario = idUsuario;
     }
 
-    public Integer getId_usuario() {
-        return id_usuario;
+    @JsonView(UsuarioViews.IndiscreetUser.class)
+    public Integer getIdUsuario() {
+        return idUsuario;
     }
 
-    public String getNombre_usuario() {
-        return nombre_usuario;
+    @JsonView(UsuarioViews.DiscreetUser.class)
+    public String getNombreUsuario() {
+        return nombreUsuario;
     }
 
-    public void setNombre_usuario(String nombre_usuario) {
-        this.nombre_usuario = nombre_usuario;
+    //SETTER
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
 
-    public String getApellido_usuario() {
-        return apellido_usuario;
+    @JsonView(UsuarioViews.DiscreetUser.class)
+    public String getApellidoUsuario() {
+        return apellidoUsuario;
     }
 
-    public void setApellido_usuario(String apellido_usuario) {
-        this.apellido_usuario = apellido_usuario;
+    //SETTER
+    public void setApellidoUsuario(String apellidoUsuario) {
+        this.apellidoUsuario = apellidoUsuario;
     }
 
-    public String getCorreo_usuario() {
-        return correo_usuario;
+    @JsonView(UsuarioViews.IndiscreetUser.class)
+    public String getCorreoUsuario() {
+        return correoUsuario;
     }
 
-    public void setCorreo_usuario(String correo_usuario) {
-        this.correo_usuario = correo_usuario;
+    //SETTER
+    public void setCorreoUsuario(String correoUsuario) {
+        this.correoUsuario = correoUsuario;
     }
 
-    public String getContrasenha_usuario() {
-        return contrasenha_usuario;
+    @JsonView(UsuarioViews.ExtraIndiscreetUser.class)
+    public String getContrasenhaUsuario() {
+        return contrasenhaUsuario;
     }
 
-    public void setContrasenha_usuario(String contrasenha_usuario) {
-        this.contrasenha_usuario = contrasenha_usuario;
+    //SETTER
+    public void setContrasenhaUsuario(String contrasenhaUsuario) {
+        this.contrasenhaUsuario = contrasenhaUsuario;
     }
 
+    @JsonView(UsuarioViews.ExtraIndiscreetUser.class)
     public boolean isActivo() {
         return activo;
     }
 
+    //SETTER
     public void setActivo(boolean activo) {
         this.activo = activo;
     }

@@ -11,6 +11,8 @@ import java.util.Optional;
 
 import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.services.UsuarioService;
+import com.eduardo.examen_backend.views.UsuarioViews;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +41,7 @@ public class UsuarioController {
     // GET
     // http://localhost:8080/usuarios
     @GetMapping
+    @JsonView(UsuarioViews.IndiscreetUser.class)
     public ResponseEntity<List<UsuarioDTO>> findAll() {
         List<UsuarioDTO> usuarioDTOs = usuarioService.findAll();
         if (usuarioDTOs.isEmpty()) {

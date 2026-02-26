@@ -30,7 +30,7 @@ public class RolService {
     public List<RolDTO> findAll() {
         return rolRepository.findAll().stream().map(
                 rol -> {
-                    return modelMapper.map(rolRepository, RolDTO.class);
+                    return modelMapper.map(rol, RolDTO.class);
                 }).collect(Collectors.toList());
     }
 
@@ -38,6 +38,16 @@ public class RolService {
         return rolRepository.findById(id_rol).map(
                 rolDB -> {
                     return modelMapper.map(rolDB, RolDTO.class);
+                });
+    }
+
+    public Optional<RolDTO> update(RolDTO rolDTO) {
+        Rol rol = modelMapper.map(rolDTO, Rol.class);
+        return rolRepository.findById(rol.getIdRol()).map(
+                rolBD -> {
+                    rolBD.setNombreRol(rol.getNombreRol());
+                    rolBD.setActivo(rol.isActivo());
+                    return modelMapper.map(rolRepository.save(rolBD), RolDTO.class);
                 });
     }
 
@@ -49,13 +59,4 @@ public class RolService {
                 }).orElse(false);
     }
 
-    public Optional<RolDTO> update(RolDTO rolDTO) {
-        Rol rol = modelMapper.map(rolDTO, Rol.class);
-        return rolRepository.findById(rol.getId_rol()).map(
-                rolBD -> {
-                    rolBD.setNombre_rol(rol.getNombre_rol());
-                    rolBD.setActivo(rol.isActivo());
-                   return modelMapper.map(rolRepository.save(rolBD), RolDTO.class);
-                });
-    }
 }

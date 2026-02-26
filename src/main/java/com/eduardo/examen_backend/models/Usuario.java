@@ -13,24 +13,24 @@ public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id_usuario;
+    private Integer idUsuario;
     @Column(name = "nombre_usuario")
-    private String nombre_usuario;
+    private String nombreUsuario;
     @Column(name = "apellido_usuario")
-    private String apellido_usuario;
+    private String apellidoUsuario;
     @Column(name = "correo_usuario")
-    private String correo_usuario;
+    private String correoUsuario;
     @Column(name = "contrasenha_usuario")
-    private String contrasenha_usuario;
+    private String contrasenhaUsuario;
     @Column(name = "activo")
     private boolean activo;
 
-    public Usuario(String nombre_usuario, String apellido_usuario, String correo_usuario, String contrasenha_usuario,
+    public Usuario(String nombreUsuario, String apellidoUsuario, String correoUsuario, String contrasenhaUsuario,
             boolean activo) {
-        this.nombre_usuario = nombre_usuario;
-        this.apellido_usuario = apellido_usuario;
-        this.correo_usuario = correo_usuario;
-        this.contrasenha_usuario = contrasenha_usuario;
+        this.nombreUsuario = nombreUsuario;
+        this.apellidoUsuario = apellidoUsuario;
+        this.correoUsuario = correoUsuario;
+        this.contrasenhaUsuario = contrasenhaUsuario;
         this.activo = activo;
     }
 
@@ -39,44 +39,44 @@ public class Usuario {
     }
 
     // * * * * * * * * * * * *GETTERS & SETTERS* * * * * * * * * * * * * * *\\
-    public void setId_usuario(Integer id_usuario) {
-        this.id_usuario = id_usuario;
+    public void setIdUsuario(Integer idUsuario) {
+        this.idUsuario = idUsuario;
     }
 
-    public int getId_usuario() {
-        return id_usuario;
+    public int getIdUsuario() {
+        return idUsuario;
     }
 
-    public String getNombre_usuario() {
-        return nombre_usuario;
+    public String getNombreUsuario() {
+        return nombreUsuario;
     }
 
-    public void setNombre_usuario(String nombre_usuario) {
-        this.nombre_usuario = nombre_usuario;
+    public void setNombreUsuario(String nombreUsuario) {
+        this.nombreUsuario = nombreUsuario;
     }
 
-    public String getApellido_usuario() {
-        return apellido_usuario;
+    public String getApellidoUsuario() {
+        return apellidoUsuario;
     }
 
-    public void setApellido_usuario(String apellido_usuario) {
-        this.apellido_usuario = apellido_usuario;
+    public void setApellidoUsuario(String apellidoUsuario) {
+        this.apellidoUsuario = apellidoUsuario;
     }
 
-    public String getCorreo_usuario() {
-        return correo_usuario;
+    public String getCorreoUsuario() {
+        return correoUsuario;
     }
 
-    public void setCorreo_usuario(String correo_usuario) {
-        this.correo_usuario = correo_usuario;
+    public void setCorreoUsuario(String correoUsuario) {
+        this.correoUsuario = correoUsuario;
     }
 
-    public String getContrasenha_usuario() {
-        return contrasenha_usuario;
+    public String getContrasenhaUsuario() {
+        return contrasenhaUsuario;
     }
 
-    public void setContrasenha_usuario(String contrasenha_usuario) {
-        this.contrasenha_usuario = contrasenha_usuario;
+    public void setContrasenhaUsuario(String contrasenhaUsuario) {
+        this.contrasenhaUsuario = contrasenhaUsuario;
     }
 
     public boolean isActivo() {

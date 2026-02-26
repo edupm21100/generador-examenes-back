@@ -32,7 +32,7 @@ public class UsuarioService {
     public List<UsuarioDTO> findAll() {
         return usuarioRepository.findAll().stream().map(
                 usuario -> {
-                    return modelMapper.map(usuarioRepository, UsuarioDTO.class);
+                    return modelMapper.map(usuario, UsuarioDTO.class);
                 }).collect(Collectors.toList());
     }
 
@@ -43,27 +43,27 @@ public class UsuarioService {
                 });
     }
 
+    public Optional<UsuarioDTO> update(UsuarioDTO usuarioDTO) {
+        // DTO USUARIO
+        Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
+
+        return usuarioRepository.findById(usuario.getIdUsuario()).map(
+                usuarioBD -> {
+                    usuarioBD.setNombreUsuario(usuario.getNombreUsuario());
+                    usuarioBD.setApellidoUsuario(usuario.getApellidoUsuario());
+                    usuarioBD.setCorreoUsuario(usuario.getCorreoUsuario());
+                    usuarioBD.setContrasenhaUsuario(usuario.getContrasenhaUsuario());
+                    usuarioBD.setActivo(usuario.isActivo());
+                    return modelMapper.map(usuarioRepository.save(usuarioBD), UsuarioDTO.class);
+                });
+    }
+
     public boolean deleteById(Integer id_usuario) {
         return usuarioRepository.findById(id_usuario).map(
                 usuario -> {
                     usuarioRepository.delete(usuario);
                     return true;
                 }).orElse(false);
-    }
-
-    public Optional<UsuarioDTO> update(UsuarioDTO usuarioDTO) {
-        // DTO USUARIO
-        Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
-
-        return usuarioRepository.findById(usuario.getId_usuario()).map(
-                usuarioBD -> {
-                    usuarioBD.setNombre_usuario(usuario.getNombre_usuario());
-                    usuarioBD.setApellido_usuario(usuario.getApellido_usuario());
-                    usuarioBD.setCorreo_usuario(usuario.getCorreo_usuario());
-                    usuarioBD.setContrasenha_usuario(usuario.getContrasenha_usuario());
-                    usuarioBD.setActivo(usuario.isActivo());
-                    return modelMapper.map(usuarioRepository.save(usuarioBD), UsuarioDTO.class);
-                });
     }
 
 }

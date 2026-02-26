@@ -1,27 +1,27 @@
 package com.eduardo.examen_backend.dto;
 
 public class RolDTO {
-    private Integer id_rol;
-    private String nombre_rol;
+    private Integer idRol;
+    private String nombreRol;
     private boolean activo;
 
     public RolDTO() {
     }
 
-    public void setId_rol(Integer id_rol) {
-        this.id_rol = id_rol;
+    public void setIdRol(Integer idRol) {
+        this.idRol = idRol;
     }
 
-    public Integer getId_rol() {
-        return id_rol;
+    public Integer getIdRol() {
+        return idRol;
     }
 
-    public String getNombre_rol() {
-        return nombre_rol;
+    public String getNombreRol() {
+        return nombreRol;
     }
 
-    public void setNombre_rol(String nombre_rol) {
-        this.nombre_rol = nombre_rol;
+    public void setNombreRol(String nombreRol) {
+        this.nombreRol = nombreRol;
     }
 
     public boolean isActivo() {

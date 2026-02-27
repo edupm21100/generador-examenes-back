@@ -21,7 +21,7 @@ public class UsuarioDTO {
         this.idUsuario = idUsuario;
     }
 
-    @JsonView(UsuarioViews.IndiscreetUser.class)
+    @JsonView(UsuarioViews.NotDiscreetUser.class)
     public Integer getIdUsuario() {
         return idUsuario;
     }
@@ -56,7 +56,7 @@ public class UsuarioDTO {
         this.correoUsuario = correoUsuario;
     }
 
-    @JsonView(UsuarioViews.ExtraIndiscreetUser.class)
+    @JsonView(UsuarioViews.UltraExtraIndiscreetUser.class)
     public String getContrasenhaUsuario() {
         return contrasenhaUsuario;
     }

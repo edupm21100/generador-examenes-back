@@ -2,7 +2,6 @@ package com.eduardo.examen_backend.services;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -28,13 +27,11 @@ public class RolService {
 
     public List<RolDTO> findAll() {
         return rolRepository.findAll().stream().map(
-                rol -> {
-                    return modelMapper.map(rol, RolDTO.class);
-                }).collect(Collectors.toList());
+                rol -> modelMapper.map(rol, RolDTO.class)).toList();
     }
 
-    public Optional<RolDTO> findById(Integer id_rol) {
-        return rolRepository.findById(id_rol).map(
+    public Optional<RolDTO> findById(Integer idRol) {
+        return rolRepository.findById(idRol).map(
                 rolDB -> {
                     return modelMapper.map(rolDB, RolDTO.class);
                 });
@@ -50,8 +47,8 @@ public class RolService {
                 });
     }
 
-    public boolean deleteById(Integer id_rol) {
-        return rolRepository.findById(id_rol).map(
+    public boolean deleteById(Integer idRol) {
+        return rolRepository.findById(idRol).map(
                 rol -> {
                     rolRepository.delete(rol);
                     return true;

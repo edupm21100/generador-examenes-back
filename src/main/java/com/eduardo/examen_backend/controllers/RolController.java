@@ -48,7 +48,7 @@ public class RolController {
     }
 
     // GET
-    // http://localhost:8080/roles/{idRol}
+    // http://localhost:8080/roles/1
     @GetMapping("/{idRol}")
     public ResponseEntity<RolDTO> findById(@PathVariable Integer idRol) {
         RolDTO rolDTO = rolService.findById(idRol).orElseThrow(
@@ -66,7 +66,7 @@ public class RolController {
     }
 
     // DELETE
-    // http://localhost:8080/roles/{idRol}
+    // http://localhost:8080/roles/1
     @DeleteMapping("/{idRol}")
     public ResponseEntity<Void> deleteById(@PathVariable Integer idRol) {
         if (rolService.deleteById(idRol)) {

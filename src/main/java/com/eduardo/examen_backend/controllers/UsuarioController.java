@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eduardo.examen_backend.dto.UsuarioDTO;
@@ -19,7 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -35,6 +35,7 @@ public class UsuarioController {
     // http://localhost:8080/usuarios
     // RECUERDA QUE SPRING SECURITY ESTÁ DESHABILITADO POR AHORA
     @PostMapping
+    @JsonView(UsuarioViews.IndiscreetUser.class)
     public ResponseEntity<UsuarioDTO> save(@RequestBody UsuarioDTO usuarioDTO) {
         return new ResponseEntity<>(usuarioService.save(usuarioDTO), HttpStatus.CREATED);
     }
@@ -42,7 +43,7 @@ public class UsuarioController {
     // GET
     // http://localhost:8080/usuarios
     @GetMapping
-    @JsonView(UsuarioViews.DiscreetUser.class)
+    @JsonView(UsuarioViews.IndiscreetUser.class)
     public ResponseEntity<List<UsuarioDTO>> findAll() {
         List<UsuarioDTO> usuarioDTOs = usuarioService.findAll();
         if (usuarioDTOs.isEmpty()) {
@@ -52,7 +53,7 @@ public class UsuarioController {
     }
 
     // GET usuarios por rol
-    // http://localhost:8080/usuarios/rolista/{idRol}
+    // http://localhost:8080/usuarios/2
     @GetMapping("/{idRol}/usuarios")
     @JsonView(UsuarioViews.DiscreetUser.class)
     public ResponseEntity<List<UsuarioDTO>> findByRol(@PathVariable Integer idRol) {
@@ -64,16 +65,16 @@ public class UsuarioController {
     }
 
     // GET
-    // http://localhost:8080/usuarios/{idUsuario}
+    // http://localhost:8080/usuarios/2
     @GetMapping("/{idUsuario}")
-    @JsonView(UsuarioViews.IndiscreetUser.class)
+    @JsonView(UsuarioViews.ExtraIndiscreetUser.class)
     public ResponseEntity<UsuarioDTO> findById(@PathVariable Integer idUsuario) {
         UsuarioDTO usuarioDTO = usuarioService.findById(idUsuario).orElseThrow(
                 () -> new NotFoundException("Id: " + idUsuario + " no encontrado"));
         return new ResponseEntity<>(usuarioDTO, HttpStatus.OK);
     }
 
-    // PUT
+    // PUT MODIFICACIÓN GENERAL
     // http://localhost:8080/usuarios
     @PutMapping
     @JsonView(UsuarioViews.DiscreetUser.class)
@@ -83,9 +84,29 @@ public class UsuarioController {
                         () -> ResponseEntity.notFound().build());
     }
 
+    // PUT MODIFICACIÓN CONTRASEÑA
+    // PUT http://localhost:8080/usuarios/5/contrasenha?contrasenhaNueva=####&contrasenhaVieja=#####
+    @PutMapping("/{idUsuario}/contrasenha")
+    @JsonView(UsuarioViews.DiscreetUser.class)
+    public ResponseEntity<UsuarioDTO> cambiarContrasenha(@PathVariable Integer idUsuario, @RequestParam String contrasenhaNueva, @RequestParam String contrasenhaVieja){
+        UsuarioDTO usuarioActualizado = usuarioService.changeContrasenha(idUsuario, contrasenhaNueva, contrasenhaVieja);
+        return ResponseEntity.ok(usuarioActualizado);
+    }
+
+    // PUT MODIFICACION POR ADMIN
+    // PUT http://localhost:8080/usuarios/5/roles?idRol=2&idAdmin=1
+    @PutMapping("/{idUsuario}/roles")
+    @JsonView(UsuarioViews.IndiscreetUser.class)
+    public ResponseEntity<UsuarioDTO> cambiarRol(@PathVariable Integer idUsuario, @RequestParam Integer idRol,
+            @RequestParam Integer idAdmin) {
+        UsuarioDTO usuarioActualizado = usuarioService.changeRol(idUsuario, idRol, idAdmin);
+        return ResponseEntity.ok(usuarioActualizado);
+    }
+
     // DELETE
-    // http://localhost:8080/usuarios/{idUsuario}
+    // http://localhost:8080/usuarios/2
     @DeleteMapping("/{idUsuario}")
+    @JsonView(UsuarioViews.NotDiscreetUser.class)
     public ResponseEntity<Void> deleteById(@PathVariable Integer idUsuario) {
         if (usuarioService.deleteById(idUsuario)) {
             return ResponseEntity.noContent().build();

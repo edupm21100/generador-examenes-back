@@ -16,7 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.exception.NotFoundException;
 import com.eduardo.examen_backend.services.RolService;
-
+import com.eduardo.examen_backend.views.RolViews;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @RestController
 @RequestMapping("/roles")
@@ -73,5 +74,14 @@ public class RolController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // PUT (BORRADO LÓGICO)
+    // http://localhost:8080/roles/desactivar/1
+    @PutMapping("/desactivar/{idRol}")
+    @JsonView(RolViews.IndiscreetRol.class)
+    public ResponseEntity<RolDTO> desactivateRol(@PathVariable Integer idRol) {
+        RolDTO rolDTO = rolService.desactivateRol(idRol);
+        return ResponseEntity.ok(rolDTO);
     }
 }

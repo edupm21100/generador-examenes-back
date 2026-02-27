@@ -113,12 +113,22 @@ public class UsuarioService {
         }
     }
 
+    // BORRADO TOTAL
     public boolean deleteById(Integer idUsuario) {
         return usuarioRepository.findById(idUsuario).map(
                 usuario -> {
                     usuarioRepository.delete(usuario);
                     return true;
                 }).orElse(false);
+    }
+
+    // BORRADO LÓGICO
+    public UsuarioDTO desactivateUser(Integer idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(
+                () -> new RuntimeException("El usuario que se desactiva/activa no existe"));
+        usuario.setActivo(!usuario.isActivo());
+        Usuario usuarioGuardado = usuarioRepository.save(usuario);
+        return modelMapper.map(usuarioGuardado, UsuarioDTO.class);
     }
 
 }

@@ -13,7 +13,9 @@ public class UsuarioDTO {
     // ATRIBUTO NECESARIO PARA ASIGNAR ROL
     private Integer idRol;
 
+  
     public UsuarioDTO() {
+        //POR CUESTIONES DTO, ESTE CONSTRUCTOR ESTÁ VACÍO
     }
 
     // SETTER

@@ -85,10 +85,12 @@ public class UsuarioController {
     }
 
     // PUT MODIFICACIÓN CONTRASEÑA
-    // PUT http://localhost:8080/usuarios/5/contrasenha?contrasenhaNueva=####&contrasenhaVieja=#####
+    // PUT
+    // http://localhost:8080/usuarios/5/contrasenha?contrasenhaNueva=####&contrasenhaVieja=#####
     @PutMapping("/{idUsuario}/contrasenha")
     @JsonView(UsuarioViews.DiscreetUser.class)
-    public ResponseEntity<UsuarioDTO> cambiarContrasenha(@PathVariable Integer idUsuario, @RequestParam String contrasenhaNueva, @RequestParam String contrasenhaVieja){
+    public ResponseEntity<UsuarioDTO> cambiarContrasenha(@PathVariable Integer idUsuario,
+            @RequestParam String contrasenhaNueva, @RequestParam String contrasenhaVieja) {
         UsuarioDTO usuarioActualizado = usuarioService.changeContrasenha(idUsuario, contrasenhaNueva, contrasenhaVieja);
         return ResponseEntity.ok(usuarioActualizado);
     }
@@ -112,6 +114,15 @@ public class UsuarioController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // PUT (BORRADO LÓGICO)
+    // http://localhost:8080/usuarios/desactivar/1
+    @PutMapping("/desactivar/{idUsuario}")
+    @JsonView(UsuarioViews.ExtraIndiscreetUser.class)
+    public ResponseEntity<UsuarioDTO> desactivateUser(@PathVariable Integer idUsuario) {
+        UsuarioDTO usuarioDTO = usuarioService.desactivateUser(idUsuario);
+        return ResponseEntity.ok(usuarioDTO);
     }
 
 }

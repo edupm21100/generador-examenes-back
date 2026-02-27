@@ -7,7 +7,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.eduardo.examen_backend.dto.RolDTO;
+import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.models.Rol;
+import com.eduardo.examen_backend.models.Usuario;
 import com.eduardo.examen_backend.repositories.RolRepository;
 
 @Service
@@ -53,6 +55,15 @@ public class RolService {
                     rolRepository.delete(rol);
                     return true;
                 }).orElse(false);
+    }
+
+    // BORRADO LÓGICO
+    public RolDTO desactivateRol(Integer idRol) {
+        Rol rol = rolRepository.findById(idRol).orElseThrow(
+                () -> new RuntimeException("El usuario que se desactiva/activa no existe"));
+        rol.setActivo(!rol.isActivo());
+        Rol rolGuardado = rolRepository.save(rol);
+        return modelMapper.map(rolGuardado, RolDTO.class);
     }
 
 }

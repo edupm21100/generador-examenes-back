@@ -45,9 +45,15 @@ public class RolService {
                 });
     }
 
-    public boolean deleteById(Integer idRol) {
+public boolean deleteById(Integer idRol) {
         return rolRepository.findById(idRol).map(
                 rol -> {
+                    if (rol.getUsuarios() != null) {
+                        rol.getUsuarios().forEach(usuario -> usuario.getRoles().remove(rol));
+                        
+                        rol.getUsuarios().clear();
+                    }
+
                     rolRepository.delete(rol);
                     return true;
                 }).orElse(false);

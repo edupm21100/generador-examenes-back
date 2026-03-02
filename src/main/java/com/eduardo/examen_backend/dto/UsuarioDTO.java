@@ -12,7 +12,7 @@ public class UsuarioDTO {
     private Integer idUsuario;
     @Schema(description = "Nombre de pila del usuario", example = "Eduardo")
     private String nombreUsuario;
-    @Schema(description = "Apellidos del usuario", example = "García Pérez")
+    @Schema(description = "Apellidos del usuario", example = "Pérez")
     private String apellidoUsuario;
     @Schema(description = "Dirección de correo electrónico", example = "eduardo@test.com")
     private String correoUsuario;

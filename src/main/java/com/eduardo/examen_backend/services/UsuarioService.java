@@ -36,7 +36,7 @@ public class UsuarioService {
     public UsuarioDTO save(UsuarioDTO usuarioDTO) {
         Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
 
-        Integer idRolDefinitivo = (usuarioDTO.getIdRol() != null) ? usuarioDTO.getIdRol() : 1;
+        Integer idRolDefinitivo = (usuarioDTO.getIdRol() != null) ? usuarioDTO.getIdRol() : 4;
         // ASIGNAMOS POR EL ID DEL ROL QUE SE LE PASE
         Rol deafultRol = rolRepository.findById(idRolDefinitivo).orElseThrow(
                 () -> new RuntimeException("Error al asignar un ROL"));
@@ -117,6 +117,8 @@ public class UsuarioService {
     public boolean deleteById(Integer idUsuario) {
         return usuarioRepository.findById(idUsuario).map(
                 usuario -> {
+                    usuario.getRoles().forEach(rol -> rol.getUsuarios().remove(usuario));
+                    usuario.getRoles().clear();
                     usuarioRepository.delete(usuario);
                     return true;
                 }).orElse(false);
@@ -141,7 +143,7 @@ public class UsuarioService {
     }
 
     // ELIMINAR ROL DE UN USUARIO
-        public UsuarioRolDTO removeRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin) {
+    public UsuarioRolDTO removeRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin) {
         Usuario admin = usuarioRepository.findById(idAdmin).orElseThrow(
                 () -> new RuntimeException("Error: El usuario administrador no existe"));
         boolean isAdmin = admin.getRoles().stream()

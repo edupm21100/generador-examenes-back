@@ -26,6 +26,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+/**
+ * Controlador REST para la gestión del catálogo de roles del sistema.
+ * <p>
+ * Permite la administración de los perfiles de usuario (ADMIN, USER, etc.),
+ * incluyendo su creación, actualización y la gestión de su estado activo.
+ * </p>
+ * * @author Eduardo
+ * @version 0.01
+ */
 @RestController
 @RequestMapping("/roles")
 @Tag(name = "Roles", description = "Gestión de los roles de acceso del sistema")
@@ -40,6 +49,11 @@ public class RolController {
     // POST
     // http://localhost:8080/roles
     // RECUERDA QUE SPRING SECURITY ESTÁ DESHABILITADO POR AHORA
+    /**
+     * Crea un nuevo rol en la base de datos.
+     * * @param rolDTO Objeto con los datos del nuevo rol (nombre, descripción, etc.).
+     * @return ResponseEntity con el {@link RolDTO} creado y estado 201.
+     */
     @PostMapping
     @Operation(summary = "Crear un nuevo rol", description = "Guarda un nuevo rol en la base de datos.")
     @ApiResponse(responseCode = "201", description = "Rol creado con éxito")
@@ -50,6 +64,10 @@ public class RolController {
 
     // GET
     // http://localhost:8080/roles
+    /**
+     * Recupera todos los roles disponibles en el sistema.
+     * * @return Lista de {@link RolDTO}. Devuelve 204 (No Content) si la lista está vacía.
+     */
     @GetMapping
     @Operation(summary = "Listar todos los roles", description = "Devuelve una lista completa de todos los roles registrados. Devuelve 204 si no hay ninguno.")
     @ApiResponse(responseCode = "200", description = "Lista devuelta con éxito")
@@ -68,7 +86,7 @@ public class RolController {
     @Operation(summary = "Buscar rol por ID", description = "Obtiene los detalles de un rol específico mediante su ID.")
     @ApiResponse(responseCode = "200", description = "Rol encontrado")
     @ApiResponse(responseCode = "404", description = "El rol no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<RolDTO> findById(@PathVariable("idRol") Integer idRol) {
+    public ResponseEntity<RolDTO> findById(@PathVariable Integer idRol) {
         RolDTO rolDTO = rolService.findById(idRol).orElseThrow(
                 () -> new NotFoundException("Id: " + idRol + " no encontrado"));
         return new ResponseEntity<>(rolDTO, HttpStatus.OK);
@@ -88,11 +106,21 @@ public class RolController {
 
     // DELETE
     // http://localhost:8080/roles/1
+    /**
+     * Elimina un rol de forma permanente.
+     * <p>
+     * <b>Nota de seguridad:</b> Antes de eliminar el rol, el sistema desvincula 
+     * automáticamente a todos los usuarios que lo tengan asignado para mantener 
+     * la integridad de la base de datos.
+     * </p>
+     * * @param idRol Identificador del rol a eliminar.
+     * @return 204 si se eliminó correctamente, 404 si el rol no existe.
+     */
     @DeleteMapping("/{idRol}")
     @Operation(summary = "Eliminar rol físicamente", description = "Borra de forma permanente un rol de la base de datos.")
     @ApiResponse(responseCode = "204", description = "Rol eliminado con éxito")
     @ApiResponse(responseCode = "404", description = "El rol no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<Void> deleteById(@PathVariable("idRol") Integer idRol) {
+    public ResponseEntity<Void> deleteById(@PathVariable Integer idRol) {
         if (rolService.deleteById(idRol)) {
             return ResponseEntity.noContent().build();
         }
@@ -101,12 +129,21 @@ public class RolController {
 
     // PUT (BORRADO LÓGICO)
     // http://localhost:8080/roles/desactivar/1
+    /**
+     * Cambia el estado de activación de un rol.
+     * <p>
+     * Si el rol está activo, lo desactiva; si está inactivo, lo activa.
+     * </p>
+     * * @param idRol ID del rol a modificar.
+     * @return El {@link RolDTO} con el nuevo estado de activación.
+     * @throws RuntimeException Si el rol no existe en el sistema.
+     */
     @PutMapping("/desactivar/{idRol}")
     @JsonView(RolViews.IndiscreetRol.class)
     @Operation(summary = "Activar/Desactivar rol (Borrado lógico)", description = "Invierte el estado 'activo' de un rol sin borrarlo de la base de datos.")
     @ApiResponse(responseCode = "200", description = "Estado modificado exitosamente")
     @ApiResponse(responseCode = "404", description = "El rol no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<RolDTO> desactivateRol(@PathVariable("idRol") Integer idRol) {
+    public ResponseEntity<RolDTO> desactivateRol(@PathVariable Integer idRol) {
         RolDTO rolDTO = rolService.desactivateRol(idRol);
         return ResponseEntity.ok(rolDTO);
     }

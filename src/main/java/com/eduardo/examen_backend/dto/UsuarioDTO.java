@@ -78,6 +78,7 @@ public class UsuarioDTO {
         this.activo = activo;
     }
 
+
     public Integer getIdRol() {
         return idRol;
     }

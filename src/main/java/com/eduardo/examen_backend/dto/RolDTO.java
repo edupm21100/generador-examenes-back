@@ -18,6 +18,7 @@ public class RolDTO {
         this.idRol = idRol;
     }
 
+    @JsonView(RolViews.IndiscreetRol.class)
     public Integer getIdRol() {
         return idRol;
     }

@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.dto.UsuarioDTO;
+import com.eduardo.examen_backend.dto.UsuarioRolDTO;
 import com.eduardo.examen_backend.exception.NotFoundException;
 import com.eduardo.examen_backend.services.UsuarioService;
+import com.eduardo.examen_backend.views.RolViews;
 import com.eduardo.examen_backend.views.UsuarioViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -53,7 +56,7 @@ public class UsuarioController {
     }
 
     // GET usuarios por rol
-    // http://localhost:8080/usuarios/2
+    // http://localhost:8080/2/usuarios
     @GetMapping("/{idRol}/usuarios")
     @JsonView(UsuarioViews.DiscreetUser.class)
     public ResponseEntity<List<UsuarioDTO>> findByRol(@PathVariable Integer idRol) {
@@ -95,13 +98,13 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioActualizado);
     }
 
-    // PUT MODIFICACION POR ADMIN
+    // PUT AÑADIR ROL POR ADMIN
     // PUT http://localhost:8080/usuarios/5/roles?idRol=2&idAdmin=1
     @PutMapping("/{idUsuario}/roles")
-    @JsonView(UsuarioViews.IndiscreetUser.class)
-    public ResponseEntity<UsuarioDTO> cambiarRol(@PathVariable Integer idUsuario, @RequestParam Integer idRol,
+    @JsonView(UsuarioViews.ExtraIndiscreetUser.class)
+    public ResponseEntity<UsuarioDTO> anhadirRol(@PathVariable Integer idUsuario, @RequestParam Integer idRol,
             @RequestParam Integer idAdmin) {
-        UsuarioDTO usuarioActualizado = usuarioService.changeRol(idUsuario, idRol, idAdmin);
+        UsuarioDTO usuarioActualizado = usuarioService.anhadirRol(idUsuario, idRol, idAdmin);
         return ResponseEntity.ok(usuarioActualizado);
     }
 
@@ -123,6 +126,27 @@ public class UsuarioController {
     public ResponseEntity<UsuarioDTO> desactivateUser(@PathVariable Integer idUsuario) {
         UsuarioDTO usuarioDTO = usuarioService.desactivateUser(idUsuario);
         return ResponseEntity.ok(usuarioDTO);
+    }
+
+    // GET LISTA DE ROLES DE UN USUARIO
+    // http://localhost:8080/usuarios/1/roles
+    @GetMapping("{idUsuario}/roles")
+    @JsonView(RolViews.IndiscreetRol.class)
+    public ResponseEntity<List<RolDTO>> findRolByUsuario(@PathVariable Integer idUsuario) {
+        List<RolDTO> rolDTOs = usuarioService.findRolByUsuario(idUsuario);
+        if (rolDTOs.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(rolDTOs);
+    }
+
+    // QUITAR ROL A UN USUARIO
+    // http://localhost:8080/usuarios/1/roles/2?idAdmin=1
+    @PutMapping("{idUsuario}/roles/{idRol}")
+    public ResponseEntity<UsuarioRolDTO> removeRol(@PathVariable Integer idUsuario, @PathVariable Integer idRol,
+            @RequestParam Integer idAdmin) {
+        UsuarioRolDTO usuarioActualizado = usuarioService.removeRol(idUsuario, idRol, idAdmin);
+        return ResponseEntity.ok(usuarioActualizado);
     }
 
 }

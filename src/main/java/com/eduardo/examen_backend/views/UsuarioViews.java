@@ -11,5 +11,4 @@ public class UsuarioViews {
     public interface ExtraIndiscreetUser extends IndiscreetUser{}
 
     public interface UltraExtraIndiscreetUser extends ExtraIndiscreetUser{}
-
 }

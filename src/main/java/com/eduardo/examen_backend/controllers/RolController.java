@@ -84,4 +84,5 @@ public class RolController {
         RolDTO rolDTO = rolService.desactivateRol(idRol);
         return ResponseEntity.ok(rolDTO);
     }
+    
 }

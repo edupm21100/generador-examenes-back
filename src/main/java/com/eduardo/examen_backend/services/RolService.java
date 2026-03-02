@@ -7,9 +7,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.eduardo.examen_backend.dto.RolDTO;
-import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.models.Rol;
-import com.eduardo.examen_backend.models.Usuario;
 import com.eduardo.examen_backend.repositories.RolRepository;
 
 @Service
@@ -34,9 +32,7 @@ public class RolService {
 
     public Optional<RolDTO> findById(Integer idRol) {
         return rolRepository.findById(idRol).map(
-                rolDB -> {
-                    return modelMapper.map(rolDB, RolDTO.class);
-                });
+                rolDB -> modelMapper.map(rolDB, RolDTO.class));
     }
 
     public Optional<RolDTO> update(RolDTO rolDTO) {

@@ -9,8 +9,11 @@ import java.util.Set;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.dto.UsuarioDTO;
+import com.eduardo.examen_backend.dto.UsuarioRolDTO;
 import com.eduardo.examen_backend.exception.BadRequestException;
+import com.eduardo.examen_backend.exception.NotFoundException;
 import com.eduardo.examen_backend.models.Rol;
 import com.eduardo.examen_backend.models.Usuario;
 import com.eduardo.examen_backend.repositories.RolRepository;
@@ -78,8 +81,8 @@ public class UsuarioService {
                 });
     }
 
-    // CAMBIAR O AÑADIR ROL
-    public UsuarioDTO changeRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin) {
+    // AÑADIR ROL
+    public UsuarioDTO anhadirRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin) {
         Usuario admin = usuarioRepository.findById(idAdmin).orElseThrow(
                 () -> new RuntimeException("Error: El usuario administrador no existe"));
         boolean isAdmin = admin.getRoles().stream()
@@ -92,10 +95,7 @@ public class UsuarioService {
                 () -> new RuntimeException("Error: El usuario a modificar no existe"));
         Rol nuevoRol = rolRepository.findById(idRolNuevo).orElseThrow(
                 () -> new RuntimeException("Error: El rol especificado no existe"));
-        Set<Rol> rolesActualizados = new HashSet<>();
-        rolesActualizados.add(nuevoRol);
-        usuarioTarget.setRoles(rolesActualizados);
-
+        usuarioTarget.getRoles().add(nuevoRol);
         Usuario usuarioGuardado = usuarioRepository.save(usuarioTarget);
         return modelMapper.map(usuarioGuardado, UsuarioDTO.class);
     }
@@ -131,4 +131,34 @@ public class UsuarioService {
         return modelMapper.map(usuarioGuardado, UsuarioDTO.class);
     }
 
+    // LISTAR ROLES EN FUNCIÓN DEL USUARIO
+    public List<RolDTO> findRolByUsuario(Integer idUsuario) {
+        Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(
+                () -> new NotFoundException("El usuario con ID " + idUsuario + " no existe"));
+        return usuario.getRoles().stream()
+                .map(rol -> modelMapper.map(rol, RolDTO.class))
+                .toList();
+    }
+
+    // ELIMINAR ROL DE UN USUARIO
+        public UsuarioRolDTO removeRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin) {
+        Usuario admin = usuarioRepository.findById(idAdmin).orElseThrow(
+                () -> new RuntimeException("Error: El usuario administrador no existe"));
+        boolean isAdmin = admin.getRoles().stream()
+                .anyMatch(rol -> rol.getIdRol() == 1);
+
+        if (!isAdmin) {
+            throw new BadRequestException("Acceso denegado: No tienes permisos de Administrador");
+        }
+        Usuario usuarioTarget = usuarioRepository.findById(idUsuarioTarget).orElseThrow(
+                () -> new RuntimeException("Error: El usuario a modificar no existe"));
+        Rol nuevoRol = rolRepository.findById(idRolNuevo).orElseThrow(
+                () -> new RuntimeException("Error: El rol especificado no existe"));
+        usuarioTarget.getRoles().remove(nuevoRol);
+        UsuarioRolDTO datoMostrado = new UsuarioRolDTO();
+        usuarioRepository.save(usuarioTarget);
+        datoMostrado.setIdUsuario(idUsuarioTarget);
+        datoMostrado.setIdRol(idRolNuevo);
+        return (datoMostrado);
+    }
 }

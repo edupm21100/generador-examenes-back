@@ -1,4 +1,4 @@
-package com.eduardo.examen_backend;
+package com.eduardo.examen_backend.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -23,13 +23,15 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.dto.UsuarioDTO;
+import com.eduardo.examen_backend.dto.UsuarioRolDTO;
 import com.eduardo.examen_backend.models.Rol;
 import com.eduardo.examen_backend.models.Usuario;
 import com.eduardo.examen_backend.repositories.RolRepository;
 import com.eduardo.examen_backend.repositories.UsuarioRepository;
-import com.eduardo.examen_backend.services.UsuarioService;
 import com.eduardo.examen_backend.exception.BadRequestException;
+import com.eduardo.examen_backend.exception.NotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class UsuarioServiceTest {
@@ -255,4 +257,216 @@ class UsuarioServiceTest {
         verify(usuarioRepository, times(1)).save(any(Usuario.class));
     }
 
+    @Test
+    void deleteByIdMAL() {
+        Integer idUsuario = -1;
+
+        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.empty());
+
+        boolean resultado = usuarioService.deleteById(idUsuario);
+
+        assertFalse(resultado, "Debería devolver false indicando que no se encontró para borrar");
+        verify(usuarioRepository, times(1)).findById(idUsuario);
+        verify(usuarioRepository, never()).delete(any(Usuario.class));
+    }
+
+    @Test
+    void desactivateUserMAL() {
+        Integer idUsuario = -1;
+
+        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.empty());
+
+        RuntimeException excepcion = assertThrows(RuntimeException.class, () -> {
+            usuarioService.desactivateUser(idUsuario);
+        });
+
+        assertEquals("El usuario que se desactiva/activa no existe", excepcion.getMessage());
+        verify(usuarioRepository, never()).save(any(Usuario.class));
+    }
+
+    @Test
+    void updateOK() {
+        UsuarioDTO dtoEntrada = new UsuarioDTO();
+        dtoEntrada.setIdUsuario(1);
+        dtoEntrada.setNombreUsuario("EduModificado");
+
+        Usuario usuarioMapeado = new Usuario();
+        usuarioMapeado.setIdUsuario(1);
+
+        Usuario usuarioBD = new Usuario();
+        usuarioBD.setIdUsuario(1);
+
+        UsuarioDTO dtoSalida = new UsuarioDTO();
+        dtoSalida.setIdUsuario(1);
+        dtoSalida.setNombreUsuario("EduModificado");
+
+        when(modelMapper.map(dtoEntrada, Usuario.class)).thenReturn(usuarioMapeado);
+        when(usuarioRepository.findById(1)).thenReturn(Optional.of(usuarioBD));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioBD);
+        when(modelMapper.map(usuarioBD, UsuarioDTO.class)).thenReturn(dtoSalida);
+
+        Optional<UsuarioDTO> resultado = usuarioService.update(dtoEntrada);
+
+        assertTrue(resultado.isPresent(), "Debería devolver el usuario actualizado");
+        assertEquals("EduModificado", resultado.get().getNombreUsuario());
+        verify(usuarioRepository, times(1)).save(any(Usuario.class));
+    }
+
+    @Test
+    void updateMAL() {
+        UsuarioDTO dtoEntrada = new UsuarioDTO();
+        dtoEntrada.setIdUsuario(99);
+
+        Usuario usuarioMapeado = new Usuario();
+        usuarioMapeado.setIdUsuario(99);
+
+        when(modelMapper.map(dtoEntrada, Usuario.class)).thenReturn(usuarioMapeado);
+        when(usuarioRepository.findById(99)).thenReturn(Optional.empty());
+
+        Optional<UsuarioDTO> resultado = usuarioService.update(dtoEntrada);
+
+        assertFalse(resultado.isPresent(), "Debería devolver Optional vacío si no existe");
+        verify(usuarioRepository, never()).save(any(Usuario.class));
+    }
+
+    @Test
+    void findByRolOK() {
+        Integer idRol = 2;
+        Usuario usuarioBD = new Usuario();
+        usuarioBD.setIdUsuario(1);
+
+        UsuarioDTO dtoEsperado = new UsuarioDTO();
+        dtoEsperado.setIdUsuario(1);
+
+        when(usuarioRepository.findByRolesIdRol(idRol)).thenReturn(Arrays.asList(usuarioBD));
+        when(modelMapper.map(usuarioBD, UsuarioDTO.class)).thenReturn(dtoEsperado);
+
+        List<UsuarioDTO> resultado = usuarioService.findByRol(idRol);
+
+        assertFalse(resultado.isEmpty());
+        assertEquals(1, resultado.size());
+        verify(usuarioRepository, times(1)).findByRolesIdRol(idRol);
+    }
+
+    @Test
+    void findRolByUsuarioOK() {
+        Integer idUsuario = 1;
+        
+        Usuario usuarioBD = new Usuario();
+        usuarioBD.setIdUsuario(idUsuario);
+        Rol rol = new Rol();
+        rol.setIdRol(2);
+        usuarioBD.getRoles().add(rol);
+
+        RolDTO rolDTOEsperado = new RolDTO();
+        rolDTOEsperado.setIdRol(2);
+
+        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuarioBD));
+        when(modelMapper.map(rol, RolDTO.class)).thenReturn(rolDTOEsperado);
+
+        List<RolDTO> resultado = usuarioService.findRolByUsuario(idUsuario);
+
+        assertFalse(resultado.isEmpty());
+        assertEquals(1, resultado.size());
+        verify(usuarioRepository, times(1)).findById(idUsuario);
+    }
+
+    @Test
+    void findRolByUsuarioMAL() {
+        Integer idUsuario = 99;
+        
+        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.empty());
+
+        NotFoundException excepcion = assertThrows(NotFoundException.class, () -> {
+            usuarioService.findRolByUsuario(idUsuario);
+        });
+
+        assertEquals("El usuario con ID " + idUsuario + " no existe", excepcion.getMessage());
+    }
+
+    @Test
+    void anhadirRolOK() {
+        Integer idTarget = 5;
+        Integer idRol = 2;
+        Integer idAdmin = 1;
+
+        Usuario usuarioAdmin = new Usuario();
+        usuarioAdmin.setIdUsuario(idAdmin);
+        Rol rolAdministrador = new Rol();
+        rolAdministrador.setIdRol(1);
+        usuarioAdmin.getRoles().add(rolAdministrador);
+
+        Usuario usuarioTarget = new Usuario();
+        usuarioTarget.setIdUsuario(idTarget);
+        Rol nuevoRol = new Rol();
+        nuevoRol.setIdRol(idRol);
+
+        UsuarioDTO dtoSalida = new UsuarioDTO();
+        dtoSalida.setIdUsuario(idTarget);
+
+        when(usuarioRepository.findById(idAdmin)).thenReturn(Optional.of(usuarioAdmin));
+        when(usuarioRepository.findById(idTarget)).thenReturn(Optional.of(usuarioTarget));
+        when(rolRepository.findById(idRol)).thenReturn(Optional.of(nuevoRol));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioTarget);
+        when(modelMapper.map(usuarioTarget, UsuarioDTO.class)).thenReturn(dtoSalida);
+
+        UsuarioDTO resultado = usuarioService.anhadirRol(idTarget, idRol, idAdmin);
+
+        assertNotNull(resultado);
+        verify(usuarioRepository, times(1)).save(usuarioTarget);
+    }
+
+    @Test
+    void removeRolOK() {
+        Integer idTarget = 5;
+        Integer idRol = 2;
+        Integer idAdmin = 1;
+
+        Usuario usuarioAdmin = new Usuario();
+        usuarioAdmin.setIdUsuario(idAdmin);
+        Rol rolAdministrador = new Rol();
+        rolAdministrador.setIdRol(1);
+        usuarioAdmin.getRoles().add(rolAdministrador);
+
+        Usuario usuarioTarget = new Usuario();
+        usuarioTarget.setIdUsuario(idTarget);
+        Rol rolAQuitar = new Rol();
+        rolAQuitar.setIdRol(idRol);
+        usuarioTarget.getRoles().add(rolAQuitar);
+
+        when(usuarioRepository.findById(idAdmin)).thenReturn(Optional.of(usuarioAdmin));
+        when(usuarioRepository.findById(idTarget)).thenReturn(Optional.of(usuarioTarget));
+        when(rolRepository.findById(idRol)).thenReturn(Optional.of(rolAQuitar));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioTarget);
+
+        UsuarioRolDTO resultado = usuarioService.removeRol(idTarget, idRol, idAdmin);
+
+        assertNotNull(resultado);
+        assertEquals(idTarget, resultado.getIdUsuario());
+        assertEquals(idRol, resultado.getIdRol());
+        assertTrue(usuarioTarget.getRoles().isEmpty(), "El rol debió ser eliminado del Set");
+        verify(usuarioRepository, times(1)).save(usuarioTarget);
+    }
+
+    @Test
+    void removeRolIfSolicitanteNoEsAdminMAL() {
+        Integer idTarget = 5;
+        Integer idRol = 2;
+        Integer idImpostor = 99;
+
+        Usuario usuarioImpostor = new Usuario();
+        usuarioImpostor.setIdUsuario(idImpostor);
+        Rol rolNormal = new Rol();
+        rolNormal.setIdRol(2); // No es admin
+        usuarioImpostor.getRoles().add(rolNormal);
+
+        when(usuarioRepository.findById(idImpostor)).thenReturn(Optional.of(usuarioImpostor));
+
+        BadRequestException excepcion = assertThrows(BadRequestException.class, () -> {
+            usuarioService.removeRol(idTarget, idRol, idImpostor);
+        });
+
+        assertEquals("Acceso denegado: No tienes permisos de Administrador", excepcion.getMessage());
+        verify(usuarioRepository, never()).save(any(Usuario.class));
+    }
 }

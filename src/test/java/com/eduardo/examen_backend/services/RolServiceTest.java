@@ -1,4 +1,4 @@
-package com.eduardo.examen_backend;
+package com.eduardo.examen_backend.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,7 +26,6 @@ import com.eduardo.examen_backend.models.Rol;
 import com.eduardo.examen_backend.models.Usuario;
 import com.eduardo.examen_backend.repositories.RolRepository;
 import com.eduardo.examen_backend.repositories.UsuarioRepository;
-import com.eduardo.examen_backend.services.RolService;
 
 @ExtendWith(MockitoExtension.class)
 class RolServiceTest {

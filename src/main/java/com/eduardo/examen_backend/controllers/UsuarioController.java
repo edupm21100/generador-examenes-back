@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eduardo.examen_backend.dto.PasswordDTO;
 import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.dto.UsuarioRolDTO;
-import com.eduardo.examen_backend.exception.ErrorResponse;
-import com.eduardo.examen_backend.exception.NotFoundException;
+import com.eduardo.examen_backend.exceptions.ErrorResponse;
 import com.eduardo.examen_backend.services.UsuarioService;
 import com.eduardo.examen_backend.views.RolViews;
 import com.eduardo.examen_backend.views.UsuarioViews;
@@ -24,10 +24,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 
+import org.apache.coyote.BadRequestException;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -39,13 +41,13 @@ import org.springframework.web.bind.annotation.PathVariable;
  * mediante validación de roles administrativos en operaciones críticas.
  * </p>
  * * @author Eduardo
+ * 
  * @version 0.01
  */
 @RestController
 @RequestMapping("/usuarios")
 @Tag(name = "Usuarios", description = "Gestión integral de usuarios, contraseñas y asignación de roles")
 public class UsuarioController {
-
     private final UsuarioService usuarioService;
 
     public UsuarioController(UsuarioService usuarioService) {
@@ -58,14 +60,16 @@ public class UsuarioController {
     /**
      * Registra un nuevo usuario en el sistema.
      * * @param usuarioDTO Objeto con la información del usuario a crear.
-     * @return ResponseEntity con el {@link UsuarioDTO} creado y estado 201 (Created).
+     * 
+     * @return ResponseEntity con el {@link UsuarioDTO} creado y estado 201
+     *         (Created).
      */
     @PostMapping
     @JsonView(UsuarioViews.IndiscreetUser.class)
     @Operation(summary = "Registrar un usuario", description = "Crea un usuario nuevo. Se le asignará el rol especificado o uno por defecto.")
     @ApiResponse(responseCode = "201", description = "Usuario creado exitosamente")
     @ApiResponse(responseCode = "400", description = "Datos inválidos o incompletos", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<UsuarioDTO> save(@RequestBody UsuarioDTO usuarioDTO) {
+    public ResponseEntity<UsuarioDTO> save(@Valid @RequestBody UsuarioDTO usuarioDTO) {
         return new ResponseEntity<>(usuarioService.save(usuarioDTO), HttpStatus.CREATED);
     }
 
@@ -85,16 +89,18 @@ public class UsuarioController {
     }
 
     // GET usuarios por rol
-    // http://localhost:8080/2/usuarios
+    // http://localhost:8080/usuarios/2/usuarios
     /**
      * Recupera la lista de usuarios que tienen asignado un rol específico.
      * <p>
      * Utiliza el ID del rol para filtrar en la base de datos y obtener
-     * los perfiles asociados a dicha categoría (por ejemplo, obtener todos los 'ADMIN').
+     * los perfiles asociados a dicha categoría (por ejemplo, obtener todos los
+     * 'ADMIN').
      * </p>
      * * @param idRol Identificador único del rol por el cual filtrar.
-     * @return ResponseEntity con una {@link List} de {@link UsuarioDTO}. 
-     * Devuelve 204 (No Content) si no existen usuarios con ese rol.
+     * 
+     * @return ResponseEntity con una {@link List} de {@link UsuarioDTO}.
+     *         Devuelve 204 (No Content) si no existen usuarios con ese rol.
      */
     @GetMapping("/{idRol}/usuarios")
     @JsonView(UsuarioViews.DiscreetUser.class)
@@ -116,9 +122,9 @@ public class UsuarioController {
     @Operation(summary = "Buscar usuario por ID", description = "Devuelve toda la información de un usuario específico.")
     @ApiResponse(responseCode = "200", description = "Usuario encontrado")
     @ApiResponse(responseCode = "404", description = "El usuario no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<UsuarioDTO> findById(@PathVariable Integer idUsuario) {
+    public ResponseEntity<UsuarioDTO> findById(@PathVariable Integer idUsuario) throws NotFoundException {
         UsuarioDTO usuarioDTO = usuarioService.findById(idUsuario).orElseThrow(
-                () -> new NotFoundException("Id: " + idUsuario + " no encontrado"));
+                NotFoundException::new);
         return new ResponseEntity<>(usuarioDTO, HttpStatus.OK);
     }
 
@@ -129,32 +135,26 @@ public class UsuarioController {
     @Operation(summary = "Actualizar datos generales", description = "Modifica los datos básicos del usuario. No usar para contraseñas o roles.")
     @ApiResponse(responseCode = "200", description = "Usuario actualizado correctamente")
     @ApiResponse(responseCode = "404", description = "El usuario a modificar no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<UsuarioDTO> update(@RequestBody() UsuarioDTO usuarioDTO) {
+    public ResponseEntity<UsuarioDTO> update(@Valid @RequestBody() UsuarioDTO usuarioDTO) {
         return usuarioService.update(usuarioDTO).map(
                 ResponseEntity::ok).orElseGet(
                         () -> ResponseEntity.notFound().build());
     }
 
     // PUT MODIFICACIÓN CONTRASEÑA
-    // PUT
-    // http://localhost:8080/usuarios/5/contrasenha?contrasenhaNueva=####&contrasenhaVieja=#####
-    /**
-     * Gestiona el cambio de credenciales de un usuario.
-     * * @param idUsuario ID del usuario que solicita el cambio.
-     * @param contrasenhaNueva La nueva clave a establecer.
-     * @param contrasenhaVieja Clave actual para validación de seguridad.
-     * @return El usuario actualizado si la validación es correcta.
-     * @throws BadRequestException Si la contraseña antigua no coincide.
-     */
-    @PutMapping("/{idUsuario}/contrasenha")
+    // PUT http://localhost:8080/usuarios/5/password
+    @PutMapping("/{idUsuario}/password")
     @JsonView(UsuarioViews.DiscreetUser.class)
     @Operation(summary = "Cambiar contraseña", description = "Actualiza la contraseña de un usuario exigiendo la contraseña antigua por seguridad.")
     @ApiResponse(responseCode = "200", description = "Contraseña cambiada exitosamente")
-    @ApiResponse(responseCode = "400", description = "La contraseña antigua es incorrecta", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+    @ApiResponse(responseCode = "400", description = "Datos inválidos o la contraseña antigua es incorrecta", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "El usuario no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<UsuarioDTO> cambiarContrasenha(@PathVariable Integer idUsuario,
-            @RequestParam String contrasenhaNueva, @RequestParam String contrasenhaVieja) {
-        UsuarioDTO usuarioActualizado = usuarioService.changeContrasenha(idUsuario, contrasenhaNueva, contrasenhaVieja);
+
+    public ResponseEntity<UsuarioDTO> cambiarContrasenha(
+            @PathVariable Integer idUsuario,
+            @Valid @RequestBody PasswordDTO passwordChangePetition) throws BadRequestException {
+        UsuarioDTO usuarioActualizado = usuarioService.changeContrasenha(
+                idUsuario, passwordChangePetition);
         return ResponseEntity.ok(usuarioActualizado);
     }
 
@@ -163,9 +163,12 @@ public class UsuarioController {
     /**
      * Asigna un rol adicional a un usuario. Requiere permisos de administrador.
      * * @param idUsuario Usuario que recibirá el rol.
-     * @param idRol ID del rol a asignar.
-     * @param idAdmin ID del usuario que realiza la petición (debe ser Administrador).
+     * 
+     * @param idRol   ID del rol a asignar.
+     * @param idAdmin ID del usuario que realiza la petición (debe ser
+     *                Administrador).
      * @return Usuario con su nueva lista de roles.
+     * @throws BadRequestException 
      */
     @PutMapping("/{idUsuario}/roles")
     @JsonView(UsuarioViews.ExtraIndiscreetUser.class)
@@ -175,23 +178,9 @@ public class UsuarioController {
     @ApiResponse(responseCode = "404", description = "El usuario o el rol no existen", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     public ResponseEntity<UsuarioDTO> anhadirRol(@PathVariable Integer idUsuario,
             @RequestParam Integer idRol,
-            @RequestParam Integer idAdmin) {
+            @RequestParam Integer idAdmin) throws BadRequestException {
         UsuarioDTO usuarioActualizado = usuarioService.anhadirRol(idUsuario, idRol, idAdmin);
         return ResponseEntity.ok(usuarioActualizado);
-    }
-
-    // DELETE
-    // http://localhost:8080/usuarios/2
-    @DeleteMapping("/{idUsuario}")
-    @JsonView(UsuarioViews.NotDiscreetUser.class)
-    @Operation(summary = "Eliminar usuario físicamente", description = "Borra un usuario de la BD. Cuidado: puede romper dependencias si tiene registros asociados.")
-    @ApiResponse(responseCode = "204", description = "Usuario eliminado con éxito")
-    @ApiResponse(responseCode = "404", description = "El usuario no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<Void> deleteById(@PathVariable Integer idUsuario) {
-        if (usuarioService.deleteById(idUsuario)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
     }
 
     // PUT (BORRADO LÓGICO)
@@ -211,12 +200,16 @@ public class UsuarioController {
     /**
      * Consulta el catálogo de roles que posee un usuario determinado.
      * <p>
-     * Permite auditar qué permisos o etiquetas de seguridad tiene un usuario 
+     * Permite auditar qué permisos o etiquetas de seguridad tiene un usuario
      * extrayendo su colección de roles desde la relación ManyToMany.
      * </p>
-     * * @param idUsuario Identificador del usuario cuya lista de roles se desea consultar.
+     * * @param idUsuario Identificador del usuario cuya lista de roles se desea
+     * consultar.
+     * 
      * @return ResponseEntity con la {@link List} de {@link RolDTO} asignados.
-     * Devuelve 204 si el usuario existe pero no tiene roles, o 404 si el usuario no existe.
+     *         Devuelve 204 si el usuario existe pero no tiene roles, o 404 si el
+     *         usuario no existe.
+     * @throws NotFoundException 
      */
     @GetMapping("{idUsuario}/roles")
     @JsonView(RolViews.IndiscreetRol.class)
@@ -224,7 +217,7 @@ public class UsuarioController {
     @ApiResponse(responseCode = "200", description = "Roles encontrados")
     @ApiResponse(responseCode = "204", description = "El usuario no tiene roles")
     @ApiResponse(responseCode = "404", description = "El usuario no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<List<RolDTO>> findRolByUsuario(@PathVariable Integer idUsuario) {
+    public ResponseEntity<List<RolDTO>> findRolByUsuario(@PathVariable Integer idUsuario) throws NotFoundException {
         List<RolDTO> rolDTOs = usuarioService.findRolByUsuario(idUsuario);
         if (rolDTOs.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -240,7 +233,7 @@ public class UsuarioController {
     @ApiResponse(responseCode = "400", description = "Acceso denegado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     @ApiResponse(responseCode = "404", description = "El usuario o el rol no existen", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     public ResponseEntity<UsuarioRolDTO> removeRol(@PathVariable Integer idUsuario, @PathVariable Integer idRol,
-            @RequestParam Integer idAdmin) {
+            @RequestParam Integer idAdmin) throws BadRequestException {
         UsuarioRolDTO usuarioActualizado = usuarioService.removeRol(idUsuario, idRol, idAdmin);
         return ResponseEntity.ok(usuarioActualizado);
     }

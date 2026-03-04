@@ -26,7 +26,7 @@ public class RolService {
     }
 
     public List<RolDTO> findAll() {
-        return rolRepository.findAll().stream().map(
+        return rolRepository.findByActivoTrue().stream().map(
                 rol -> modelMapper.map(rol, RolDTO.class)).toList();
     }
 
@@ -43,20 +43,6 @@ public class RolService {
                     rolBD.setActivo(rol.isActivo());
                     return modelMapper.map(rolRepository.save(rolBD), RolDTO.class);
                 });
-    }
-
-public boolean deleteById(Integer idRol) {
-        return rolRepository.findById(idRol).map(
-                rol -> {
-                    if (rol.getUsuarios() != null) {
-                        rol.getUsuarios().forEach(usuario -> usuario.getRoles().remove(rol));
-                        
-                        rol.getUsuarios().clear();
-                    }
-
-                    rolRepository.delete(rol);
-                    return true;
-                }).orElse(false);
     }
 
     // BORRADO LÓGICO

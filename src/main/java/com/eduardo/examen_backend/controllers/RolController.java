@@ -2,9 +2,9 @@ package com.eduardo.examen_backend.controllers;
 
 import java.util.List;
 
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eduardo.examen_backend.dto.RolDTO;
-import com.eduardo.examen_backend.exception.ErrorResponse;
-import com.eduardo.examen_backend.exception.NotFoundException;
+import com.eduardo.examen_backend.exceptions.ErrorResponse;
 import com.eduardo.examen_backend.services.RolService;
 import com.eduardo.examen_backend.views.RolViews;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -86,9 +85,9 @@ public class RolController {
     @Operation(summary = "Buscar rol por ID", description = "Obtiene los detalles de un rol específico mediante su ID.")
     @ApiResponse(responseCode = "200", description = "Rol encontrado")
     @ApiResponse(responseCode = "404", description = "El rol no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<RolDTO> findById(@PathVariable Integer idRol) {
+    public ResponseEntity<RolDTO> findById(@PathVariable Integer idRol) throws NotFoundException {
         RolDTO rolDTO = rolService.findById(idRol).orElseThrow(
-                () -> new NotFoundException("Id: " + idRol + " no encontrado"));
+                NotFoundException::new);
         return new ResponseEntity<>(rolDTO, HttpStatus.OK);
     }
 
@@ -102,29 +101,6 @@ public class RolController {
         return rolService.update(rolDTO).map(
                 ResponseEntity::ok).orElseGet(
                         () -> ResponseEntity.notFound().build());
-    }
-
-    // DELETE
-    // http://localhost:8080/roles/1
-    /**
-     * Elimina un rol de forma permanente.
-     * <p>
-     * <b>Nota de seguridad:</b> Antes de eliminar el rol, el sistema desvincula 
-     * automáticamente a todos los usuarios que lo tengan asignado para mantener 
-     * la integridad de la base de datos.
-     * </p>
-     * * @param idRol Identificador del rol a eliminar.
-     * @return 204 si se eliminó correctamente, 404 si el rol no existe.
-     */
-    @DeleteMapping("/{idRol}")
-    @Operation(summary = "Eliminar rol físicamente", description = "Borra de forma permanente un rol de la base de datos.")
-    @ApiResponse(responseCode = "204", description = "Rol eliminado con éxito")
-    @ApiResponse(responseCode = "404", description = "El rol no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<Void> deleteById(@PathVariable Integer idRol) {
-        if (rolService.deleteById(idRol)) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
     }
 
     // PUT (BORRADO LÓGICO)

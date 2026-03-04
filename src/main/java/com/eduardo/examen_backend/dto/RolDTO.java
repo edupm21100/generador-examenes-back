@@ -12,7 +12,7 @@ public class RolDTO {
     @Schema(description = "Nombre oficial del rol", example = "ADMINISTRADOR")
     private String nombreRol;
     @Schema(description = "Estado actual del rol (Si es false, nadie con este rol podrá operar)", example = "true")
-    private boolean activo;
+    private boolean activo = true;
 
     public RolDTO() {
         //VACÍO POR NECESIDAD DEL DTO

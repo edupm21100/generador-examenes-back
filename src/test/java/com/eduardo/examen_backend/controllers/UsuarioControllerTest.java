@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.eduardo.examen_backend.dto.PasswordDTO;
 import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.services.UsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,31 +72,18 @@ class UsuarioControllerTest {
     }
 
     @Test
-    void deleteById_CuandoExiste_DeberiaDevolver204() throws Exception {
-        when(usuarioService.deleteById(1)).thenReturn(true);
-
-        mockMvc.perform(delete("/usuarios/1"))
-                .andExpect(status().isNoContent()); // Esperamos HTTP 204
-    }
-
-    @Test
-    void deleteById_CuandoNoExiste_DeberiaDevolver404() throws Exception {
-        when(usuarioService.deleteById(99)).thenReturn(false);
-
-        mockMvc.perform(delete("/usuarios/99"))
-                .andExpect(status().isNotFound()); // Esperamos HTTP 404
-    }
-
-    @Test
     void cambiarContrasenha_DeberiaRecibirParametrosYDevolver200() throws Exception {
         Integer idUsuario = 5;
         String nueva = "1234";
         String vieja = "0000";
+        PasswordDTO passwordDTO = new PasswordDTO();
+        passwordDTO.setNewPassword(nueva);
+        passwordDTO.setOldPassword(vieja);
 
         UsuarioDTO dtoSalida = new UsuarioDTO();
         dtoSalida.setIdUsuario(idUsuario);
 
-        when(usuarioService.changeContrasenha(idUsuario, nueva, vieja)).thenReturn(dtoSalida);
+        when(usuarioService.changeContrasenha(idUsuario, passwordDTO)).thenReturn(dtoSalida);
 
         mockMvc.perform(put("/usuarios/{idUsuario}/contrasenha", idUsuario)
                 .param("contrasenhaNueva", nueva)

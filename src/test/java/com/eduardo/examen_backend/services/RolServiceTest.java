@@ -23,7 +23,6 @@ import org.modelmapper.ModelMapper;
 
 import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.models.Rol;
-import com.eduardo.examen_backend.models.Usuario;
 import com.eduardo.examen_backend.repositories.RolRepository;
 import com.eduardo.examen_backend.repositories.UsuarioRepository;
 
@@ -37,32 +36,6 @@ class RolServiceTest {
     private ModelMapper modelMapper;
     @InjectMocks
     private RolService rolService;
-
-    @Test
-    void deleteByIdOK() {
-        Integer idRol = 3;
-
-        Rol rolBD = new Rol();
-        rolBD.setIdRol(idRol);
-
-        Usuario usuarioAfectado = new Usuario();
-        usuarioAfectado.setIdUsuario(100);
-        
-        usuarioAfectado.getRoles().add(rolBD); 
-        rolBD.getUsuarios().add(usuarioAfectado); 
-
-        when(rolRepository.findById(idRol)).thenReturn(Optional.of(rolBD));
-
-        boolean resultado = rolService.deleteById(idRol);
-
-        assertTrue(resultado, "Debería devolver true indicando que se borró con éxito");
-
-        assertTrue(rolBD.getUsuarios().isEmpty(), "El rol debió soltar al usuario (lista vacía)");
-        assertTrue(usuarioAfectado.getRoles().isEmpty(), "Al usuario se le debió quitar el rol (lista vacía)");
-
-        verify(rolRepository, times(1)).findById(idRol);
-        verify(rolRepository, times(1)).delete(rolBD);
-    }
 
     @Test
     void saveRolOK() {

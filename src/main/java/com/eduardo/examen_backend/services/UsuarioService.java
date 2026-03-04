@@ -6,14 +6,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.coyote.BadRequestException;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.eduardo.examen_backend.dto.PasswordDTO;
 import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.dto.UsuarioRolDTO;
-import com.eduardo.examen_backend.exception.BadRequestException;
-import com.eduardo.examen_backend.exception.NotFoundException;
 import com.eduardo.examen_backend.models.Rol;
 import com.eduardo.examen_backend.models.Usuario;
 import com.eduardo.examen_backend.repositories.RolRepository;
@@ -36,7 +37,7 @@ public class UsuarioService {
     public UsuarioDTO save(UsuarioDTO usuarioDTO) {
         Usuario usuario = modelMapper.map(usuarioDTO, Usuario.class);
 
-        Integer idRolDefinitivo = (usuarioDTO.getIdRol() != null) ? usuarioDTO.getIdRol() : 4;
+        Integer idRolDefinitivo = (usuarioDTO.getIdRol() != null) ? usuarioDTO.getIdRol() : 3;
         // ASIGNAMOS POR EL ID DEL ROL QUE SE LE PASE
         Rol deafultRol = rolRepository.findById(idRolDefinitivo).orElseThrow(
                 () -> new RuntimeException("Error al asignar un ROL"));
@@ -48,7 +49,7 @@ public class UsuarioService {
     }
 
     public List<UsuarioDTO> findAll() {
-        return usuarioRepository.findAll().stream().map(
+        return usuarioRepository.findByActivoTrue().stream().map(
                 usuario -> modelMapper.map(usuario, UsuarioDTO.class)).toList();
     }
 
@@ -82,7 +83,7 @@ public class UsuarioService {
     }
 
     // AÑADIR ROL
-    public UsuarioDTO anhadirRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin) {
+    public UsuarioDTO anhadirRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin) throws BadRequestException {
         Usuario admin = usuarioRepository.findById(idAdmin).orElseThrow(
                 () -> new RuntimeException("Error: El usuario administrador no existe"));
         boolean isAdmin = admin.getRoles().stream()
@@ -101,27 +102,16 @@ public class UsuarioService {
     }
 
     // CAMBIAR CONTRASEÑA
-    public UsuarioDTO changeContrasenha(Integer idUsuario, String contrasenhaNueva, String contrasenhaVieja) {
+    public UsuarioDTO changeContrasenha(Integer idUsuario, PasswordDTO passwordDTO) throws BadRequestException {
         Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(
                 () -> new RuntimeException("El usuario que realiza la petición no existe"));
-        if (usuario.getContrasenhaUsuario().equals(contrasenhaVieja)) {
-            usuario.setContrasenhaUsuario(contrasenhaNueva);
+        if (usuario.getContrasenhaUsuario().equals(passwordDTO.getOldPassword())) {
+            usuario.setContrasenhaUsuario(passwordDTO.getNewPassword());
             Usuario usuarioGuardado = usuarioRepository.save(usuario);
             return modelMapper.map(usuarioGuardado, UsuarioDTO.class);
         } else {
             throw new BadRequestException("Contraseña invalida");
         }
-    }
-
-    // BORRADO TOTAL
-    public boolean deleteById(Integer idUsuario) {
-        return usuarioRepository.findById(idUsuario).map(
-                usuario -> {
-                    usuario.getRoles().forEach(rol -> rol.getUsuarios().remove(usuario));
-                    usuario.getRoles().clear();
-                    usuarioRepository.delete(usuario);
-                    return true;
-                }).orElse(false);
     }
 
     // BORRADO LÓGICO
@@ -134,16 +124,16 @@ public class UsuarioService {
     }
 
     // LISTAR ROLES EN FUNCIÓN DEL USUARIO
-    public List<RolDTO> findRolByUsuario(Integer idUsuario) {
+    public List<RolDTO> findRolByUsuario(Integer idUsuario) throws NotFoundException {
         Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(
-                () -> new NotFoundException("El usuario con ID " + idUsuario + " no existe"));
+                NotFoundException::new);
         return usuario.getRoles().stream()
                 .map(rol -> modelMapper.map(rol, RolDTO.class))
                 .toList();
     }
 
     // ELIMINAR ROL DE UN USUARIO
-    public UsuarioRolDTO removeRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin) {
+    public UsuarioRolDTO removeRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin) throws BadRequestException {
         Usuario admin = usuarioRepository.findById(idAdmin).orElseThrow(
                 () -> new RuntimeException("Error: El usuario administrador no existe"));
         boolean isAdmin = admin.getRoles().stream()

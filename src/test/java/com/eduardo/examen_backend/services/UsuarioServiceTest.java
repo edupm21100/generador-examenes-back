@@ -16,13 +16,16 @@ import java.util.Arrays;
 import java.util.Optional;
 import java.util.List;
 
+import org.apache.coyote.BadRequestException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 
+import com.eduardo.examen_backend.dto.PasswordDTO;
 import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.dto.UsuarioRolDTO;
@@ -30,8 +33,6 @@ import com.eduardo.examen_backend.models.Rol;
 import com.eduardo.examen_backend.models.Usuario;
 import com.eduardo.examen_backend.repositories.RolRepository;
 import com.eduardo.examen_backend.repositories.UsuarioRepository;
-import com.eduardo.examen_backend.exception.BadRequestException;
-import com.eduardo.examen_backend.exception.NotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class UsuarioServiceTest {
@@ -87,6 +88,10 @@ class UsuarioServiceTest {
         String contrasenhaAntigua = "$$$$";
         String contrasenhaIntroducida = "%%%%";
         String contrasenhaNueva = "####";
+        PasswordDTO passwordDTO = new PasswordDTO();
+        passwordDTO.setNewPassword(contrasenhaNueva);
+        passwordDTO.setOldPassword(contrasenhaAntigua);
+
 
         Usuario usuarioBD = new Usuario();
         usuarioBD.setIdUsuario(idUsuario);
@@ -95,7 +100,7 @@ class UsuarioServiceTest {
         when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuarioBD));
 
         BadRequestException excepcion = assertThrows(BadRequestException.class, () -> {
-            usuarioService.changeContrasenha(idUsuario, contrasenhaNueva, contrasenhaIntroducida);
+            usuarioService.changeContrasenha(idUsuario, passwordDTO);
         });
 
         assertEquals("Contraseña invalida", excepcion.getMessage());
@@ -104,11 +109,13 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void changeContrasenhaComprobacionCorrectaOK() {
+    void changeContrasenhaComprobacionCorrectaOK() throws BadRequestException {
         Integer idUsuario = 1;
         String contrasenhaAntigua = "$$$$";
-        String contrasenhaConfirmacion = "$$$$";
         String contrasenhaNueva = "####";
+        PasswordDTO passwordDTO = new PasswordDTO();
+        passwordDTO.setNewPassword(contrasenhaNueva);
+        passwordDTO.setOldPassword(contrasenhaAntigua);
 
         Usuario usuarioBD = new Usuario();
         usuarioBD.setIdUsuario(idUsuario);
@@ -122,7 +129,7 @@ class UsuarioServiceTest {
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioBD);
         when(modelMapper.map(usuarioBD, UsuarioDTO.class)).thenReturn(usuarioDTO);
 
-        UsuarioDTO resultado = usuarioService.changeContrasenha(idUsuario, contrasenhaNueva, contrasenhaConfirmacion);
+        UsuarioDTO resultado = usuarioService.changeContrasenha(idUsuario, passwordDTO);
 
         assertNotNull(resultado, "Debería devolverse un usuario");
         assertEquals(contrasenhaNueva, resultado.getContrasenhaUsuario(), "La contraseña en el DTO debe ser la nueva");
@@ -216,23 +223,6 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void deleteByIdOK() {
-        Integer idUsuario = 1;
-        Usuario usuarioBD = new Usuario();
-        
-        usuarioBD.setIdUsuario(idUsuario);
-
-        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuarioBD));
-
-        boolean resultado = usuarioService.deleteById(idUsuario);
-
-        assertTrue(resultado, "Debería devolver true indicando que se borró");
-
-        verify(usuarioRepository, times(1)).findById(idUsuario);
-        verify(usuarioRepository, times(1)).delete(usuarioBD);
-    }
-
-    @Test
     void desactivateUserOK() {
         Integer idUsuario = 1;
 
@@ -255,19 +245,6 @@ class UsuarioServiceTest {
 
         verify(usuarioRepository, times(1)).findById(idUsuario);
         verify(usuarioRepository, times(1)).save(any(Usuario.class));
-    }
-
-    @Test
-    void deleteByIdMAL() {
-        Integer idUsuario = -1;
-
-        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.empty());
-
-        boolean resultado = usuarioService.deleteById(idUsuario);
-
-        assertFalse(resultado, "Debería devolver false indicando que no se encontró para borrar");
-        verify(usuarioRepository, times(1)).findById(idUsuario);
-        verify(usuarioRepository, never()).delete(any(Usuario.class));
     }
 
     @Test
@@ -349,7 +326,7 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void findRolByUsuarioOK() {
+    void findRolByUsuarioOK() throws NotFoundException {
         Integer idUsuario = 1;
         
         Usuario usuarioBD = new Usuario();
@@ -385,7 +362,7 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void anhadirRolOK() {
+    void anhadirRolOK() throws BadRequestException {
         Integer idTarget = 5;
         Integer idRol = 2;
         Integer idAdmin = 1;
@@ -417,7 +394,7 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void removeRolOK() {
+    void removeRolOK() throws BadRequestException {
         Integer idTarget = 5;
         Integer idRol = 2;
         Integer idAdmin = 1;

@@ -102,22 +102,6 @@ class RolControllerTest {
     }
 
     @Test
-    void deleteById_CuandoExiste_DeberiaDevolver204() throws Exception {
-        when(rolService.deleteById(1)).thenReturn(true);
-
-        mockMvc.perform(delete("/roles/1"))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    void deleteById_CuandoNoExiste_DeberiaDevolver404() throws Exception {
-        when(rolService.deleteById(99)).thenReturn(false);
-
-        mockMvc.perform(delete("/roles/99"))
-                .andExpect(status().isNotFound());
-    }
-
-    @Test
     void desactivateRol_DeberiaDevolver200() throws Exception {
         RolDTO dtoSalida = new RolDTO();
         dtoSalida.setActivo(false);

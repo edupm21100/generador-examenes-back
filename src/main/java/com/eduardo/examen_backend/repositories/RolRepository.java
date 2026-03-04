@@ -9,5 +9,5 @@ import com.eduardo.examen_backend.models.Rol;
 public interface RolRepository extends JpaRepository<Rol, Integer>{
     List<Rol> findByUsuariosIdUsuario(Integer idUsuario);
     List<Rol> findByActivoTrue();
-    
+    boolean existsByNombreRol(String nombreRol);
 }

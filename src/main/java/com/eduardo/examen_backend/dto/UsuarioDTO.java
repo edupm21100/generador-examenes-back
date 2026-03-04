@@ -39,7 +39,7 @@ public class UsuarioDTO {
     private boolean activo = true;
     
     // ATRIBUTO NECESARIO PARA ASIGNAR ROL
-    @Schema(description = "ID del rol inicial que se le asignará al crear (Opcional, por defecto es 1)", example = "2")
+    @Schema(description = "ID del rol inicial que se le asignará al crear (Opcional, por defecto es 3)", example = "2")
     private Integer idRol;
 
     public UsuarioDTO() {

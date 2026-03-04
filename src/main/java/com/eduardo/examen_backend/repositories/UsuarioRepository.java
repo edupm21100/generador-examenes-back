@@ -9,4 +9,5 @@ import com.eduardo.examen_backend.models.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     List<Usuario> findByRolesIdRol(Integer idRol);
     List<Usuario> findByActivoTrue();
+    boolean existsByCorreoUsuario(String correoUsuario);
 }

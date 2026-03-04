@@ -2,7 +2,6 @@ package com.eduardo.examen_backend.controllers;
 
 import java.util.List;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eduardo.examen_backend.dto.RolDTO;
+import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.exceptions.ErrorResponse;
 import com.eduardo.examen_backend.services.RolService;
 import com.eduardo.examen_backend.views.RolViews;
+import com.eduardo.examen_backend.views.UsuarioViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,6 +33,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
  * incluyendo su creación, actualización y la gestión de su estado activo.
  * </p>
  * * @author Eduardo
+ * 
  * @version 0.01
  */
 @RestController
@@ -50,7 +52,9 @@ public class RolController {
     // RECUERDA QUE SPRING SECURITY ESTÁ DESHABILITADO POR AHORA
     /**
      * Crea un nuevo rol en la base de datos.
-     * * @param rolDTO Objeto con los datos del nuevo rol (nombre, descripción, etc.).
+     * * @param rolDTO Objeto con los datos del nuevo rol (nombre, descripción,
+     * etc.).
+     * 
      * @return ResponseEntity con el {@link RolDTO} creado y estado 201.
      */
     @PostMapping
@@ -65,18 +69,15 @@ public class RolController {
     // http://localhost:8080/roles
     /**
      * Recupera todos los roles disponibles en el sistema.
-     * * @return Lista de {@link RolDTO}. Devuelve 204 (No Content) si la lista está vacía.
+     * * @return Lista de {@link RolDTO}. Devuelve 204 (No Content) si la lista está
+     * vacía.
      */
     @GetMapping
     @Operation(summary = "Listar todos los roles", description = "Devuelve una lista completa de todos los roles registrados. Devuelve 204 si no hay ninguno.")
     @ApiResponse(responseCode = "200", description = "Lista devuelta con éxito")
     @ApiResponse(responseCode = "204", description = "No hay roles registrados")
     public ResponseEntity<List<RolDTO>> findAll() {
-        List<RolDTO> rolDTOs = rolService.findAll();
-        if (rolDTOs.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(rolDTOs);
+        return ResponseEntity.ok(rolService.findAll());
     }
 
     // GET
@@ -85,10 +86,8 @@ public class RolController {
     @Operation(summary = "Buscar rol por ID", description = "Obtiene los detalles de un rol específico mediante su ID.")
     @ApiResponse(responseCode = "200", description = "Rol encontrado")
     @ApiResponse(responseCode = "404", description = "El rol no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
-    public ResponseEntity<RolDTO> findById(@PathVariable Integer idRol) throws NotFoundException {
-        RolDTO rolDTO = rolService.findById(idRol).orElseThrow(
-                NotFoundException::new);
-        return new ResponseEntity<>(rolDTO, HttpStatus.OK);
+    public ResponseEntity<RolDTO> findById(@PathVariable Integer idRol) {
+        return ResponseEntity.ok(rolService.findById(idRol));
     }
 
     // PUT
@@ -98,9 +97,7 @@ public class RolController {
     @ApiResponse(responseCode = "200", description = "Rol actualizado correctamente")
     @ApiResponse(responseCode = "404", description = "El rol a modificar no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     public ResponseEntity<RolDTO> update(@RequestBody RolDTO rolDTO) {
-        return rolService.update(rolDTO).map(
-                ResponseEntity::ok).orElseGet(
-                        () -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(rolService.update(rolDTO));
     }
 
     // PUT (BORRADO LÓGICO)
@@ -111,6 +108,7 @@ public class RolController {
      * Si el rol está activo, lo desactiva; si está inactivo, lo activa.
      * </p>
      * * @param idRol ID del rol a modificar.
+     * 
      * @return El {@link RolDTO} con el nuevo estado de activación.
      * @throws RuntimeException Si el rol no existe en el sistema.
      */
@@ -120,8 +118,16 @@ public class RolController {
     @ApiResponse(responseCode = "200", description = "Estado modificado exitosamente")
     @ApiResponse(responseCode = "404", description = "El rol no existe", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
     public ResponseEntity<RolDTO> desactivateRol(@PathVariable Integer idRol) {
-        RolDTO rolDTO = rolService.desactivateRol(idRol);
-        return ResponseEntity.ok(rolDTO);
+        return ResponseEntity.ok(rolService.desactivateRol(idRol));
+    }
+
+    // Obtener usuarios de un determinado rol
+    // http://localhost:8080/roles/{idRol}/usuarios
+    @GetMapping("/{idRol}/usuarios")
+    @JsonView(UsuarioViews.DiscreetUser.class)
+    @Operation(summary = "Listar usuarios por Rol")
+    public ResponseEntity<List<UsuarioDTO>> findUsuariosByRol(@PathVariable Integer idRol) {
+        return ResponseEntity.ok(rolService.findUsuariosByRol(idRol));
     }
 
 }

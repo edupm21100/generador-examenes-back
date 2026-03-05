@@ -25,20 +25,35 @@ public class GlobalExceptionHandler {
         this.incidenciaRepository = incidenciaRepository;
     }
 
-    private void auditarIncidencia(String tipoError, String mensajeLimpio, HttpServletRequest request) {
+    private void auditarIncidencia(Exception ex, HttpServletRequest request) {
         String endpoint = request.getMethod() + " " + request.getRequestURI();
-        String descripcion = tipoError + ": " + mensajeLimpio;
+        String tipo = ex.getClass().getSimpleName();
 
-        if (descripcion.length() > 500) {
-            descripcion = descripcion.substring(0, 497) + "...";
+        String clase = "Desconocida";
+        String metodo = "Desconocido";
+        int linea = 0;
+
+        for (StackTraceElement element : ex.getStackTrace()) {
+            if (element.getClassName().startsWith("com.eduardo.examen_backend")
+                    && !element.getMethodName().contains("$")) {
+                clase = element.getClassName();
+                metodo = element.getMethodName();
+                linea = element.getLineNumber();
+                break;
+            }
         }
 
-        String correoUsuario = "Anónimo";
-        if (request.getUserPrincipal() != null) {
-            correoUsuario = request.getUserPrincipal().getName();
+        String mensajeLimpio = ex.getMessage() != null ? ex.getMessage() : "Sin mensaje detallado";
+        String traza = "Mensaje: " + mensajeLimpio + " | Fallo en línea: " + linea;
+
+        if (traza.length() > 500) {
+            traza = traza.substring(0, 497) + "...";
         }
 
-        Incidencia incidencia = new Incidencia(endpoint, descripcion, LocalDateTime.now(), correoUsuario);
+        // TODO: Para cuando tengamos Spring Security
+        Integer idUsuario = null;
+
+        Incidencia incidencia = new Incidencia(endpoint, tipo, clase, metodo, traza, LocalDateTime.now(), idUsuario);
         incidenciaRepository.save(incidencia);
     }
 
@@ -54,7 +69,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 errorMessage);
 
-        auditarIncidencia("ValidationExceptions", errorMessage, request);
+        auditarIncidencia(ex, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -64,7 +79,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.NOT_FOUND.value(),
                 HttpStatus.NOT_FOUND.getReasonPhrase(),
                 ex.getMessage());
-        auditarIncidencia("NotFoundException", ex.getMessage(), request);
+        auditarIncidencia(ex, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
@@ -75,7 +90,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
                 "Error de integridad en la base de datos. Es posible que el registro ya exista (ej. correo duplicado) o falten datos obligatorios.");
-        auditarIncidencia("DatabaseException", errorResponse.getMessage(), request);
+        auditarIncidencia(ex, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
@@ -85,7 +100,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
                 ex.getMessage());
-        auditarIncidencia("RunTimeException", ex.getMessage(), request);
+        auditarIncidencia(ex, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -95,7 +110,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
                 "Ha ocurrido un error inesperado en el servidor, posiblemente error de escritura en el texto de la petición.");
-        auditarIncidencia("GenericException", errorResponse.getMessage(), request);
+        auditarIncidencia(ex, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -105,7 +120,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT.value(),
                 HttpStatus.CONFLICT.getReasonPhrase(),
                 ex.getMessage());
-        auditarIncidencia("DuplicateException", errorResponse.getMessage(), request);
+        auditarIncidencia(ex, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
@@ -116,7 +131,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.UNAUTHORIZED.value(),
                 HttpStatus.UNAUTHORIZED.getReasonPhrase(),
                 ex.getMessage());
-        auditarIncidencia("Acceso No Autorizado", ex.getMessage(), request);
+        auditarIncidencia(ex, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 }

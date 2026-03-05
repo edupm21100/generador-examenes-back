@@ -3,6 +3,8 @@ package com.eduardo.examen_backend.models;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 
 @Entity
 @Table(name = "usuarios")
@@ -28,6 +31,7 @@ public class Usuario {
     @Column(name = "correo_usuario")
     private String correoUsuario;
     @Column(name = "contrasenha_usuario")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String contrasenhaUsuario;
     @Column(name = "activo")
     private boolean activo;
@@ -74,4 +78,13 @@ public class Usuario {
     private Set<Rol> roles = new HashSet<>();
     public Set<Rol> getRoles() {return roles;}
     public void setRoles(Set<Rol> roles) {this.roles = roles;}
+
+    //DETECTOR DE ADMINS
+    @Transient
+    private boolean admin;
+
+    public boolean isAdmin() {return admin;}
+    public void setAdmin(boolean admin) {this.admin = admin;}
+
+    
 }

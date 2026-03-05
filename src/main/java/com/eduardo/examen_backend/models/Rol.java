@@ -31,34 +31,20 @@ public class Rol {
         this.activo = activo;
     }
 
-    // CONSTRUCTOR VACIO POR GRACIA Y EXIGENCIA DEL MÉTODO HIBERNATE
-    public Rol() {
-    }
+
+    public Rol() {    
+        // CONSTRUCTOR VACIO POR GRACIA Y EXIGENCIA DEL MÉTODO HIBERNATE
+        }
 
     // * * * * * * * * * * * *GETTERS & SETTERS* * * * * * * * * * * * * * *\\
-    public void setIdRol(Integer idRol) {
-        this.idRol = idRol;
-    }
+    public void setIdRol(Integer idRol) {this.idRol = idRol;}
+    public Integer getIdRol() {return idRol;}
 
-    public Integer getIdRol() {
-        return idRol;
-    }
+    public String getNombreRol() {return nombreRol;}
+    public void setNombreRol(String nombreRol) {this.nombreRol = nombreRol;}
 
-    public String getNombreRol() {
-        return nombreRol;
-    }
-
-    public void setNombreRol(String nombreRol) {
-        this.nombreRol = nombreRol;
-    }
-
-    public boolean isActivo() {
-        return activo;
-    }
-
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
+    public boolean isActivo() {return activo;}
+    public void setActivo(boolean activo) {this.activo = activo;}
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -66,14 +52,9 @@ public class Rol {
         joinColumns = @JoinColumn(name = "id_rol"),
         inverseJoinColumns = @JoinColumn(name = "id_usuario")
     )
-    private Set<Usuario> usuarios = new HashSet<>();
-    
-    public Set<Usuario> getUsuarios() {
-        return usuarios;
-    }
 
-    public void setUsuarios(Set<Usuario> usuarios) {
-        this.usuarios = usuarios;
-    }
+    private Set<Usuario> usuarios = new HashSet<>();
+    public Set<Usuario> getUsuarios() {return usuarios;}
+    public void setUsuarios(Set<Usuario> usuarios) {this.usuarios = usuarios;}
 
 }

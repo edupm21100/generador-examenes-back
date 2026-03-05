@@ -46,73 +46,32 @@ public class UsuarioDTO {
         //POR CUESTIONES DTO, ESTE CONSTRUCTOR ESTÁ VACÍO
     }
 
-    // SETTER
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
+    public void setIdUsuario(Integer idUsuario) {this.idUsuario = idUsuario;}
     @JsonView(UsuarioViews.NotDiscreetUser.class)
-    public Integer getIdUsuario() {
-        return idUsuario;
-    }
+    public Integer getIdUsuario() {return idUsuario;}
 
     @JsonView(UsuarioViews.DiscreetUser.class)
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
-
-    // SETTER
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
+    public String getNombreUsuario() {return nombreUsuario;}
+    public void setNombreUsuario(String nombreUsuario) {this.nombreUsuario = nombreUsuario;}
 
     @JsonView(UsuarioViews.DiscreetUser.class)
-    public String getApellidoUsuario() {
-        return apellidoUsuario;
-    }
-
-    // SETTER
-    public void setApellidoUsuario(String apellidoUsuario) {
-        this.apellidoUsuario = apellidoUsuario;
-    }
+    public String getApellidoUsuario() {return apellidoUsuario;}
+    public void setApellidoUsuario(String apellidoUsuario) {this.apellidoUsuario = apellidoUsuario;}
 
     @JsonView(UsuarioViews.IndiscreetUser.class)
-    public String getCorreoUsuario() {
-        return correoUsuario;
-    }
-
-    // SETTER
-    public void setCorreoUsuario(String correoUsuario) {
-        this.correoUsuario = correoUsuario;
-    }
+    public String getCorreoUsuario() {return correoUsuario;}
+    public void setCorreoUsuario(String correoUsuario) {this.correoUsuario = correoUsuario;}
 
     @JsonView(UsuarioViews.UltraExtraIndiscreetUser.class)
-    public String getContrasenhaUsuario() {
-        return contrasenhaUsuario;
-    }
-
-    // SETTER
-    public void setContrasenhaUsuario(String contrasenhaUsuario) {
-        this.contrasenhaUsuario = contrasenhaUsuario;
-    }
+    public String getContrasenhaUsuario() {return contrasenhaUsuario;}
+    public void setContrasenhaUsuario(String contrasenhaUsuario) {this.contrasenhaUsuario = contrasenhaUsuario;}
 
     @JsonView(UsuarioViews.ExtraIndiscreetUser.class)
-    public boolean isActivo() {
-        return activo;
-    }
-
-    // SETTER
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
+    public boolean isActivo() {return activo;}
+    public void setActivo(boolean activo) {this.activo = activo;}
 
 
-    public Integer getIdRol() {
-        return idRol;
-    }
-
-    public void setIdRol(Integer idRol) {
-        this.idRol = idRol;
-    }
+    public Integer getIdRol() {return idRol;}
+    public void setIdRol(Integer idRol) {this.idRol = idRol;}
 
 }

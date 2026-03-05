@@ -12,21 +12,11 @@ public class PasswordDTO {
     @Size(min = 6, message = "La nueva contraseña debe tener al menos 6 caracteres")
     private String newPassword;
 
-    public String getOldPassword() {
-        return oldPassword;
-    }
+    public String getOldPassword() {return oldPassword;}
+    public void setOldPassword(String oldPassword) {this.oldPassword = oldPassword;}
 
-    public void setOldPassword(String oldPassword) {
-        this.oldPassword = oldPassword;
-    }
-
-    public String getNewPassword() {
-        return newPassword;
-    }
-
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
+    public String getNewPassword() {return newPassword;}
+    public void setNewPassword(String newPassword) {this.newPassword = newPassword;}
 
     
 }

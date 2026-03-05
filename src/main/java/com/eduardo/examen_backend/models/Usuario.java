@@ -41,58 +41,28 @@ public class Usuario {
         this.activo = activo;
     }
 
-    // EXIGENCIAS DE HIBERNATE
     public Usuario() {
+        // EXIGENCIAS DE HIBERNATE
     }
 
     // * * * * * * * * * * * *GETTERS & SETTERS* * * * * * * * * * * * * * *\\
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
-    }
+    public void setIdUsuario(Integer idUsuario) {this.idUsuario = idUsuario;}
+    public int getIdUsuario() {return idUsuario;}
 
-    public int getIdUsuario() {
-        return idUsuario;
-    }
+    public String getNombreUsuario() {return nombreUsuario;}
+    public void setNombreUsuario(String nombreUsuario) {this.nombreUsuario = nombreUsuario; }
 
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
+    public String getApellidoUsuario() {return apellidoUsuario;}
+    public void setApellidoUsuario(String apellidoUsuario) {this.apellidoUsuario = apellidoUsuario;}
 
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
+    public String getCorreoUsuario() {return correoUsuario;}
+    public void setCorreoUsuario(String correoUsuario) {this.correoUsuario = correoUsuario;}
 
-    public String getApellidoUsuario() {
-        return apellidoUsuario;
-    }
+    public String getContrasenhaUsuario() {return contrasenhaUsuario;}
+    public void setContrasenhaUsuario(String contrasenhaUsuario) {this.contrasenhaUsuario = contrasenhaUsuario;}
 
-    public void setApellidoUsuario(String apellidoUsuario) {
-        this.apellidoUsuario = apellidoUsuario;
-    }
-
-    public String getCorreoUsuario() {
-        return correoUsuario;
-    }
-
-    public void setCorreoUsuario(String correoUsuario) {
-        this.correoUsuario = correoUsuario;
-    }
-
-    public String getContrasenhaUsuario() {
-        return contrasenhaUsuario;
-    }
-
-    public void setContrasenhaUsuario(String contrasenhaUsuario) {
-        this.contrasenhaUsuario = contrasenhaUsuario;
-    }
-
-    public boolean isActivo() {
-        return activo;
-    }
-
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
+    public boolean isActivo() {return activo;}
+    public void setActivo(boolean activo) {this.activo = activo;}
 
     //HERRAMIENTA PARA ACTUALIZAR LA TABLA INTERMEDIA
     @ManyToMany(fetch = FetchType.EAGER)
@@ -102,12 +72,6 @@ public class Usuario {
         inverseJoinColumns = @JoinColumn(name = "id_rol")
     )
     private Set<Rol> roles = new HashSet<>();
-    
-    public Set<Rol> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Rol> roles) {
-        this.roles = roles;
-    }
+    public Set<Rol> getRoles() {return roles;}
+    public void setRoles(Set<Rol> roles) {this.roles = roles;}
 }

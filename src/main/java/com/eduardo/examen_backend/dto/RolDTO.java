@@ -20,32 +20,16 @@ public class RolDTO {
 
     
     @JsonView(RolViews.ExraIndiscreetRol.class)
-    public void setIdRol(Integer idRol) {
-        this.idRol = idRol;
-    }
-
+    public void setIdRol(Integer idRol) {this.idRol = idRol;}
     @JsonView(RolViews.IndiscreetRol.class)
-    public Integer getIdRol() {
-        return idRol;
-    }
+    public Integer getIdRol() {return idRol;}
 
     @JsonView(RolViews.DiscreetRol.class)
-    public String getNombreRol() {
-        return nombreRol;
-    }
+    public String getNombreRol() {return nombreRol;}
+    public void setNombreRol(String nombreRol) {this.nombreRol = nombreRol;}
 
-    public void setNombreRol(String nombreRol) {
-        this.nombreRol = nombreRol;
-    }
-
-    
     @JsonView(RolViews.IndiscreetRol.class)
-    public boolean isActivo() {
-        return activo;
-    }
-
-    public void setActivo(boolean activo) {
-        this.activo = activo;
-    }
+    public boolean isActivo() {return activo;}
+    public void setActivo(boolean activo) {this.activo = activo;}
 
 }

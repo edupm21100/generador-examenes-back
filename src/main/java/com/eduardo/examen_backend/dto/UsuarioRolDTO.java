@@ -13,21 +13,11 @@ public class UsuarioRolDTO {
         // CONSTRUCTOR VACÍO POR NECESIDAD DEL DTO
     }
 
-    public Integer getIdUsuario() {
-        return idUsuario;
-    }
+    public Integer getIdUsuario() {return idUsuario;}
+    public void setIdUsuario(Integer idUsuario) {this.idUsuario = idUsuario;}
 
-    public void setIdUsuario(Integer idUsuario) {
-        this.idUsuario = idUsuario;
-    }
-
-    public Integer getIdRol() {
-        return idRol;
-    }
-
-    public void setIdRol(Integer idRol) {
-        this.idRol = idRol;
-    }
+    public Integer getIdRol() {return idRol;}
+    public void setIdRol(Integer idRol) {this.idRol = idRol;}
 
     
 

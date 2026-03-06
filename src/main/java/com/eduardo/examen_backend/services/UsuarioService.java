@@ -17,13 +17,13 @@ public interface UsuarioService {
     
     UsuarioDTO update(UsuarioDTO usuarioDTO);
     
-    UsuarioDTO anhadirRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin);
+    UsuarioDTO anhadirRol(Integer idUsuarioTarget, Integer idRolNuevo);
     
-    UsuarioDTO changeContrasenha(Integer idUsuario, PasswordDTO passwordDTO);
+    UsuarioDTO changeContrasenha( String correoLogueado, PasswordDTO passwordDTO);
     
     UsuarioDTO desactivateUser(Integer idUsuario);
     
     List<RolDTO> findRolByUsuario(Integer idUsuario);
     
-    UsuarioRolDTO removeRol(Integer idUsuarioTarget, Integer idRolEliminar, Integer idAdmin);
+    UsuarioRolDTO removeRol(Integer idUsuarioTarget, Integer idRolEliminar);
 }

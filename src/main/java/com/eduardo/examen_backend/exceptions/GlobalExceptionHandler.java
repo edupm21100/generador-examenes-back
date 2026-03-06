@@ -3,6 +3,8 @@ package com.eduardo.examen_backend.exceptions;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -10,9 +12,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.eduardo.examen_backend.models.Incidencia;
 import com.eduardo.examen_backend.repositories.IncidenciaRepository;
+import com.eduardo.examen_backend.repositories.UsuarioRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
@@ -20,42 +25,63 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
 
     private final IncidenciaRepository incidenciaRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public GlobalExceptionHandler(IncidenciaRepository incidenciaRepository) {
+    public GlobalExceptionHandler(IncidenciaRepository incidenciaRepository, UsuarioRepository usuarioRepository) {
         this.incidenciaRepository = incidenciaRepository;
+        this.usuarioRepository = usuarioRepository;
     }
 
     private void auditarIncidencia(Exception ex, HttpServletRequest request) {
         String endpoint = request.getMethod() + " " + request.getRequestURI();
         String tipo = ex.getClass().getSimpleName();
 
-        String clase = "Desconocida";
+        String clase = "Desconocida/Framework";
         String metodo = "Desconocido";
-        int linea = 0;
 
         for (StackTraceElement element : ex.getStackTrace()) {
-            if (element.getClassName().startsWith("com.eduardo.examen_backend")
+            if (element.getClassName().startsWith("com.eduardo.examen_backend") 
                     && !element.getMethodName().contains("$")) {
                 clase = element.getClassName();
-                metodo = element.getMethodName();
-                linea = element.getLineNumber();
+                metodo = element.getMethodName() + " (Línea: " + element.getLineNumber() + ")";
                 break;
             }
         }
 
-        String mensajeLimpio = ex.getMessage() != null ? ex.getMessage() : "Sin mensaje detallado";
-        String traza = "Mensaje: " + mensajeLimpio + " | Fallo en línea: " + linea;
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        ex.printStackTrace(pw);
+        String traza = sw.toString();
 
-        if (traza.length() > 500) {
-            traza = traza.substring(0, 497) + "...";
+        LocalDateTime fecha = LocalDateTime.now();
+
+        Integer idUsuario = null;
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            
+            if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
+                String correoLogueado = auth.getName();
+                
+                idUsuario = usuarioRepository.findByCorreoUsuario(correoLogueado)
+                        .map(usuario -> usuario.getIdUsuario())
+                        .orElse(null);
+            }
+        } catch (Exception securityEx) {
+            idUsuario = null; 
         }
 
-        // TODO: Para cuando tengamos Spring Security
-        Integer idUsuario = null;
-
-        Incidencia incidencia = new Incidencia(endpoint, tipo, clase, metodo, traza, LocalDateTime.now(), idUsuario);
+        Incidencia incidencia = new Incidencia(
+                endpoint, 
+                tipo, 
+                clase, 
+                metodo, 
+                traza, 
+                fecha, 
+                idUsuario
+        );
         incidenciaRepository.save(incidencia);
     }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex,
@@ -133,5 +159,15 @@ public class GlobalExceptionHandler {
                 ex.getMessage());
         auditarIncidencia(ex, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
+                ex.getMessage()
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 }

@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,12 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.eduardo.examen_backend.exceptions.NotFoundException;
 import com.eduardo.examen_backend.exceptions.BadRequestException;
-
 import com.eduardo.examen_backend.dto.PasswordDTO;
 import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.dto.UsuarioDTO;
@@ -37,9 +38,22 @@ class UsuarioControllerTest {
 
     @MockitoBean
     private UsuarioService usuarioService;
+    
+    @MockitoBean
+    private com.eduardo.examen_backend.repositories.IncidenciaRepository incidenciaRepository;
 
+    @MockitoBean
+    private com.eduardo.examen_backend.repositories.UsuarioRepository usuarioRepository;
+
+    @MockitoBean
+    private com.eduardo.examen_backend.security.JwtService jwtService;
+
+    @MockitoBean
+    private com.eduardo.examen_backend.security.CustomUserDetailService customUserDetailsService; 
+    
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findAll_CuandoHayUsuarios_DeberiaDevolver200YLista() throws Exception {
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setIdUsuario(1);
@@ -54,16 +68,18 @@ class UsuarioControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findAll_CuandoNoHayUsuarios_DeberiaDevolver200YListaVacia() throws Exception {
         when(usuarioService.findAll()).thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/usuarios")
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk()) // Esperamos 200 OK
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findById_CuandoExiste_DeberiaDevolver200() throws Exception {
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setIdUsuario(1);
@@ -78,6 +94,7 @@ class UsuarioControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findById_CuandoNoExiste_DeberiaDevolver404() throws Exception {
         when(usuarioService.findById(99)).thenThrow(new NotFoundException("Usuario no encontrado"));
 
@@ -87,10 +104,10 @@ class UsuarioControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void save_DeberiaDevolver201YUsuarioCreado() throws Exception {
         UsuarioDTO dtoEntrada = new UsuarioDTO();
         dtoEntrada.setNombreUsuario("Laura");
-        dtoEntrada.setApellidoUsuario("García");
         dtoEntrada.setCorreoUsuario("laura@test.com"); 
         dtoEntrada.setContrasenhaUsuario("123456");
 
@@ -100,6 +117,7 @@ class UsuarioControllerTest {
         when(usuarioService.save(any(UsuarioDTO.class))).thenReturn(dtoSalida);
 
         mockMvc.perform(post("/usuarios")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dtoEntrada)))
                 .andExpect(status().isCreated())
@@ -107,17 +125,16 @@ class UsuarioControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void update_DeberiaDevolver200() throws Exception {
         UsuarioDTO dtoEntrada = new UsuarioDTO();
         dtoEntrada.setIdUsuario(1);
         dtoEntrada.setNombreUsuario("Modificado");
-        dtoEntrada.setApellidoUsuario("García");
-        dtoEntrada.setCorreoUsuario("modificado@test.com");
-        dtoEntrada.setContrasenhaUsuario("123456");
 
         when(usuarioService.update(any(UsuarioDTO.class))).thenReturn(dtoEntrada);
 
         mockMvc.perform(put("/usuarios")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dtoEntrada)))
                 .andExpect(status().isOk())
@@ -125,40 +142,43 @@ class UsuarioControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "test@test.com")
     void cambiarContrasenha_DeberiaRecibirJSONYDevolver200() throws Exception {
-        Integer idUsuario = 5;
         PasswordDTO passwordDTO = new PasswordDTO();
         passwordDTO.setNewPassword("123456");
         passwordDTO.setOldPassword("000000");
 
         UsuarioDTO dtoSalida = new UsuarioDTO();
-        dtoSalida.setIdUsuario(idUsuario);
+        dtoSalida.setIdUsuario(5);
 
-        when(usuarioService.changeContrasenha(eq(idUsuario), any(PasswordDTO.class))).thenReturn(dtoSalida);
+        when(usuarioService.changeContrasenha(eq("test@test.com"), any(PasswordDTO.class))).thenReturn(dtoSalida);
 
-        mockMvc.perform(put("/usuarios/{idUsuario}/password", idUsuario)
+        mockMvc.perform(put("/usuarios/me/password")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(passwordDTO)))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(username = "test@test.com")
     void cambiarContrasenha_ConContrasenhaViejaIncorrecta_DeberiaDevolver400() throws Exception {
-        Integer idUsuario = 5;
         PasswordDTO passwordDTO = new PasswordDTO();
         passwordDTO.setNewPassword("123456");
         passwordDTO.setOldPassword("mal_password");
 
-        when(usuarioService.changeContrasenha(eq(idUsuario), any(PasswordDTO.class)))
+        when(usuarioService.changeContrasenha(eq("test@test.com"), any(PasswordDTO.class)))
                 .thenThrow(new BadRequestException("Contraseña inválida"));
 
-        mockMvc.perform(put("/usuarios/{idUsuario}/password", idUsuario)
+        mockMvc.perform(put("/usuarios/me/password")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(passwordDTO)))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void desactivateUser_DeberiaDevolver200() throws Exception {
         UsuarioDTO dtoSalida = new UsuarioDTO();
         dtoSalida.setActivo(false);
@@ -166,39 +186,43 @@ class UsuarioControllerTest {
         when(usuarioService.desactivateUser(1)).thenReturn(dtoSalida);
 
         mockMvc.perform(put("/usuarios/desactivar/1")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void anhadirRol_DeberiaDevolver200() throws Exception {
         UsuarioDTO dtoSalida = new UsuarioDTO();
         dtoSalida.setIdUsuario(1);
 
-        when(usuarioService.anhadirRol(1, 2, 1)).thenReturn(dtoSalida);
+        when(usuarioService.anhadirRol(1, 2)).thenReturn(dtoSalida);
 
         mockMvc.perform(put("/usuarios/1/roles")
+                .with(csrf())
                 .param("idRol", "2")
-                .param("idAdmin", "1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void removeRol_DeberiaDevolver200() throws Exception {
         UsuarioRolDTO dtoSalida = new UsuarioRolDTO();
         dtoSalida.setIdUsuario(1);
         dtoSalida.setIdRol(2);
 
-        when(usuarioService.removeRol(1, 2, 1)).thenReturn(dtoSalida);
+        when(usuarioService.removeRol(1, 2)).thenReturn(dtoSalida);
 
         mockMvc.perform(put("/usuarios/1/roles/2")
-                .param("idAdmin", "1")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findRolByUsuario_DeberiaDevolver200YLista() throws Exception {
         RolDTO rol = new RolDTO();
         rol.setNombreRol("ADMIN");

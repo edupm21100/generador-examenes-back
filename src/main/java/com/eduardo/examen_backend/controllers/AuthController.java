@@ -10,6 +10,8 @@ import com.eduardo.examen_backend.services.UsuarioService;
 import com.eduardo.examen_backend.views.UsuarioViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
+import jakarta.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,8 +39,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @JsonView(UsuarioViews.IndiscreetUser.class)
-    public ResponseEntity<UsuarioDTO> register(@RequestBody UsuarioDTO usuarioDTO) {
-        // Delegamos en tu servicio, que ya comprueba duplicados, encripta y asigna el rol
+    public ResponseEntity<UsuarioDTO> register(@Valid @RequestBody UsuarioDTO usuarioDTO) {
         UsuarioDTO nuevoUsuario = usuarioService.save(usuarioDTO);
         return new ResponseEntity<>(nuevoUsuario, HttpStatus.CREATED);
     }

@@ -1,9 +1,6 @@
 package com.eduardo.examen_backend.services;
 
-import java.util.HashSet;
 import java.util.List;
-
-import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,8 +18,6 @@ import com.eduardo.examen_backend.models.Rol;
 import com.eduardo.examen_backend.models.Usuario;
 import com.eduardo.examen_backend.repositories.RolRepository;
 import com.eduardo.examen_backend.repositories.UsuarioRepository;
-
-
 
 @Service
 @Transactional(readOnly = true)
@@ -42,22 +37,22 @@ public class UsuarioServiceImpl implements UsuarioService {
                 this.passwordEncoder = passwordEncoder;
         }
 
-        // GUARDAR USUARIO
+        //GUARDAR USUARIO
         @Override
         @Transactional
         public UsuarioDTO save(UsuarioDTO usuarioDTO) {
                 if (usuarioRepository.existsByCorreoUsuario(usuarioDTO.getCorreoUsuario())) {
                         throw new DuplicateException("El correo ya está en uso");
                 }
-
                 Usuario userToSave = modelMapper.map(usuarioDTO, Usuario.class);
-
-                String simplePassword = userToSave.getContrasenhaUsuario();
-                String encodedPassword = passwordEncoder.encode(simplePassword);
+                String encodedPassword = passwordEncoder.encode(userToSave.getContrasenhaUsuario());
                 userToSave.setContrasenhaUsuario(encodedPassword);
-                Rol rolDefecto = rolRepository.findById(3)
-                                .orElseThrow(() -> new NotFoundException("Rol por defecto no encontrado"));
-                userToSave.getRoles().add(rolDefecto);
+                Integer idRolAsignar = (usuarioDTO.getIdRol() != null) ? usuarioDTO.getIdRol() : 3;
+
+                Rol rol = rolRepository.findById(idRolAsignar)
+                                .orElseThrow(() -> new NotFoundException("El rol especificado (" + idRolAsignar
+                                                + ") no existe en la base de datos"));
+                userToSave.getRoles().add(rol);
 
                 Usuario usuarioGuardado = usuarioRepository.save(userToSave);
                 return modelMapper.map(usuarioGuardado, UsuarioDTO.class);
@@ -98,21 +93,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         // AÑADIR ROL A USUARIO SI ES ADMIN
         @Override
         @Transactional
-        public UsuarioDTO anhadirRol(Integer idUsuarioTarget, Integer idRolNuevo, Integer idAdmin) {
-                Usuario admin = usuarioRepository.findById(idAdmin).orElseThrow(
-                                () -> new NotFoundException("Error: El usuario administrador no existe"));
-                boolean isAdmin = admin.getRoles().stream()
-                                .anyMatch(rol -> rol.getIdRol() == 1);
-
-                if (!isAdmin) {
-                        // (Nota: En el futuro con Spring Security esto lanzará un 403 Forbidden,
-                        // peropor ahora BadRequest es perfecto)
-                        throw new BadRequestException("Acceso denegado: No tienes permisos de Administrador");
-                }
+        public UsuarioDTO anhadirRol(Integer idUsuarioTarget, Integer idRolNuevo) {
                 Usuario usuarioTarget = usuarioRepository.findById(idUsuarioTarget).orElseThrow(
                                 () -> new NotFoundException("Error: El usuario a modificar no existe"));
                 Rol nuevoRol = rolRepository.findById(idRolNuevo).orElseThrow(
                                 () -> new NotFoundException("Error: El rol especificado no existe"));
+                if (usuarioTarget.getRoles().contains(nuevoRol)) {
+                        throw new BadRequestException("El usuario ya tiene asignado este rol");
+                }
                 usuarioTarget.getRoles().add(nuevoRol);
                 return modelMapper.map(usuarioRepository.save(usuarioTarget), UsuarioDTO.class);
         }
@@ -120,15 +108,14 @@ public class UsuarioServiceImpl implements UsuarioService {
         // CAMBIAR CONTRASEÑA
         @Override
         @Transactional
-        public UsuarioDTO changeContrasenha(Integer idUsuario, PasswordDTO passwordDTO) {
-                Usuario usuario = usuarioRepository.findById(idUsuario).orElseThrow(
-                                () -> new NotFoundException("El usuario que realiza la petición no existe"));
-                if (!usuario.getContrasenhaUsuario().equals(passwordDTO.getOldPassword())) {
-                        throw new BadRequestException("Contraseña inválida");
+        public UsuarioDTO changeContrasenha(String correoLogueado, PasswordDTO dto) {
+                Usuario usuarioBD = usuarioRepository.findByCorreoUsuario(correoLogueado)
+                                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+                if (!passwordEncoder.matches(dto.getOldPassword(), usuarioBD.getContrasenhaUsuario())) {
+                        throw new BadRequestException("La contraseña antigua no es correcta");
                 }
-                usuario.setContrasenhaUsuario(passwordDTO.getNewPassword());
-                Usuario usuarioGuardado = usuarioRepository.save(usuario);
-                return modelMapper.map(usuarioGuardado, UsuarioDTO.class);
+                usuarioBD.setContrasenhaUsuario(passwordEncoder.encode(dto.getNewPassword()));
+                return modelMapper.map(usuarioRepository.save(usuarioBD), UsuarioDTO.class);
         }
 
         // BORRADO LÓGICO
@@ -156,24 +143,22 @@ public class UsuarioServiceImpl implements UsuarioService {
         // ELIMINAR ROL DE UN USUARIO
         @Override
         @Transactional
-        public UsuarioRolDTO removeRol(Integer idUsuarioTarget, Integer idRolEliminar, Integer idAdmin) {
-                Usuario admin = usuarioRepository.findById(idAdmin)
-                                .orElseThrow(() -> new NotFoundException("Error: El usuario administrador no existe"));
-                boolean isAdmin = admin.getRoles().stream()
-                                .anyMatch(rol -> rol.getIdRol() == 1);
-
-                if (!isAdmin) {
-                        throw new BadRequestException("Acceso denegado: No tienes permisos de Administrador");
-                }
+        public UsuarioRolDTO removeRol(Integer idUsuarioTarget, Integer idRolEliminar) {
                 Usuario usuarioTarget = usuarioRepository.findById(idUsuarioTarget)
                                 .orElseThrow(() -> new NotFoundException("Error: El usuario a modificar no existe"));
-
                 Rol rolARemover = rolRepository.findById(idRolEliminar)
                                 .orElseThrow(() -> new NotFoundException("Error: El rol especificado no existe"));
+                if (!usuarioTarget.getRoles().contains(rolARemover)) {
+                        throw new BadRequestException("El usuario no posee el rol que intentas eliminar");
+                }
+                if (usuarioTarget.getRoles().size() == 1) {
+                        throw new BadRequestException("No puedes dejar a un usuario sin roles. Asígnale otro primero.");
+                }
                 usuarioTarget.getRoles().remove(rolARemover);
                 usuarioRepository.save(usuarioTarget);
 
                 UsuarioRolDTO datoMostrado = new UsuarioRolDTO();
+
                 datoMostrado.setIdUsuario(idUsuarioTarget);
                 datoMostrado.setIdRol(idRolEliminar);
 

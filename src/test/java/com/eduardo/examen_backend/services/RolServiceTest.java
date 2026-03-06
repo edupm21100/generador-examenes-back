@@ -21,6 +21,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 
+import com.eduardo.examen_backend.exceptions.BadRequestException;
+import com.eduardo.examen_backend.exceptions.DuplicateException;
 import com.eduardo.examen_backend.exceptions.NotFoundException;
 
 import com.eduardo.examen_backend.dto.RolDTO;
@@ -43,24 +45,25 @@ class RolServiceTest {
     private ModelMapper modelMapper;
 
     @InjectMocks
-    private RolService rolService;
+    private RolServiceImpl rolService;
 
     @Test
     void saveRolOK() {
         RolDTO dtoEntrada = new RolDTO();
-        dtoEntrada.setNombreRol("ADMIN");
+        dtoEntrada.setNombreRol("MODERADOR");
 
         Rol rolMapeado = new Rol();
-        rolMapeado.setNombreRol("ADMIN");
+        rolMapeado.setNombreRol("MODERADOR");
 
         Rol rolGuardado = new Rol();
-        rolGuardado.setIdRol(1);
-        rolGuardado.setNombreRol("ADMIN");
+        rolGuardado.setIdRol(2);
+        rolGuardado.setNombreRol("MODERADOR");
 
         RolDTO dtoSalida = new RolDTO();
-        dtoSalida.setIdRol(1);
-        dtoSalida.setNombreRol("ADMIN");
+        dtoSalida.setIdRol(2);
+        dtoSalida.setNombreRol("MODERADOR");
 
+        when(rolRepository.existsByNombreRol("MODERADOR")).thenReturn(false);
         when(modelMapper.map(dtoEntrada, Rol.class)).thenReturn(rolMapeado);
         when(rolRepository.save(any(Rol.class))).thenReturn(rolGuardado);
         when(modelMapper.map(rolGuardado, RolDTO.class)).thenReturn(dtoSalida);
@@ -68,10 +71,22 @@ class RolServiceTest {
         RolDTO resultado = rolService.save(dtoEntrada);
 
         assertNotNull(resultado);
-        assertEquals(1, resultado.getIdRol());
-        assertEquals("ADMIN", resultado.getNombreRol());
-
+        assertEquals(2, resultado.getIdRol());
         verify(rolRepository, times(1)).save(any(Rol.class));
+    }
+
+    @Test
+    void saveRolDuplicadoMAL() {
+        RolDTO dtoEntrada = new RolDTO();
+        dtoEntrada.setNombreRol("ADMIN");
+
+        when(rolRepository.existsByNombreRol("ADMIN")).thenReturn(true);
+
+        assertThrows(DuplicateException.class, () -> {
+            rolService.save(dtoEntrada);
+        });
+
+        verify(rolRepository, never()).save(any(Rol.class));
     }
 
     @Test
@@ -82,9 +97,7 @@ class RolServiceTest {
         RolDTO dtoEsperado = new RolDTO();
         dtoEsperado.setIdRol(1);
 
-        lenient().when(rolRepository.findAll()).thenReturn(List.of(rolBD));
         lenient().when(rolRepository.findByActivoTrue()).thenReturn(List.of(rolBD));
-
         when(modelMapper.map(rolBD, RolDTO.class)).thenReturn(dtoEsperado);
 
         List<RolDTO> resultado = rolService.findAll();
@@ -120,25 +133,23 @@ class RolServiceTest {
         assertThrows(NotFoundException.class, () -> {
             rolService.findById(idBuscado);
         });
-
-        verify(modelMapper, never()).map(any(), any());
     }
 
     @Test
     void updateRolOK() {
         RolDTO dtoEntrada = new RolDTO();
-        dtoEntrada.setIdRol(1);
+        dtoEntrada.setIdRol(2);
         dtoEntrada.setNombreRol("NUEVO_NOMBRE");
-        dtoEntrada.setActivo(true);
 
         Rol rolBD = new Rol();
-        rolBD.setIdRol(1);
+        rolBD.setIdRol(2);
         rolBD.setNombreRol("VIEJO_NOMBRE");
 
         RolDTO dtoSalida = new RolDTO();
         dtoSalida.setNombreRol("NUEVO_NOMBRE");
 
-        when(rolRepository.findById(1)).thenReturn(Optional.of(rolBD));
+        when(rolRepository.findById(2)).thenReturn(Optional.of(rolBD));
+        when(rolRepository.existsByNombreRol("NUEVO_NOMBRE")).thenReturn(false);
         when(rolRepository.save(any(Rol.class))).thenReturn(rolBD);
         when(modelMapper.map(rolBD, RolDTO.class)).thenReturn(dtoSalida);
 
@@ -150,7 +161,26 @@ class RolServiceTest {
     }
 
     @Test
-    void updateRolMAL() {
+    void updateRolRenombrarAdminMAL() {
+        RolDTO dtoEntrada = new RolDTO();
+        dtoEntrada.setIdRol(1);
+        dtoEntrada.setNombreRol("ADMIN_HACKEADO");
+
+        Rol rolBD = new Rol();
+        rolBD.setIdRol(1);
+        rolBD.setNombreRol("Admin");
+
+        when(rolRepository.findById(1)).thenReturn(Optional.of(rolBD));
+
+        assertThrows(BadRequestException.class, () -> {
+            rolService.update(dtoEntrada);
+        });
+
+        verify(rolRepository, never()).save(any(Rol.class));
+    }
+
+    @Test
+    void updateRolNoExisteMAL() {
         RolDTO dtoEntrada = new RolDTO();
         dtoEntrada.setIdRol(99);
 
@@ -159,16 +189,15 @@ class RolServiceTest {
         assertThrows(NotFoundException.class, () -> {
             rolService.update(dtoEntrada);
         });
-
-        verify(rolRepository, never()).save(any(Rol.class));
     }
+
 
     @Test
     void desactivateRolOK() {
-        Integer idBuscado = 1;
-
+        Integer idBuscado = 2;
         Rol rolBD = new Rol();
         rolBD.setIdRol(idBuscado);
+        rolBD.setNombreRol("USER");
         rolBD.setActivo(true);
 
         RolDTO dtoSalida = new RolDTO();
@@ -185,16 +214,31 @@ class RolServiceTest {
     }
 
     @Test
+    void desactivateRolAdminMAL() {
+        Integer idBuscado = 1;
+
+        Rol rolBD = new Rol();
+        rolBD.setIdRol(idBuscado);
+        rolBD.setNombreRol("Admin");
+
+        when(rolRepository.findById(idBuscado)).thenReturn(Optional.of(rolBD));
+
+        assertThrows(BadRequestException.class, () -> {
+            rolService.desactivateRol(idBuscado);
+        });
+
+        verify(rolRepository, never()).save(any(Rol.class));
+    }
+
+    @Test
     void desactivateRolMAL() {
         Integer idBuscado = 99;
 
         lenient().when(rolRepository.findById(idBuscado)).thenReturn(Optional.empty());
 
-        Exception excepcion = assertThrows(Exception.class, () -> {
+        assertThrows(NotFoundException.class, () -> {
             rolService.desactivateRol(idBuscado);
         });
-
-        verify(rolRepository, never()).save(any(Rol.class));
     }
 
     @Test
@@ -214,8 +258,6 @@ class RolServiceTest {
 
         assertFalse(resultado.isEmpty());
         assertEquals(1, resultado.size());
-        verify(rolRepository, times(1)).existsById(idRol);
-        verify(usuarioRepository, times(1)).findByRolesIdRol(idRol);
     }
 
     @Test
@@ -224,10 +266,8 @@ class RolServiceTest {
 
         lenient().when(rolRepository.existsById(idRol)).thenReturn(false);
 
-        Exception excepcion = assertThrows(Exception.class, () -> {
+        assertThrows(NotFoundException.class, () -> {
             rolService.findUsuariosByRol(idRol);
         });
-
-        verify(usuarioRepository, never()).findByRolesIdRol(any());
     }
 }

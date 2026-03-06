@@ -2,6 +2,7 @@ package com.eduardo.examen_backend.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -11,10 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-// Importamos tus excepciones
 import com.eduardo.examen_backend.exceptions.NotFoundException;
 
 import com.eduardo.examen_backend.dto.RolDTO;
@@ -32,7 +33,21 @@ class RolControllerTest {
 
     @MockitoBean
     private RolService rolService;
+
+    @MockitoBean
+    private com.eduardo.examen_backend.repositories.IncidenciaRepository incidenciaRepository;
+
+    @MockitoBean
+    private com.eduardo.examen_backend.repositories.UsuarioRepository usuarioRepository;
+    
+    @MockitoBean
+    private com.eduardo.examen_backend.security.JwtService jwtService;
+
+    @MockitoBean
+    private com.eduardo.examen_backend.security.CustomUserDetailService customUserDetailsService; 
+
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findAll_CuandoHayRoles_DeberiaDevolver200YLista() throws Exception {
         RolDTO rolDTO = new RolDTO();
         rolDTO.setNombreRol("ADMIN");
@@ -46,6 +61,7 @@ class RolControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findById_CuandoExiste_DeberiaDevolver200() throws Exception {
         RolDTO rolDTO = new RolDTO();
         rolDTO.setNombreRol("USER");
@@ -59,6 +75,7 @@ class RolControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findById_CuandoNoExiste_DeberiaDevolver404() throws Exception {
         when(rolService.findById(99)).thenThrow(new NotFoundException("Rol no encontrado"));
 
@@ -68,6 +85,7 @@ class RolControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void save_DeberiaDevolver201YRolCreado() throws Exception {
         RolDTO dtoEntrada = new RolDTO();
         dtoEntrada.setNombreRol("MANAGER");
@@ -78,6 +96,7 @@ class RolControllerTest {
         when(rolService.save(any(RolDTO.class))).thenReturn(dtoSalida);
 
         mockMvc.perform(post("/roles")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dtoEntrada)))
                 .andExpect(status().isCreated())
@@ -85,6 +104,7 @@ class RolControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void update_CuandoExiste_DeberiaDevolver200() throws Exception {
         RolDTO dtoEntrada = new RolDTO();
         dtoEntrada.setIdRol(1);
@@ -96,6 +116,7 @@ class RolControllerTest {
         when(rolService.update(any(RolDTO.class))).thenReturn(dtoSalida);
 
         mockMvc.perform(put("/roles")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dtoEntrada)))
                 .andExpect(status().isOk())
@@ -103,6 +124,7 @@ class RolControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void update_CuandoNoExiste_DeberiaDevolver404() throws Exception {
         RolDTO dtoEntrada = new RolDTO();
         dtoEntrada.setIdRol(-1);
@@ -110,12 +132,14 @@ class RolControllerTest {
         when(rolService.update(any(RolDTO.class))).thenThrow(new NotFoundException("Rol no encontrado"));
 
         mockMvc.perform(put("/roles")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dtoEntrada)))
                 .andExpect(status().isNotFound());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void desactivateRol_DeberiaDevolver200() throws Exception {
         RolDTO dtoSalida = new RolDTO();
         dtoSalida.setActivo(false);
@@ -123,11 +147,13 @@ class RolControllerTest {
         when(rolService.desactivateRol(1)).thenReturn(dtoSalida);
 
         mockMvc.perform(put("/roles/desactivar/1")
+                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
 
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findUsuariosByRol_DeberiaDevolver200YLista() throws Exception {
         UsuarioDTO usuarioDTO = new UsuarioDTO();
         usuarioDTO.setNombreUsuario("Eduardo");
@@ -140,6 +166,7 @@ class RolControllerTest {
     }
     
     @Test
+    @WithMockUser(roles = "ADMIN")
     void findUsuariosByRol_CuandoRolNoExiste_DeberiaDevolver404() throws Exception {
         when(rolService.findUsuariosByRol(-1)).thenThrow(new NotFoundException("Rol no encontrado"));
 

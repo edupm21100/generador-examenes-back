@@ -1,32 +1,33 @@
 package com.eduardo.examen_backend.security;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final JwtService jwtService;
+    private final CustomUserDetailService userDetailService;
+
+    public JwtAuthenticationFilter(JwtService jwtService, CustomUserDetailService userDetailService){
+        this.jwtService = jwtService;
+        this.userDetailService = userDetailService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         final String authHeader = request.getHeader("Authorization");
-
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -35,21 +36,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             final String jwt = authHeader.substring(7);
 
-            Claims claims = Jwts.parserBuilder()
-                    .build()
-                    .parseClaimsJws(jwt)
-                    .getBody();
-
-            String correoUsuario = claims.getSubject();
+            String correoUsuario = jwtService.extractUsername(jwt);
 
             if (correoUsuario != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                UserDetails userDetails = userDetailService.loadUserByUsername(correoUsuario);
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        correoUsuario, null, new ArrayList<>()
-                );
+                  userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         } catch (Exception e) {
-            //CREAR EN UN FUTURO
+            //TODO CREAR EN UN FUTURO
         }
 
         filterChain.doFilter(request, response);

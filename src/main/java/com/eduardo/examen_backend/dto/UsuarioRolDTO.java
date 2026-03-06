@@ -9,9 +9,7 @@ public class UsuarioRolDTO {
     @Schema(description = "ID del rol que fue afectado en la operación", example = "2")
     private Integer idRol;
 
-    public UsuarioRolDTO() {
-        // CONSTRUCTOR VACÍO POR NECESIDAD DEL DTO
-    }
+    public UsuarioRolDTO() {/*CONSTRUCTOR VACÍO POR NECESIDAD DEL DTO*/}
 
     public Integer getIdUsuario() {return idUsuario;}
     public void setIdUsuario(Integer idUsuario) {this.idUsuario = idUsuario;}

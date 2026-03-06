@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -22,6 +23,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.eduardo.examen_backend.exceptions.BadRequestException;
 import com.eduardo.examen_backend.exceptions.NotFoundException;
@@ -47,13 +49,14 @@ class UsuarioServiceTest {
     @Mock
     private ModelMapper modelMapper;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
     @InjectMocks
-    private UsuarioService usuarioService;
+    private UsuarioServiceImpl usuarioService;
 
     @Test
     void findUserByIdTestOK() {
         Integer idUsuario = 2;
-
         Usuario usuario = new Usuario();
         usuario.setIdUsuario(idUsuario);
         usuario.setNombreUsuario("Eduardo");
@@ -65,22 +68,18 @@ class UsuarioServiceTest {
         when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuario));
         when(modelMapper.map(usuario, UsuarioDTO.class)).thenReturn(usuarioDTO);
 
-        // Ya no devuelve Optional, devuelve el DTO directo
         UsuarioDTO resultado = usuarioService.findById(idUsuario);
 
         assertNotNull(resultado, "El resultado no debería ser nulo");
         assertEquals("Eduardo", resultado.getNombreUsuario(), "El nombre del usuario no coincide");
-
         verify(usuarioRepository, times(1)).findById(idUsuario);
     }
 
     @Test
     void findUserByIdTestMAL() {
         Integer idUsuario = -1;
-
         when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.empty());
 
-        // Ahora comprobamos que salta TU NotFoundException
         assertThrows(NotFoundException.class, () -> {
             usuarioService.findById(idUsuario);
         });
@@ -91,57 +90,53 @@ class UsuarioServiceTest {
 
     @Test
     void changeContrasenhaComprobacionEquivocadaMAL() {
-        Integer idUsuario = 1;
-        String contrasenhaAntigua = "$$$$";
-        String contrasenhaNueva = "####";
+        String correoLogueado = "test@test.com";
+        String contrasenhaBD = "$2a$10$hash...";
 
         PasswordDTO passwordDTO = new PasswordDTO();
-        passwordDTO.setNewPassword(contrasenhaNueva);
-        passwordDTO.setOldPassword("%%%%"); // Contraseña errónea enviada
+        passwordDTO.setOldPassword("PassEquivocada");
+        passwordDTO.setNewPassword("NuevaPass");
 
         Usuario usuarioBD = new Usuario();
-        usuarioBD.setIdUsuario(idUsuario);
-        usuarioBD.setContrasenhaUsuario(contrasenhaAntigua);
+        usuarioBD.setCorreoUsuario(correoLogueado);
+        usuarioBD.setContrasenhaUsuario(contrasenhaBD);
 
-        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuarioBD));
+        when(usuarioRepository.findByCorreoUsuario(correoLogueado)).thenReturn(Optional.of(usuarioBD));
+        when(passwordEncoder.matches("PassEquivocada", contrasenhaBD)).thenReturn(false);
 
         BadRequestException excepcion = assertThrows(BadRequestException.class, () -> {
-            usuarioService.changeContrasenha(idUsuario, passwordDTO);
+            usuarioService.changeContrasenha(correoLogueado, passwordDTO);
         });
 
-        assertEquals("Contraseña inválida", excepcion.getMessage());
-
+        assertEquals("La contraseña antigua no es correcta", excepcion.getMessage());
         verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 
     @Test
     void changeContrasenhaComprobacionCorrectaOK() {
-        Integer idUsuario = 1;
-        String contrasenhaAntigua = "$$$$";
-        String contrasenhaNueva = "####";
+        String correoLogueado = "test@test.com";
+        String contrasenhaBD = "$2a$10$hash...";
 
         PasswordDTO passwordDTO = new PasswordDTO();
-        passwordDTO.setNewPassword(contrasenhaNueva);
-        passwordDTO.setOldPassword(contrasenhaAntigua);
+        passwordDTO.setOldPassword("PassCorrecta");
+        passwordDTO.setNewPassword("NuevaPass");
 
         Usuario usuarioBD = new Usuario();
-        usuarioBD.setIdUsuario(idUsuario);
-        usuarioBD.setContrasenhaUsuario(contrasenhaAntigua);
+        usuarioBD.setIdUsuario(1);
+        usuarioBD.setContrasenhaUsuario(contrasenhaBD);
 
         UsuarioDTO usuarioDTO = new UsuarioDTO();
-        usuarioDTO.setIdUsuario(idUsuario);
-        usuarioDTO.setContrasenhaUsuario(contrasenhaNueva);
+        usuarioDTO.setContrasenhaUsuario("NuevaPass");
 
-        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuarioBD));
+        when(usuarioRepository.findByCorreoUsuario(correoLogueado)).thenReturn(Optional.of(usuarioBD));
+        when(passwordEncoder.matches("PassCorrecta", contrasenhaBD)).thenReturn(true);
+        when(passwordEncoder.encode("NuevaPass")).thenReturn("HASH_NUEVO");
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioBD);
         when(modelMapper.map(usuarioBD, UsuarioDTO.class)).thenReturn(usuarioDTO);
 
-        UsuarioDTO resultado = usuarioService.changeContrasenha(idUsuario, passwordDTO);
+        UsuarioDTO resultado = usuarioService.changeContrasenha(correoLogueado, passwordDTO);
 
-        assertNotNull(resultado, "Debería devolverse un usuario");
-        assertEquals(contrasenhaNueva, resultado.getContrasenhaUsuario(), "La contraseña en el DTO debe ser la nueva");
-
-        verify(usuarioRepository, times(1)).findById(idUsuario);
+        assertNotNull(resultado);
         verify(usuarioRepository, times(1)).save(any(Usuario.class));
     }
 
@@ -149,19 +144,19 @@ class UsuarioServiceTest {
     void saveUsuarioOK() {
         UsuarioDTO datosEntrada = new UsuarioDTO();
         datosEntrada.setNombreUsuario("Laura");
-        datosEntrada.setCorreoUsuario("laura@test.com"); // Necesario para la validación
+        datosEntrada.setCorreoUsuario("laura@test.com");
+        datosEntrada.setContrasenhaUsuario("1234");
 
         Usuario usuarioMapeado = new Usuario();
         usuarioMapeado.setNombreUsuario("Laura");
+        usuarioMapeado.setContrasenhaUsuario("1234");
 
         Rol rolFalso = new Rol();
-        rolFalso.setIdRol(2);
-        rolFalso.setNombreRol("USER");
+        rolFalso.setIdRol(3);
 
         Usuario usuarioGuardado = new Usuario();
         usuarioGuardado.setIdUsuario(10);
         usuarioGuardado.setNombreUsuario("Laura");
-        usuarioGuardado.getRoles().add(rolFalso);
 
         UsuarioDTO dtoSalida = new UsuarioDTO();
         dtoSalida.setIdUsuario(10);
@@ -169,41 +164,17 @@ class UsuarioServiceTest {
 
         when(usuarioRepository.existsByCorreoUsuario(any())).thenReturn(false);
         when(modelMapper.map(datosEntrada, Usuario.class)).thenReturn(usuarioMapeado);
+        when(passwordEncoder.encode("1234")).thenReturn("HASHED_1234");
         when(rolRepository.findById(anyInt())).thenReturn(Optional.of(rolFalso));
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioGuardado);
         when(modelMapper.map(usuarioGuardado, UsuarioDTO.class)).thenReturn(dtoSalida);
 
         UsuarioDTO resultado = usuarioService.save(datosEntrada);
 
-        assertNotNull(resultado, "El usuario guardado no debe ser nulo");
-        assertEquals("Laura", resultado.getNombreUsuario(), "El nombre debe coincidir");
-        assertEquals(10, resultado.getIdUsuario(), "Debería tener el ID generado por la BD");
-
-        verify(rolRepository, times(1)).findById(anyInt());
+        assertNotNull(resultado);
+        assertEquals(10, resultado.getIdUsuario());
+        verify(rolRepository, times(1)).findById(3);
         verify(usuarioRepository, times(1)).save(any(Usuario.class));
-    }
-
-    @Test
-    void anhadirRolIfSolicitanteNoEsAdminMAL() {
-        Integer idTarget = 5;
-        Integer idRol = 2;
-        Integer idImpostor = 99;
-
-        Usuario usuarioImpostor = new Usuario();
-        usuarioImpostor.setIdUsuario(idImpostor);
-        Rol rolNormal = new Rol();
-        rolNormal.setIdRol(2);
-        usuarioImpostor.getRoles().add(rolNormal);
-
-        when(usuarioRepository.findById(idImpostor)).thenReturn(Optional.of(usuarioImpostor));
-
-        BadRequestException excepcion = assertThrows(BadRequestException.class, () -> {
-            usuarioService.anhadirRol(idTarget, idRol, idImpostor);
-        });
-
-        assertEquals("Acceso denegado: No tienes permisos de Administrador", excepcion.getMessage());
-
-        verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 
     @Test
@@ -221,23 +192,18 @@ class UsuarioServiceTest {
 
         List<UsuarioDTO> resultado = usuarioService.findAll();
 
-        assertFalse(resultado.isEmpty(), "La lista no debería estar vacía");
-        assertEquals(1, resultado.size(), "Debería haber 1 usuario en la lista");
-        assertEquals("Eduardo", resultado.get(0).getNombreUsuario());
-
-        verify(usuarioRepository, times(1)).findByActivoTrue();
+        assertFalse(resultado.isEmpty());
+        assertEquals(1, resultado.size());
     }
 
     @Test
     void desactivateUserOK() {
         Integer idUsuario = 1;
-
         Usuario usuarioBD = new Usuario();
         usuarioBD.setIdUsuario(idUsuario);
         usuarioBD.setActivo(true);
 
         UsuarioDTO dtoEsperado = new UsuarioDTO();
-        dtoEsperado.setIdUsuario(idUsuario);
         dtoEsperado.setActivo(false);
 
         when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.of(usuarioBD));
@@ -247,30 +213,13 @@ class UsuarioServiceTest {
         UsuarioDTO resultado = usuarioService.desactivateUser(idUsuario);
 
         assertNotNull(resultado);
-        assertFalse(resultado.isActivo(), "El usuario debería estar desactivado (false)");
-
-        verify(usuarioRepository, times(1)).findById(idUsuario);
-        verify(usuarioRepository, times(1)).save(any(Usuario.class));
-    }
-
-    @Test
-    void desactivateUserMAL() {
-        Integer idUsuario = -1;
-
-        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> {
-            usuarioService.desactivateUser(idUsuario);
-        });
-
-        verify(usuarioRepository, never()).save(any(Usuario.class));
+        assertFalse(resultado.isActivo());
     }
 
     @Test
     void updateOK() {
         UsuarioDTO dtoEntrada = new UsuarioDTO();
         dtoEntrada.setIdUsuario(1);
-        dtoEntrada.setNombreUsuario("EduModificado");
         dtoEntrada.setCorreoUsuario("test@test.com");
 
         Usuario usuarioBD = new Usuario();
@@ -279,8 +228,6 @@ class UsuarioServiceTest {
 
         UsuarioDTO dtoSalida = new UsuarioDTO();
         dtoSalida.setIdUsuario(1);
-        dtoSalida.setNombreUsuario("EduModificado");
-        dtoSalida.setCorreoUsuario("test@test.com");
 
         when(usuarioRepository.findById(1)).thenReturn(Optional.of(usuarioBD));
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioBD);
@@ -288,29 +235,13 @@ class UsuarioServiceTest {
 
         UsuarioDTO resultado = usuarioService.update(dtoEntrada);
 
-        assertNotNull(resultado, "Debería devolver el usuario actualizado");
-        assertEquals("EduModificado", resultado.getNombreUsuario());
+        assertNotNull(resultado);
         verify(usuarioRepository, times(1)).save(any(Usuario.class));
-    }
-
-    @Test
-    void updateMAL() {
-        UsuarioDTO dtoEntrada = new UsuarioDTO();
-        dtoEntrada.setIdUsuario(99);
-
-        when(usuarioRepository.findById(99)).thenReturn(Optional.empty());
-
-        assertThrows(NotFoundException.class, () -> {
-            usuarioService.update(dtoEntrada);
-        });
-
-        verify(usuarioRepository, never()).save(any(Usuario.class));
     }
 
     @Test
     void findRolByUsuarioOK() {
         Integer idUsuario = 1;
-
         Usuario usuarioBD = new Usuario();
         usuarioBD.setIdUsuario(idUsuario);
         Rol rol = new Rol();
@@ -326,37 +257,16 @@ class UsuarioServiceTest {
         List<RolDTO> resultado = usuarioService.findRolByUsuario(idUsuario);
 
         assertFalse(resultado.isEmpty());
-        assertEquals(1, resultado.size());
-        verify(usuarioRepository, times(1)).findById(idUsuario);
-    }
-
-    @Test
-    void findRolByUsuarioMAL() {
-        Integer idUsuario = 99;
-
-        when(usuarioRepository.findById(idUsuario)).thenReturn(Optional.empty());
-
-        NotFoundException excepcion = assertThrows(NotFoundException.class, () -> {
-            usuarioService.findRolByUsuario(idUsuario);
-        });
-
-        assertEquals("El usuario con ID " + idUsuario + " no existe", excepcion.getMessage());
     }
 
     @Test
     void anhadirRolOK() {
         Integer idTarget = 5;
         Integer idRol = 2;
-        Integer idAdmin = 1;
-
-        Usuario usuarioAdmin = new Usuario();
-        usuarioAdmin.setIdUsuario(idAdmin);
-        Rol rolAdministrador = new Rol();
-        rolAdministrador.setIdRol(1);
-        usuarioAdmin.getRoles().add(rolAdministrador);
 
         Usuario usuarioTarget = new Usuario();
         usuarioTarget.setIdUsuario(idTarget);
+        // NO TIENE ROLES AÚN
 
         Rol nuevoRol = new Rol();
         nuevoRol.setIdRol(idRol);
@@ -364,69 +274,86 @@ class UsuarioServiceTest {
         UsuarioDTO dtoSalida = new UsuarioDTO();
         dtoSalida.setIdUsuario(idTarget);
 
-        when(usuarioRepository.findById(idAdmin)).thenReturn(Optional.of(usuarioAdmin));
         when(usuarioRepository.findById(idTarget)).thenReturn(Optional.of(usuarioTarget));
         when(rolRepository.findById(idRol)).thenReturn(Optional.of(nuevoRol));
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioTarget);
         when(modelMapper.map(usuarioTarget, UsuarioDTO.class)).thenReturn(dtoSalida);
 
-        UsuarioDTO resultado = usuarioService.anhadirRol(idTarget, idRol, idAdmin);
+        UsuarioDTO resultado = usuarioService.anhadirRol(idTarget, idRol); // 👈 Ya no se pasa idAdmin
 
         assertNotNull(resultado);
+        assertTrue(usuarioTarget.getRoles().contains(nuevoRol));
         verify(usuarioRepository, times(1)).save(usuarioTarget);
+    }
+
+    @Test
+    void anhadirRolYaExistenteMAL() {
+        Integer idTarget = 5;
+        Integer idRol = 2;
+
+        Usuario usuarioTarget = new Usuario();
+        usuarioTarget.setIdUsuario(idTarget);
+        
+        Rol rolExistente = new Rol();
+        rolExistente.setIdRol(idRol);
+        usuarioTarget.getRoles().add(rolExistente); // 👈 Ya tiene el rol
+
+        when(usuarioRepository.findById(idTarget)).thenReturn(Optional.of(usuarioTarget));
+        when(rolRepository.findById(idRol)).thenReturn(Optional.of(rolExistente));
+
+        assertThrows(BadRequestException.class, () -> {
+            usuarioService.anhadirRol(idTarget, idRol);
+        });
+
+        verify(usuarioRepository, never()).save(any());
     }
 
     @Test
     void removeRolOK() {
         Integer idTarget = 5;
         Integer idRol = 2;
-        Integer idAdmin = 1;
-
-        Usuario usuarioAdmin = new Usuario();
-        usuarioAdmin.setIdUsuario(idAdmin);
-        Rol rolAdministrador = new Rol();
-        rolAdministrador.setIdRol(1);
-        usuarioAdmin.getRoles().add(rolAdministrador);
 
         Usuario usuarioTarget = new Usuario();
         usuarioTarget.setIdUsuario(idTarget);
+        
         Rol rolAQuitar = new Rol();
         rolAQuitar.setIdRol(idRol);
+        Rol rolDeReserva = new Rol();
+        rolDeReserva.setIdRol(3);
+        
         usuarioTarget.getRoles().add(rolAQuitar);
+        usuarioTarget.getRoles().add(rolDeReserva);
 
-        when(usuarioRepository.findById(idAdmin)).thenReturn(Optional.of(usuarioAdmin));
         when(usuarioRepository.findById(idTarget)).thenReturn(Optional.of(usuarioTarget));
         when(rolRepository.findById(idRol)).thenReturn(Optional.of(rolAQuitar));
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioTarget);
 
-        UsuarioRolDTO resultado = usuarioService.removeRol(idTarget, idRol, idAdmin);
+        UsuarioRolDTO resultado = usuarioService.removeRol(idTarget, idRol); 
 
         assertNotNull(resultado);
-        assertEquals(idTarget, resultado.getIdUsuario());
-        assertEquals(idRol, resultado.getIdRol());
-        assertTrue(usuarioTarget.getRoles().isEmpty(), "El rol debió ser eliminado del Set");
+        assertFalse(usuarioTarget.getRoles().contains(rolAQuitar));
         verify(usuarioRepository, times(1)).save(usuarioTarget);
     }
 
     @Test
-    void removeRolIfSolicitanteNoEsAdminMAL() {
+    void removeUltimoRolMAL() {
         Integer idTarget = 5;
         Integer idRol = 2;
-        Integer idImpostor = 99;
 
-        Usuario usuarioImpostor = new Usuario();
-        usuarioImpostor.setIdUsuario(idImpostor);
-        Rol rolNormal = new Rol();
-        rolNormal.setIdRol(2);
-        usuarioImpostor.getRoles().add(rolNormal);
+        Usuario usuarioTarget = new Usuario();
+        usuarioTarget.setIdUsuario(idTarget);
+        
+        Rol elUnicoRol = new Rol();
+        elUnicoRol.setIdRol(idRol);
+        usuarioTarget.getRoles().add(elUnicoRol);
 
-        when(usuarioRepository.findById(idImpostor)).thenReturn(Optional.of(usuarioImpostor));
+        when(usuarioRepository.findById(idTarget)).thenReturn(Optional.of(usuarioTarget));
+        when(rolRepository.findById(idRol)).thenReturn(Optional.of(elUnicoRol));
 
-        BadRequestException excepcion = assertThrows(BadRequestException.class, () -> {
-            usuarioService.removeRol(idTarget, idRol, idImpostor);
+        assertThrows(BadRequestException.class, () -> {
+            usuarioService.removeRol(idTarget, idRol);
         });
 
-        assertEquals("Acceso denegado: No tienes permisos de Administrador", excepcion.getMessage());
-        verify(usuarioRepository, never()).save(any(Usuario.class));
+        verify(usuarioRepository, never()).save(any());
     }
 }

@@ -38,7 +38,7 @@ class UsuarioControllerTest {
 
     @MockitoBean
     private UsuarioService usuarioService;
-    
+
     @MockitoBean
     private com.eduardo.examen_backend.repositories.IncidenciaRepository incidenciaRepository;
 
@@ -49,8 +49,7 @@ class UsuarioControllerTest {
     private com.eduardo.examen_backend.security.JwtService jwtService;
 
     @MockitoBean
-    private com.eduardo.examen_backend.security.CustomUserDetailService customUserDetailsService; 
-    
+    private com.eduardo.examen_backend.security.CustomUserDetailService customUserDetailsService;
 
     @Test
     @WithMockUser(roles = "ADMIN")
@@ -108,9 +107,10 @@ class UsuarioControllerTest {
     void save_DeberiaDevolver201YUsuarioCreado() throws Exception {
         UsuarioDTO dtoEntrada = new UsuarioDTO();
         dtoEntrada.setNombreUsuario("Laura");
-        dtoEntrada.setCorreoUsuario("laura@test.com"); 
-        dtoEntrada.setContrasenhaUsuario("123456");
-
+        // Añadimos datos válidos para que pase el @Valid
+        dtoEntrada.setApellidoUsuario("García");
+        dtoEntrada.setCorreoUsuario("laura@test.com");
+        dtoEntrada.setContrasenhaUsuario("12345678");
         UsuarioDTO dtoSalida = new UsuarioDTO();
         dtoSalida.setNombreUsuario("Laura");
 
@@ -130,6 +130,9 @@ class UsuarioControllerTest {
         UsuarioDTO dtoEntrada = new UsuarioDTO();
         dtoEntrada.setIdUsuario(1);
         dtoEntrada.setNombreUsuario("Modificado");
+        dtoEntrada.setApellidoUsuario("Perez");
+        dtoEntrada.setCorreoUsuario("modificado@test.com");
+        dtoEntrada.setContrasenhaUsuario("12345678");
 
         when(usuarioService.update(any(UsuarioDTO.class))).thenReturn(dtoEntrada);
 
@@ -141,19 +144,20 @@ class UsuarioControllerTest {
                 .andExpect(jsonPath("$.nombreUsuario").value("Modificado"));
     }
 
-    @Test
+@Test
     @WithMockUser(username = "test@test.com")
     void cambiarContrasenha_DeberiaRecibirJSONYDevolver200() throws Exception {
         PasswordDTO passwordDTO = new PasswordDTO();
-        passwordDTO.setNewPassword("123456");
-        passwordDTO.setOldPassword("000000");
+
+        passwordDTO.setNewPassword("12345678"); 
+        passwordDTO.setOldPassword("00000000"); 
 
         UsuarioDTO dtoSalida = new UsuarioDTO();
         dtoSalida.setIdUsuario(5);
 
         when(usuarioService.changeContrasenha(eq("test@test.com"), any(PasswordDTO.class))).thenReturn(dtoSalida);
 
-        mockMvc.perform(put("/usuarios/me/password")
+        mockMvc.perform(put("/usuarios/me/password") 
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(passwordDTO)))

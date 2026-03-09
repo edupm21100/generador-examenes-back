@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="LOGS_DIR" value="./logs" />
+
+    <appender name="Consola" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="ArchivoDiario" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_DIR}/registro_diario.txt</file>
+        
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_DIR}/registro_diario-%d{yyyy-MM-dd}.txt</fileNamePattern>
+            <maxHistory>1</maxHistory>
+        </rollingPolicy>
+        
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="Consola" />
+        <appender-ref ref="ArchivoDiario" />
+    </root>
+
+</configuration>

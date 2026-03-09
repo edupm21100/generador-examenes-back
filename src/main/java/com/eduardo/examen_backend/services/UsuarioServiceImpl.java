@@ -3,6 +3,8 @@ package com.eduardo.examen_backend.services;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +21,9 @@ import com.eduardo.examen_backend.models.Usuario;
 import com.eduardo.examen_backend.repositories.RolRepository;
 import com.eduardo.examen_backend.repositories.UsuarioRepository;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class UsuarioServiceImpl implements UsuarioService {
@@ -37,7 +42,16 @@ public class UsuarioServiceImpl implements UsuarioService {
                 this.passwordEncoder = passwordEncoder;
         }
 
-        //GUARDAR USUARIO
+        // DEVOLVER INFORMACIÓN DEL USUARIO QUE HACE LA PETICIÓN
+        private String getUsuarioAccion() {
+                Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+                if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
+                        return auth.getName(); // Devuelve el correo guardado en el token
+                }
+                return "Sistema/Anónimo";
+        }
+
+        // GUARDAR USUARIO
         @Override
         @Transactional
         public UsuarioDTO save(UsuarioDTO usuarioDTO) {
@@ -55,12 +69,17 @@ public class UsuarioServiceImpl implements UsuarioService {
                 userToSave.getRoles().add(rol);
 
                 Usuario usuarioGuardado = usuarioRepository.save(userToSave);
+
+                log.info("Nuevo usuario registrado con éxito. Correo: {} | ID asignado: {}",
+                                usuarioGuardado.getCorreoUsuario(), usuarioGuardado.getIdUsuario());
+
                 return modelMapper.map(usuarioGuardado, UsuarioDTO.class);
         }
 
         // LISTAR USUARIOS
         @Override
         public List<UsuarioDTO> findAll() {
+                log.info("[Autor: {}] Ha consultado la lista completa de usuarios activos.", getUsuarioAccion());
                 return usuarioRepository.findByActivoTrue().stream().map(
                                 usuario -> modelMapper.map(usuario, UsuarioDTO.class)).toList();
         }
@@ -68,6 +87,8 @@ public class UsuarioServiceImpl implements UsuarioService {
         // OBTENER USUARIO POR SU ID
         @Override
         public UsuarioDTO findById(Integer idUsuario) {
+                log.info("[Autor: {}] Ha consultado los detalles del usuario con ID {}.", getUsuarioAccion(),
+                                idUsuario);
                 return usuarioRepository.findById(idUsuario)
                                 .map(usuario -> modelMapper.map(usuario, UsuarioDTO.class))
                                 .orElseThrow(() -> new NotFoundException("Id: " + idUsuario + " no encontrado"));
@@ -87,6 +108,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 usuarioBD.setNombreUsuario(usuarioDTO.getNombreUsuario());
                 usuarioBD.setApellidoUsuario(usuarioDTO.getApellidoUsuario());
                 usuarioBD.setCorreoUsuario(usuarioDTO.getCorreoUsuario());
+                log.info("[Autor: {}] Usuario actualizado con éxito. ID modificado: {}",
+                                getUsuarioAccion(), usuarioBD.getIdUsuario());
                 return modelMapper.map(usuarioRepository.save(usuarioBD), UsuarioDTO.class);
         }
 
@@ -102,6 +125,10 @@ public class UsuarioServiceImpl implements UsuarioService {
                         throw new BadRequestException("El usuario ya tiene asignado este rol");
                 }
                 usuarioTarget.getRoles().add(nuevoRol);
+
+                log.info("[Autor: {}] Ha añadido el rol '{}' (ID: {}) al usuario objetivo con ID {}.",
+                                getUsuarioAccion(), nuevoRol.getNombreRol(), idRolNuevo, idUsuarioTarget);
+
                 return modelMapper.map(usuarioRepository.save(usuarioTarget), UsuarioDTO.class);
         }
 
@@ -115,6 +142,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                         throw new BadRequestException("La contraseña antigua no es correcta");
                 }
                 usuarioBD.setContrasenhaUsuario(passwordEncoder.encode(dto.getNewPassword()));
+
+                log.info("[Autor: {}] Ha cambiado su propia contraseña exitosamente.", getUsuarioAccion());
                 return modelMapper.map(usuarioRepository.save(usuarioBD), UsuarioDTO.class);
         }
 
@@ -126,6 +155,11 @@ public class UsuarioServiceImpl implements UsuarioService {
                                 .orElseThrow(() -> new NotFoundException(
                                                 "Usuario no encontrado para activar/desactivar"));
                 usuario.setActivo(!usuario.isActivo());
+
+                String estado = usuario.isActivo() ? "REACTIVADO" : "DESACTIVADO";
+                log.info("[Autor: {}] Ha {} al usuario objetivo con ID {}.",
+                                getUsuarioAccion(), estado, idUsuario);
+
                 return modelMapper.map(usuarioRepository.save(usuario), UsuarioDTO.class);
         }
 
@@ -135,6 +169,8 @@ public class UsuarioServiceImpl implements UsuarioService {
                 Usuario usuario = usuarioRepository.findById(idUsuario)
                                 .orElseThrow(() -> new NotFoundException(
                                                 "El usuario con ID " + idUsuario + " no existe"));
+                log.info("[Autor: {}] Ha consultado la lista de roles del usuario con ID {}.", getUsuarioAccion(),
+                                idUsuario);
                 return usuario.getRoles().stream()
                                 .map(rol -> modelMapper.map(rol, RolDTO.class))
                                 .toList();
@@ -161,6 +197,9 @@ public class UsuarioServiceImpl implements UsuarioService {
 
                 datoMostrado.setIdUsuario(idUsuarioTarget);
                 datoMostrado.setIdRol(idRolEliminar);
+
+                log.info("[Autor: {}] Ha eliminado el rol '{}' (ID: {}) del usuario objetivo con ID {}.",
+                                getUsuarioAccion(), rolARemover.getNombreRol(), idRolEliminar, idUsuarioTarget);
 
                 return datoMostrado;
         }

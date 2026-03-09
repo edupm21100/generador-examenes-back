@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import com.eduardo.examen_backend.services.AuditoriaService;
 
@@ -115,15 +117,31 @@ public class GlobalExceptionHandler {
 
 @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
     public ResponseEntity<ErrorResponse> handleAccessDeniedException(Exception ex, HttpServletRequest request) { 
-        log.warn("Intento de acceso denegado (Forbidden) en {}: {}", request.getRequestURI(), ex.getMessage());
+        String usuario = "Anónimo";
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            usuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        }
+        log.warn("Usuario: {} | Intento de acceso denegado en {}. Motivo: {}", usuario, request.getRequestURI(), ex.getMessage());
         
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
                 HttpStatus.FORBIDDEN.getReasonPhrase(),
-                "Acceso Denegado: No tienes permisos (Roles) para realizar esta acción."
+                "Acceso Denegado: No tienes permisos para realizar esta acción."
         );
-        auditoriaService.registrarIncidencia(ex, request); 
         
+        auditoriaService.registrarIncidencia(ex, request); 
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
+        log.warn("Usuario: Desconocido | Acción: Intento de login fallido (Contraseña incorrecta)");
+        
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                HttpStatus.UNAUTHORIZED.getReasonPhrase(),
+                "Credenciales inválidas. El correo o la contraseña no son correctos."
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 }

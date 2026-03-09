@@ -3,26 +3,28 @@
 
     <property name="LOGS_DIR" value="./logs" />
 
+    <property name="CLEAN_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} | %msg%n" />
+
     <appender name="Consola" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
+        <encoder><pattern>${CLEAN_PATTERN}</pattern></encoder>
     </appender>
 
     <appender name="ArchivoDiario" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>${LOGS_DIR}/registro_diario.txt</file>
-        
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOGS_DIR}/registro_diario-%d{yyyy-MM-dd}.txt</fileNamePattern>
             <maxHistory>1</maxHistory>
         </rollingPolicy>
-        
-        <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
+        <encoder><pattern>${CLEAN_PATTERN}</pattern></encoder>
     </appender>
 
-    <root level="INFO">
+    <logger name="org.springframework" level="OFF" />
+    <logger name="org.apache.catalina" level="OFF" />
+    <logger name="org.apache.coyote" level="OFF" />
+
+    <logger name="com.eduardo.examen_backend" level="INFO" />
+
+    <root level="ERROR">
         <appender-ref ref="Consola" />
         <appender-ref ref="ArchivoDiario" />
     </root>

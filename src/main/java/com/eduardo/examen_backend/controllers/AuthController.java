@@ -11,6 +11,7 @@ import com.eduardo.examen_backend.views.UsuarioViews;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -56,7 +58,7 @@ public class AuthController {
         }
 
         String token = jwtService.generateToken(usuario.getCorreoUsuario());
-
+        log.info("Usuario: {} | Acción: Login exitoso en el sistema.", loginDTO.getCorreoUsuario());
         return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
 }

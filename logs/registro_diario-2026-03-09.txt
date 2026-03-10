@@ -1,0 +1,20 @@
+2026-03-09 15:28:09 | Starting ExamenBackendApplication using Java 21.0.10 with PID 11712 (C:\Users\6003626\Documents\Programa de examenes\examen-backend\target\classes started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-09 15:28:09 | No active profile set, falling back to 1 default profile: "default"
+2026-03-09 15:28:25 | Started ExamenBackendApplication in 17.608 seconds (process running for 19.132)
+2026-03-09 15:28:49 | [Autor: prospero@admin.com] Ha consultado la lista completa de usuarios activos.
+2026-03-09 15:29:09 | Acceso no autorizado en /usuarios/27: Acceso denegado: El Token es inválido, está mal formado o ha caducado.
+2026-03-09 15:29:53 | [Autor: anneB@prospero.com] Ha consultado los detalles del usuario con ID 27.
+2026-03-09 15:29:53 | Recurso no encontrado en /usuarios/27: Id: 27 no encontrado
+2026-03-09 15:30:33 | Intento de acceso denegado (Forbidden) en /usuarios: Access Denied
+2026-03-09 15:34:33 | Starting ExamenBackendApplication using Java 21.0.10 with PID 24908 (C:\Users\6003626\Documents\Programa de examenes\examen-backend\target\classes started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-09 15:34:33 | No active profile set, falling back to 1 default profile: "default"
+2026-03-09 15:34:45 | Started ExamenBackendApplication in 12.802 seconds (process running for 13.605)
+2026-03-09 15:36:00 | Usuario: emilyM@prospero.com | Intento de acceso denegado en /usuarios. Motivo: Access Denied
+2026-03-09 15:36:22 | Acceso no autorizado en /usuarios: Acceso denegado: El Token es inválido, está mal formado o ha caducado.
+2026-03-09 15:43:09 | Starting ExamenBackendApplication using Java 21.0.10 with PID 28212 (C:\Users\6003626\Documents\Programa de examenes\examen-backend\target\classes started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-09 15:43:09 | No active profile set, falling back to 1 default profile: "default"
+2026-03-09 15:43:24 | Started ExamenBackendApplication in 16.523 seconds (process running for 17.419)
+2026-03-09 15:43:28 | Usuario: emilyM@prospero.com | Acción: Login exitoso en el sistema.
+2026-03-09 15:43:43 | Usuario: emilyM@prospero.com | Acción: Login exitoso en el sistema.
+2026-03-09 15:43:54 | Acceso no autorizado en /auth/login: Credenciales incorrectas
+2026-03-09 15:44:05 | Usuario: emilyM@prospero.com | Acción: Login exitoso en el sistema.

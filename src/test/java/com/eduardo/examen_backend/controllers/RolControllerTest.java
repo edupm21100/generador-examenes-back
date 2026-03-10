@@ -22,6 +22,7 @@ import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.services.RolService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.eduardo.examen_backend.services.AuditoriaService;
 
 @WebMvcTest(RolController.class)
 class RolControllerTest {
@@ -44,7 +45,10 @@ class RolControllerTest {
     private com.eduardo.examen_backend.security.JwtService jwtService;
 
     @MockitoBean
-    private com.eduardo.examen_backend.security.CustomUserDetailService customUserDetailsService; 
+    private com.eduardo.examen_backend.security.CustomUserDetailService customUserDetailsService;
+    
+    @MockitoBean
+    private AuditoriaService auditoriaService;
 
     @Test
     @WithMockUser(roles = "ADMIN")

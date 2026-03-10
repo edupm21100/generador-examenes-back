@@ -29,7 +29,7 @@ public class IncidenciaServiceImpl implements IncidenciaService {
 
     private String getUsuarioAccion() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
+        if (auth != null && auth.isAuthenticated()) {
             return auth.getName();
         }
         return "Sistema/Anónimo";

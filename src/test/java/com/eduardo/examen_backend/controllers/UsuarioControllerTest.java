@@ -10,6 +10,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.security.Principal;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import com.eduardo.examen_backend.exceptions.NotFoundException;
 import com.eduardo.examen_backend.exceptions.BadRequestException;
@@ -25,6 +27,7 @@ import com.eduardo.examen_backend.dto.PasswordDTO;
 import com.eduardo.examen_backend.dto.RolDTO;
 import com.eduardo.examen_backend.dto.UsuarioDTO;
 import com.eduardo.examen_backend.dto.UsuarioRolDTO;
+import com.eduardo.examen_backend.services.AuditoriaService;
 import com.eduardo.examen_backend.services.UsuarioService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -50,6 +53,9 @@ class UsuarioControllerTest {
 
     @MockitoBean
     private com.eduardo.examen_backend.security.CustomUserDetailService customUserDetailsService;
+
+    @MockitoBean
+    private AuditoriaService auditoriaService;
 
     @Test
     @WithMockUser(roles = "ADMIN")
@@ -144,23 +150,26 @@ class UsuarioControllerTest {
                 .andExpect(jsonPath("$.nombreUsuario").value("Modificado"));
     }
 
-@Test
+    @Test
     @WithMockUser(username = "test@test.com")
     void cambiarContrasenha_DeberiaRecibirJSONYDevolver200() throws Exception {
         PasswordDTO passwordDTO = new PasswordDTO();
-
-        passwordDTO.setNewPassword("12345678"); 
-        passwordDTO.setOldPassword("00000000"); 
+        passwordDTO.setNewPassword("12345678");
+        passwordDTO.setOldPassword("00000000");
 
         UsuarioDTO dtoSalida = new UsuarioDTO();
         dtoSalida.setIdUsuario(5);
 
         when(usuarioService.changeContrasenha(eq("test@test.com"), any(PasswordDTO.class))).thenReturn(dtoSalida);
 
-        mockMvc.perform(put("/usuarios/me/password") 
+        Principal mockPrincipal = () -> "test@test.com";
+
+        mockMvc.perform(put("/usuarios/me/password")
+                .principal(mockPrincipal)
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(passwordDTO)))
+                .andDo(print())
                 .andExpect(status().isOk());
     }
 

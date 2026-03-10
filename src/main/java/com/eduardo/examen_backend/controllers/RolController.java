@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 /**
  * Controlador REST para la gestión del catálogo de roles del sistema.
@@ -31,6 +32,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/roles")
 @PreAuthorize("hasRole('ADMIN')")
 @Tag(name = "Roles", description = "Gestión de los roles de acceso del sistema (Solo Admin)")
+@SecurityRequirement(name = "bearerAuth")
 public class RolController {
 
     private final RolService rolService;
@@ -41,40 +43,37 @@ public class RolController {
 
     // CREAR ROL
     @PostMapping
-    @Operation(summary = "Crear un nuevo rol", description = "Guarda un nuevo rol en la base de datos.")
+    @Operation(summary = "Crear un nuevo rol", description = "Registra un perfil de acceso (ej. MODERADOR) en el sistema. Requiere privilegios de ADMIN.")
     @ApiResponse(responseCode = "201", description = "Rol creado con éxito")
-    @ApiResponse(responseCode = "400", description = "Datos inválidos")
-    @ApiResponse(responseCode = "403", description = "Acceso denegado (No es Admin)")
+    @ApiResponse(responseCode = "400", description = "Datos de entrada inválidos o nombre de rol duplicado")
+    @ApiResponse(responseCode = "403", description = "Acceso denegado: No tienes permisos de administrador")
     public ResponseEntity<RolDTO> save(@RequestBody RolDTO rolDTO) {
         return new ResponseEntity<>(rolService.save(rolDTO), HttpStatus.CREATED);
     }
 
     // LISTAR TODOS LOS ROLES
     @GetMapping
-    @Operation(summary = "Listar todos los roles", description = "Devuelve una lista completa de todos los roles registrados.")
-    @ApiResponse(responseCode = "200", description = "Lista devuelta con éxito")
-    @ApiResponse(responseCode = "204", description = "No hay roles registrados")
-    @ApiResponse(responseCode = "403", description = "Acceso denegado (No es Admin)")
+    @Operation(summary = "Listar todos los roles", description = "Obtiene la lista completa de roles definidos, incluyendo su estado de activación.")
+    @ApiResponse(responseCode = "200", description = "Operación exitosa: Lista recuperada")
+    @ApiResponse(responseCode = "204", description = "No se encontraron roles en el sistema")
     public ResponseEntity<List<RolDTO>> findAll() {
         return ResponseEntity.ok(rolService.findAll());
     }
 
     // BUSCAR ROL POR ID
     @GetMapping("/{idRol}")
-    @Operation(summary = "Buscar rol por ID", description = "Obtiene los detalles de un rol específico mediante su ID.")
-    @ApiResponse(responseCode = "200", description = "Rol encontrado")
-    @ApiResponse(responseCode = "403", description = "Acceso denegado (No es Admin)")
-    @ApiResponse(responseCode = "404", description = "El rol no existe")
+    @Operation(summary = "Buscar rol por ID", description = "Recupera la información detallada de un rol específico mediante su identificador único.")
+    @ApiResponse(responseCode = "200", description = "Rol localizado")
+    @ApiResponse(responseCode = "404", description = "El ID proporcionado no corresponde a ningún rol")
     public ResponseEntity<RolDTO> findById(@PathVariable Integer idRol) {
         return ResponseEntity.ok(rolService.findById(idRol));
     }
 
     // ACTUALIZAR ROL
     @PutMapping
-    @Operation(summary = "Actualizar rol", description = "Modifica los datos de un rol existente enviando el objeto completo.")
-    @ApiResponse(responseCode = "200", description = "Rol actualizado correctamente")
-    @ApiResponse(responseCode = "403", description = "Acceso denegado (No es Admin)")
-    @ApiResponse(responseCode = "404", description = "El rol a modificar no existe")
+    @Operation(summary = "Actualizar rol", description = "Modifica las propiedades de un rol existente. Se debe enviar el objeto completo en el cuerpo.")
+    @ApiResponse(responseCode = "200", description = "Actualización realizada con éxito")
+    @ApiResponse(responseCode = "404", description = "No se pudo actualizar: El rol no existe")
     public ResponseEntity<RolDTO> update(@RequestBody RolDTO rolDTO) {
         return ResponseEntity.ok(rolService.update(rolDTO));
     }
@@ -82,10 +81,8 @@ public class RolController {
     // ACTIVAR / DESACTIVAR ROL
     @PutMapping("/desactivar/{idRol}")
     @JsonView(RolViews.IndiscreetRol.class)
-    @Operation(summary = "Activar/Desactivar rol (Borrado lógico)", description = "Invierte el estado 'activo' de un rol.")
-    @ApiResponse(responseCode = "200", description = "Estado modificado exitosamente")
-    @ApiResponse(responseCode = "403", description = "Acceso denegado (No es Admin)")
-    @ApiResponse(responseCode = "404", description = "El rol no existe")
+    @Operation(summary = "Conmutar estado del rol", description = "Activa o desactiva un rol (borrado lógico). Los roles desactivados no pueden ser asignados a nuevos usuarios.")
+    @ApiResponse(responseCode = "200", description = "Estado del rol actualizado")
     public ResponseEntity<RolDTO> desactivateRol(@PathVariable Integer idRol) {
         return ResponseEntity.ok(rolService.desactivateRol(idRol));
     }
@@ -93,9 +90,9 @@ public class RolController {
     // OBTENER USUARIOS DE UN DETERMINADO ROL
     @GetMapping("/{idRol}/usuarios")
     @JsonView(UsuarioViews.DiscreetUser.class)
-    @Operation(summary = "Listar usuarios por Rol", description = "Devuelve los usuarios que poseen un rol específico.")
-    @ApiResponse(responseCode = "200", description = "Lista devuelta con éxito")
-    @ApiResponse(responseCode = "403", description = "Acceso denegado (No es Admin)")
+    @Operation(summary = "Listar usuarios por Rol", description = "Obtiene la lista de todos los usuarios que tienen asignado este rol específico.")
+    @ApiResponse(responseCode = "200", description = "Usuarios recuperados con éxito")
+    @ApiResponse(responseCode = "404", description = "El rol especificado no existe")
     public ResponseEntity<List<UsuarioDTO>> findUsuariosByRol(@PathVariable Integer idRol) {
         return ResponseEntity.ok(rolService.findUsuariosByRol(idRol));
     }

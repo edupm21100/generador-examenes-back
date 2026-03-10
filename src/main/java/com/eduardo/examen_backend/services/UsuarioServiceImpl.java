@@ -45,7 +45,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         // DEVOLVER INFORMACIÓN DEL USUARIO QUE HACE LA PETICIÓN
         private String getUsuarioAccion() {
                 Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-                if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
+                if (auth != null && auth.isAuthenticated()) {
                         return auth.getName(); // Devuelve el correo guardado en el token
                 }
                 return "Sistema/Anónimo";

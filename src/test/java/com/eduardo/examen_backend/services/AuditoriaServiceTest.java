@@ -18,6 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,7 +31,7 @@ class AuditoriaServiceTest {
     private UsuarioRepository usuarioRepository;
 
     @InjectMocks
-    private AuditoriaService auditoriaService;
+    private AuditoriaServiceImpl auditoriaService;
 
     @AfterEach
     void cleanUp() {
@@ -76,23 +77,24 @@ class AuditoriaServiceTest {
         verifyNoInteractions(usuarioRepository);
     }
 
-/*     @Test
+@Test
     void registrarIncidencia_CuandoExcepcionEsExterna_DeberiaPonerOrigenDesconocido() {
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getMethod()).thenReturn("GET");
         when(request.getRequestURI()).thenReturn("/ext");
         
-        Exception ex = mock(Exception.class);
+        Exception ex = new RuntimeException("Error externo de prueba");
+        
         StackTraceElement[] fakeStackTrace = {
             new StackTraceElement("org.springframework.Web", "doDispatch", "Web.java", 10)
         };
-        when(ex.getStackTrace()).thenReturn(fakeStackTrace);
-        when(ex.getClass()).thenReturn((Class) RuntimeException.class);
+        
+        ex.setStackTrace(fakeStackTrace);
 
         auditoriaService.registrarIncidencia(ex, request);
 
         verify(incidenciaRepository, times(1)).save(argThat(incidencia -> 
             incidencia.getClase().equals("Desconocida/Framework")
         ));
-    } */
+    }
 }

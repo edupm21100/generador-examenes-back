@@ -1,73 +1,22 @@
 package com.eduardo.examen_backend.services;
 
-import com.eduardo.examen_backend.models.Incidencia;
-import com.eduardo.examen_backend.repositories.IncidenciaRepository;
-import com.eduardo.examen_backend.repositories.UsuarioRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.time.LocalDateTime;
+/**
+ * Servicio interceptor encargado de la auditoría y registro de errores del sistema.
+ * Captura las excepciones no controladas, extrae su traza y el usuario responsable,
+ * y las persiste en la base de datos como incidencias.
+ * * @author Eduardo
+ * @version 1.0
+ */
+public interface AuditoriaService {
 
-@Slf4j
-@Service
-public class AuditoriaService {
-
-    private final IncidenciaRepository incidenciaRepository;
-    private final UsuarioRepository usuarioRepository;
-
-    public AuditoriaService(IncidenciaRepository incidenciaRepository, UsuarioRepository usuarioRepository) {
-        this.incidenciaRepository = incidenciaRepository;
-        this.usuarioRepository = usuarioRepository;
-    }
-
-    public void registrarIncidencia(Exception ex, HttpServletRequest request) {
-        String endpoint = request.getMethod() + " " + request.getRequestURI();
-        String origen = extraerClaseYMetodo(ex);
-        
-        Incidencia incidencia = new Incidencia(
-                endpoint, 
-                ex.getClass().getSimpleName(), 
-                origen.split("\\|")[0],
-                origen.split("\\|")[1],
-                extraerTraza(ex), 
-                LocalDateTime.now(), 
-                obtenerIdUsuarioLogueado()
-        );
-        
-        incidenciaRepository.save(incidencia);
-    }
-
-    private String extraerTraza(Exception ex) {
-        StringWriter sw = new StringWriter();
-        ex.printStackTrace(new PrintWriter(sw));
-        return sw.toString();
-    }
-
-    private String extraerClaseYMetodo(Exception ex) {
-        for (StackTraceElement element : ex.getStackTrace()) {
-            if (element.getClassName().startsWith("com.eduardo.examen_backend") && !element.getMethodName().contains("$")) {
-                return element.getClassName() + "|" + element.getMethodName() + " (Línea: " + element.getLineNumber() + ")";
-            }
-        }
-        return "Desconocida/Framework|Desconocido";
-    }
-
-    private Integer obtenerIdUsuarioLogueado() {
-        try {
-            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-            if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
-                return usuarioRepository.findByCorreoUsuario(auth.getName())
-                        .map(usuario -> usuario.getIdUsuario())
-                        .orElse(null);
-            }
-        } catch (Exception e) {
-            log.error("Error al extraer usuario logueado en auditoría", e);
-        }
-        return null;
-    }
+    /**
+     * Procesa una excepción generada durante una petición HTTP y la registra en el sistema.
+     * Analiza el StackTrace para determinar la clase y línea exactas donde se originó el fallo.
+     *
+     * @param ex La excepción capturada por el manejador global.
+     * @param request La petición HTTP original que provocó el error (para extraer el endpoint).
+     */
+    void registrarIncidencia(Exception ex, HttpServletRequest request);
 }

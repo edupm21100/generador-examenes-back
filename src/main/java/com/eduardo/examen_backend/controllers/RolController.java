@@ -19,15 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
-/**
- * Controlador REST para la gestión del catálogo de roles del sistema.
- * <p>
- * Permite la administración de los perfiles de usuario (ADMIN, USER, etc.),
- * incluyendo su creación, actualización y la gestión de su estado activo.
- * </p>
- * * @author Eduardo
- * * @version 0.01
- */
 @RestController
 @RequestMapping("/roles")
 @PreAuthorize("hasRole('ADMIN')")

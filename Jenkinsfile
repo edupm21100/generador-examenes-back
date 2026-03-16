@@ -10,7 +10,7 @@ pipeline {
             steps {
                 dir('examen-backend') {
                     echo 'Compilando el proyecto...'
-                    sh 'mvn clean package -DskipTests' 
+                    sh 'mvn clean verify' 
                 }
             }
         }

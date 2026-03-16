@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # (JENKINS)
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins_server
+    user: root # Le damos permisos máximos para que pueda usar Docker luego
+    ports:
+      - "8081:8080" # Tu app usa el 8080, así que a Jenkins le damos el 8081
+      - "50000:50000" # Puerto interno que usa Jenkins
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      # Este volumen mágico le permite a Jenkins usar el Docker de tu Windows
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ../examen-backend:/opt/examen-backend 
+    restart: unless-stopped
+
+  # (SONARQUBE)
+  sonarqube:
+    image: sonarqube:lts-community
+    container_name: sonarqube_server
+    ports:
+      - "9000:9000" # SonarQube vigilará desde el puerto 9000
+    environment:
+      - SONAR_FORCEAUTHENTICATION=false
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data
+      - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
+    restart: unless-stopped
+
+volumes:
+  jenkins_data:
+  sonarqube_data:
+  sonarqube_extensions:
+  sonarqube_logs:

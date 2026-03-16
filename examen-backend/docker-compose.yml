@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0.33
+    container_name: examen_mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: examenes
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_USER: eduardo
+      MYSQL_PASSWORD: eduardopassword
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  eureka:
+    build: ../eureka-server
+    container_name: examen_eureka
+    restart: on-failure
+    ports:
+      - "8761:8761"
+
+  # ==========================================
+  # 1. EL CONTENEDOR PRINCIPAL (Usuarios, Roles, Auth)
+  # ==========================================
+  backend_principal:
+    build: .
+    container_name: examen_backend_principal
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/examenes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=eduardo
+      - SPRING_DATASOURCE_PASSWORD=eduardopassword
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_APPLICATION_NAME=EXAMEN-BACKEND
+
+  # ==========================================
+  # 2. EL CONTENEDOR DE INCIDENCIAS (El "Clon" táctico)
+  # ==========================================
+  backend_incidencias:
+    build: .
+    container_name: examen_backend_incidencias
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/examenes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=eduardo
+      - SPRING_DATASOURCE_PASSWORD=eduardopassword
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_APPLICATION_NAME=EXAMEN-INCIDENCIAS
+
+  gateway:
+    build: ../api-gateway
+    container_name: examen_gateway
+    restart: on-failure
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+
+volumes:
+  mysql_data:

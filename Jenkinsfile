@@ -46,8 +46,8 @@ pipeline {
             steps {
                 dir('examen-backend') { 
                     echo '¡Aprobado! Desplegando la nueva versión...'
-                    sh 'docker-compose down'
-                    sh 'docker-compose up -d --build'
+                    sh 'docker compose down'
+                    sh 'docker compose up -d --build'
                 }
             }
         }

@@ -44,7 +44,6 @@ pipeline {
 
         stage('Despliegue Automático en Docker') {
             steps {
-                // Instalamos el cliente de Docker al vuelo (solo tarda unos segundos)
                 sh '''
                     if ! command -v docker &> /dev/null; then
                         echo "Docker no está instalado. Instalando cliente de Docker..."
@@ -53,7 +52,6 @@ pipeline {
                     fi
                 '''
                 
-                // Entramos al directorio y lanzamos el compose
                 dir('examen-backend') { 
                     echo '¡Aprobado! Desplegando la nueva versión...'
                     sh 'docker compose down'

@@ -26,9 +26,7 @@ services:
     ports:
       - "8761:8761"
 
-  # ==========================================
-  # 1. EL CONTENEDOR PRINCIPAL (Usuarios, Roles, Auth)
-  # ==========================================
+  # 1. EL CONTENEDOR PRINCIPAL
   backend_principal:
     build: .
     container_name: examen_backend_principal
@@ -46,9 +44,7 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
       - SPRING_APPLICATION_NAME=EXAMEN-BACKEND
 
-  # ==========================================
-  # 2. EL CONTENEDOR DE INCIDENCIAS (El "Clon" táctico)
-  # ==========================================
+  # 2. EL CONTENEDOR DE INCIDENCIAS
   backend_incidencias:
     build: .
     container_name: examen_backend_incidencias

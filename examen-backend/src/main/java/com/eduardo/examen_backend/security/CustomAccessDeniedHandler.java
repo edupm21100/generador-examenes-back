@@ -23,7 +23,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response,
             AccessDeniedException accessDeniedException) throws IOException, ServletException {
         
-        log.error("¡ENTRANDO AL HANDLER DE 403! Petición bloqueada en: {}", request.getRequestURI());
+        log.error("ERROR: 403 Petición bloqueada en: {}", request.getRequestURI());
 
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType("application/json;charset=UTF-8");

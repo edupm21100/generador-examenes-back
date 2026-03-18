@@ -16,9 +16,9 @@ El proyecto utiliza un patrón de **Despliegue de Monolito Basado en Enrutamient
 
 ## ⚙️ Stack Tecnológico
 
-* **Lenguaje & Framework:** Java 21, Spring Boot 3
+* **Lenguaje & Framework:** Java 21, Spring Boot 4.0.3
 * **Construcción:** Maven
-* **Seguridad:** Spring Security, JWT (Asumido en `/auth`)
+* **Seguridad:** Spring Security, JWT
 * **Contenedores:** Docker & Docker Compose (Imágenes base Alpine/Distroless para máxima seguridad).
 
 ## 🏭 Pipeline CI/CD (Automatización Total)

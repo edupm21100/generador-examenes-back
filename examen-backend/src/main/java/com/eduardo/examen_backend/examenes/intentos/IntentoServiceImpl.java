@@ -17,7 +17,9 @@ import com.eduardo.examen_backend.usuarios.Usuario;
 import com.eduardo.examen_backend.usuarios.UsuarioRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IntentoServiceImpl implements IntentoService {
@@ -88,6 +90,8 @@ public class IntentoServiceImpl implements IntentoService {
 
         // 5. Guardar (el CascadeType guardará las respuestas también)
         Intento intentoGuardado = intentoRepository.save(intento);
+        log.info("[Autor: {}] Examen '{}' realizado y corregido con éxito. Nota final: {}/10", 
+                 correoLogueado, examen.getTitulo(), intentoGuardado.getNota());
         return mapearADTO(intentoGuardado);
     }
 
@@ -95,7 +99,7 @@ public class IntentoServiceImpl implements IntentoService {
     @Transactional(readOnly = true)
     public List<IntentoDTO> obtenerMisIntentos(String correoLogueado) {
         return intentoRepository.findByUsuario_CorreoUsuarioOrderByFechaRealizacionDesc(correoLogueado)
-            .stream().map(this::mapearADTO).collect(Collectors.toList());
+            .stream().map(this::mapearADTO).toList();
     }
 
     @Override
@@ -106,6 +110,8 @@ public class IntentoServiceImpl implements IntentoService {
 
         // Seguridad extra: Un alumno no puede ver el examen de otro
         if (!intento.getUsuario().getCorreoUsuario().equals(correoLogueado) && !intento.getUsuario().isAdmin()) {
+            log.warn("[Alerta de Seguridad] El usuario {} intentó acceder al examen (Intento ID: {}) perteneciente a otro alumno.", 
+                     correoLogueado, idIntento);
             throw new BadRequestException("No tienes permiso para ver este examen.");
         }
 

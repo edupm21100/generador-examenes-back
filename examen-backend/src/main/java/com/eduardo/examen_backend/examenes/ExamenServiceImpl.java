@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,7 @@ import com.eduardo.examen_backend.shared.exceptions.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExamenServiceImpl implements ExamenService {
@@ -42,15 +45,16 @@ public class ExamenServiceImpl implements ExamenService {
         return mapearADTO(examen);
     }
 
-    @Override
+@Override
     @Transactional
     public ExamenDTO crearExamen(ExamenDTO dto) {
-        Examen examen = Examen.builder()
-            .titulo(dto.getTitulo())
-            .descripcion(dto.getDescripcion())
-            .activo(dto.isActivo())
-            .build();
-        return mapearADTO(examenRepository.save(examen));
+        Examen examen = Examen.builder().titulo(dto.getTitulo()).descripcion(dto.getDescripcion()).activo(dto.isActivo()).build();
+        Examen examenGuardado = examenRepository.save(examen);
+        
+        // LOG CRÍTICO
+        log.info("Nueva plantilla de examen creada con éxito. ID: {}, Título: '{}'", examenGuardado.getIdExamen(), examenGuardado.getTitulo());
+        
+        return mapearADTO(examenGuardado);
     }
 
     @Override
@@ -91,6 +95,7 @@ public class ExamenServiceImpl implements ExamenService {
         }
 
         examen.getPreguntas().add(pregunta);
+        log.info("Pregunta ID {} añadida exitosamente al Examen ID {}", idPregunta, idExamen);
         return mapearADTO(examenRepository.save(examen));
     }
 

@@ -37,9 +37,17 @@ public class ExamenDTO {
     @Schema(description = "Indica si el examen está visible para los alumnos", example = "true")
     @Builder.Default
     @JsonView(ExamenViews.DiscreetExam.class)
-    private boolean activo = true;
+    private Boolean activo = false;
 
     @Schema(description = "Lista de preguntas que componen el examen")
     @JsonView(ExamenViews.IndiscreetExam.class)
     private Set<PreguntaDTO> preguntas;
+
+    @Schema(description = "ID del profesor que creó el examen (Solo lectura)", example = "2")
+    @JsonView(ExamenViews.DiscreetExam.class)
+    private Integer idProfesor;
+
+    @Schema(description = "Nombre del profesor que lo creó (Solo lectura)", example = "Eduardo Pérez")
+    @JsonView(ExamenViews.DiscreetExam.class)
+    private String nombreProfesor;
 }

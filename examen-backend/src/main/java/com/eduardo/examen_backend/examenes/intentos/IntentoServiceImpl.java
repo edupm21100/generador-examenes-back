@@ -1,7 +1,9 @@
 package com.eduardo.examen_backend.examenes.intentos;
 
 import java.time.format.DateTimeFormatter;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -53,9 +55,17 @@ public class IntentoServiceImpl implements IntentoService {
 
         int respuestasCorrectas = 0;
 
+        Set<Integer> preguntasYaRespondidas = new HashSet<>();
+
         // Motor de Autocorrección
         for (RespuestaAlumnoDTO respuestaDTO : dto.getRespuestas()) {
-            // 1. Validar que la pregunta existe en ESTE examen
+            
+            // 1. Validar trampa de duplicados
+            if (!preguntasYaRespondidas.add(respuestaDTO.getIdPregunta())) {
+                throw new BadRequestException("Intento de fraude detectado: Se ha enviado más de una respuesta para la pregunta ID " + respuestaDTO.getIdPregunta());
+            }
+
+            // 2. Validar que la pregunta existe en ESTE examen
             Pregunta preguntaReal = examen.getPreguntas().stream()
                 .filter(p -> p.getIdPregunta().equals(respuestaDTO.getIdPregunta()))
                 .findFirst()
@@ -63,7 +73,7 @@ public class IntentoServiceImpl implements IntentoService {
 
             Opcion opcionElegida = null;
             
-            // 2. Si el alumno marcó una opción (no la dejó en blanco)
+            // 3. Si el alumno marcó una opción (no la dejó en blanco)
             if (respuestaDTO.getIdOpcionSeleccionada() != null) {
                 opcionElegida = preguntaReal.getOpciones().stream()
                     .filter(o -> o.getIdOpcion().equals(respuestaDTO.getIdOpcionSeleccionada()))
@@ -75,7 +85,7 @@ public class IntentoServiceImpl implements IntentoService {
                 }
             }
 
-            // 3. Crear la respuesta y atarla al intento (usando el Helper que vimos antes)
+            // 4. Crear la respuesta y atarla al intento
             RespuestaAlumno respuestaAlumno = RespuestaAlumno.builder()
                 .pregunta(preguntaReal)
                 .opcionSeleccionada(opcionElegida)
@@ -84,9 +94,9 @@ public class IntentoServiceImpl implements IntentoService {
             intento.addRespuesta(respuestaAlumno);
         }
 
-        // 4. Calcular nota sobre 10
+        //CALCULO DE LA NOTA
         double notaFinal = ((double) respuestasCorrectas / examen.getPreguntas().size()) * 10.0;
-        intento.setNota(Math.round(notaFinal * 100.0) / 100.0); // Redondear a 2 decimales
+        intento.setNota(Math.round(notaFinal * 100.0) / 100.0);
 
         // 5. Guardar (el CascadeType guardará las respuestas también)
         Intento intentoGuardado = intentoRepository.save(intento);

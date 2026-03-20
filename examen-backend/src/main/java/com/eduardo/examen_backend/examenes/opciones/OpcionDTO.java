@@ -30,5 +30,5 @@ public class OpcionDTO {
 
     @Schema(description = "Indica si es la respuesta correcta", example = "true")
     @JsonView(PreguntaViews.IndiscreetQuestion.class)
-    private boolean esCorrecta;
+    private Boolean esCorrecta;
 }

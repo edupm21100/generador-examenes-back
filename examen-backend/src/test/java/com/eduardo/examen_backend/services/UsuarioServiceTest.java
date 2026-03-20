@@ -278,8 +278,8 @@ class UsuarioServiceTest {
         when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioTarget);
         when(modelMapper.map(usuarioTarget, UsuarioDTO.class)).thenReturn(dtoSalida);
 
-        UsuarioDTO resultado = usuarioService.anhadirRol(idTarget, idRol); // 👈 Ya no se pasa idAdmin
-
+        UsuarioDTO resultado = usuarioService.anhadirRol(idTarget, idRol);
+        
         assertNotNull(resultado);
         assertTrue(usuarioTarget.getRoles().contains(nuevoRol));
         verify(usuarioRepository, times(1)).save(usuarioTarget);

@@ -33,7 +33,7 @@ public interface ExamenService {
      * @param examenDTO Datos básicos del examen (título, descripción).
      * @return Objeto {@link ExamenDTO} con el ID autogenerado.
      */
-    ExamenDTO crearExamen(ExamenDTO examenDTO);
+    ExamenDTO crearExamen(ExamenDTO examenDTO, String correoLogueado);
 
     /**
      * Actualiza la información básica de una plantilla de examen existente.
@@ -63,7 +63,7 @@ public interface ExamenService {
      * @return Objeto {@link ExamenDTO} actualizado con la nueva pregunta en su lista.
      * @throws com.eduardo.examen_backend.shared.exceptions.DuplicateException si la pregunta ya estaba vinculada.
      */
-    ExamenDTO anhadirPregunta(Integer idExamen, Integer idPregunta);
+    ExamenDTO anhadirPreguntas(Integer idExamen, List<Integer> idsPreguntas);
 
     /**
      * Desvincula una pregunta de la plantilla del examen (No borra la pregunta del sistema).

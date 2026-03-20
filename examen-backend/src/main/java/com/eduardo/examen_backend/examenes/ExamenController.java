@@ -1,5 +1,6 @@
 package com.eduardo.examen_backend.examenes;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
@@ -7,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -59,9 +59,10 @@ public class ExamenController {
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR')")
     @JsonView(ExamenViews.DiscreetExam.class)
-    @Operation(summary = "Crear plantilla de examen", description = "Crea un examen vacío (sin preguntas).")
-    public ResponseEntity<ExamenDTO> crearExamen(@Valid @RequestBody ExamenDTO dto) {
-        return new ResponseEntity<>(examenService.crearExamen(dto), HttpStatus.CREATED);
+    @Operation(summary = "Crear plantilla de examen", description = "Crea un examen vacío. El autor será el usuario logueado.")
+    public ResponseEntity<ExamenDTO> crearExamen(@Valid @RequestBody ExamenDTO dto, Principal principal) {
+        String correoLogueado = principal.getName();
+        return new ResponseEntity<>(examenService.crearExamen(dto, correoLogueado), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
@@ -72,7 +73,7 @@ public class ExamenController {
         return ResponseEntity.ok(examenService.actualizarExamen(id, dto));
     }
 
-    @PatchMapping("/{id}/estado")
+    @PutMapping("/{id}/estado")
     @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR')")
     @JsonView(ExamenViews.DiscreetExam.class)
     @Operation(summary = "Activar/Desactivar examen", description = "Cambia la visibilidad del examen para los alumnos.")
@@ -80,12 +81,14 @@ public class ExamenController {
         return ResponseEntity.ok(examenService.cambiarEstadoActivo(id));
     }
 
-    @PostMapping("/{idExamen}/preguntas/{idPregunta}")
+    @PutMapping("/{idExamen}/preguntas")
     @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR')")
     @JsonView(ExamenViews.IndiscreetExam.class)
-    @Operation(summary = "Añadir pregunta manual", description = "Vincula una pregunta existente a este examen.")
-    public ResponseEntity<ExamenDTO> anhadirPregunta(@PathVariable Integer idExamen, @PathVariable Integer idPregunta) {
-        return ResponseEntity.ok(examenService.anhadirPregunta(idExamen, idPregunta));
+    @Operation(summary = "Añadir preguntas en lote", description = "Vincula un array de IDs de preguntas a este examen.")
+    public ResponseEntity<ExamenDTO> anhadirPreguntas(
+            @PathVariable Integer idExamen,
+            @RequestBody List<Integer> idsPreguntas) {
+        return ResponseEntity.ok(examenService.anhadirPreguntas(idExamen, idsPreguntas));
     }
 
     @DeleteMapping("/{idExamen}/preguntas/{idPregunta}")

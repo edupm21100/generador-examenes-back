@@ -1,7 +1,6 @@
 package com.eduardo.examen_backend.examenes.preguntas;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,23 +25,23 @@ public class PreguntaServiceImpl implements PreguntaService {
     @Transactional(readOnly = true)
     public List<PreguntaDTO> obtenerTodas() {
         return preguntaRepository.findAll().stream()
-            .map(this::mapearADTO)
-            .toList();
+                .map(this::mapearADTO)
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<PreguntaDTO> obtenerPorCategoria(Integer idCategoria) {
         return preguntaRepository.findByCategoria_IdCategoria(idCategoria).stream()
-            .map(this::mapearADTO)
-            .toList();
+                .map(this::mapearADTO)
+                .toList();
     }
 
     @Override
     @Transactional(readOnly = true)
     public PreguntaDTO obtenerPorId(Integer id) {
         Pregunta pregunta = preguntaRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("La pregunta con ID " + id + " no existe."));
+                .orElseThrow(() -> new NotFoundException("La pregunta con ID " + id + " no existe."));
         return mapearADTO(pregunta);
     }
 
@@ -50,29 +49,30 @@ public class PreguntaServiceImpl implements PreguntaService {
     @Transactional
     public PreguntaDTO crearPregunta(PreguntaDTO dto) {
         Categoria categoria = categoriaRepository.findById(dto.getIdCategoria())
-            .orElseThrow(() -> new NotFoundException("La categoría especificada no existe."));
+                .orElseThrow(() -> new NotFoundException("La categoría especificada no existe."));
 
-        boolean tieneCorrecta = dto.getOpciones().stream().anyMatch(OpcionDTO::isEsCorrecta);
+        boolean tieneCorrecta = dto.getOpciones().stream().anyMatch(OpcionDTO::getEsCorrecta);
         if (!tieneCorrecta) {
             throw new BadRequestException("La pregunta debe tener al menos una opción correcta.");
         }
 
         // 3. Crear la entidad Pregunta
         Pregunta pregunta = Pregunta.builder()
-            .enunciado(dto.getEnunciado())
-            .categoria(categoria)
-            .build();
+                .enunciado(dto.getEnunciado())
+                .categoria(categoria)
+                .build();
 
         // 4. Transformar y atar las opciones a la pregunta
         for (OpcionDTO optDto : dto.getOpciones()) {
             Opcion nuevaOpcion = Opcion.builder()
-                .texto(optDto.getTexto())
-                .esCorrecta(optDto.isEsCorrecta())
-                .build();
+                    .texto(optDto.getTexto())
+                    .esCorrecta(optDto.getEsCorrecta() != null && optDto.getEsCorrecta())
+                    .build();
             pregunta.addOpcion(nuevaOpcion);
         }
 
-        // 5. Guardar (El CascadeType.ALL guarda la pregunta y sus opciones automáticamente)
+        // 5. Guardar (El CascadeType.ALL guarda la pregunta y sus opciones
+        // automáticamente)
         Pregunta preguntaGuardada = preguntaRepository.save(pregunta);
         return mapearADTO(preguntaGuardada);
     }
@@ -89,19 +89,19 @@ public class PreguntaServiceImpl implements PreguntaService {
     // --- Métodos Helper ---
     private PreguntaDTO mapearADTO(Pregunta pregunta) {
         List<OpcionDTO> opcionesDTO = pregunta.getOpciones().stream()
-            .map(o -> OpcionDTO.builder()
-                .idOpcion(o.getIdOpcion())
-                .texto(o.getTexto())
-                .esCorrecta(o.isEsCorrecta())
-                .build())
-            .collect(Collectors.toList());
+                .map(o -> OpcionDTO.builder()
+                        .idOpcion(o.getIdOpcion())
+                        .texto(o.getTexto())
+                        .esCorrecta(o.isEsCorrecta())
+                        .build())
+                .toList();
 
         return PreguntaDTO.builder()
-            .idPregunta(pregunta.getIdPregunta())
-            .enunciado(pregunta.getEnunciado())
-            .idCategoria(pregunta.getCategoria().getIdCategoria())
-            .nombreCategoria(pregunta.getCategoria().getNombre())
-            .opciones(opcionesDTO)
-            .build();
+                .idPregunta(pregunta.getIdPregunta())
+                .enunciado(pregunta.getEnunciado())
+                .idCategoria(pregunta.getCategoria().getIdCategoria())
+                .nombreCategoria(pregunta.getCategoria().getNombre())
+                .opciones(opcionesDTO)
+                .build();
     }
 }

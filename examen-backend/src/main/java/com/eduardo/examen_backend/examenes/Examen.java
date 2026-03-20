@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.eduardo.examen_backend.examenes.preguntas.Pregunta;
+import com.eduardo.examen_backend.usuarios.Usuario;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -14,7 +15,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.ForeignKey;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,10 +50,11 @@ public class Examen {
     // TABLA INTERMEDIA: Relación Muchos a Muchos con Preguntas
     @ManyToMany(fetch = FetchType.LAZY)
     @Builder.Default
-    @JoinTable(
-        name = "examenes_preguntas",
-        joinColumns = @JoinColumn(name = "id_examen"),
-        inverseJoinColumns = @JoinColumn(name = "id_pregunta")
-    )
+    @JoinTable(name = "examenes_preguntas", joinColumns = @JoinColumn(name = "id_examen"), inverseJoinColumns = @JoinColumn(name = "id_pregunta"))
     private Set<Pregunta> preguntas = new HashSet<>();
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_profesor", nullable = false, foreignKey = @ForeignKey(name = "fk_examenes_profesor")
+    )
+    private Usuario profesor;
 }

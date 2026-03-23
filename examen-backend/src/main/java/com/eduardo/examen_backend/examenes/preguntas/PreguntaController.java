@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,7 +38,7 @@ public class PreguntaController {
     @Operation(summary = "Listar preguntas", description = "Devuelve todas las preguntas. Se puede filtrar por categoría.")
     public ResponseEntity<List<PreguntaDTO>> listarPreguntas(
             @RequestParam(required = false) Integer idCategoria) {
-        
+
         if (idCategoria != null) {
             return ResponseEntity.ok(preguntaService.obtenerPorCategoria(idCategoria));
         }
@@ -62,11 +62,11 @@ public class PreguntaController {
         return new ResponseEntity<>(preguntaService.crearPregunta(dto), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR')")
-    @Operation(summary = "Eliminar pregunta", description = "Borra la pregunta y todas sus opciones en cascada.")
-    public ResponseEntity<Void> eliminarPregunta(@PathVariable Integer id) {
-        preguntaService.eliminarPregunta(id);
-        return ResponseEntity.noContent().build();
+    @PatchMapping("/{id}/estado")
+    @PreAuthorize("hasRole('ADMIN')")
+    @JsonView(PreguntaViews.DiscreetQuestion.class)
+    @Operation(summary = "Activar/Desactivar pregunta", description = "Cambia el estado lógico de la pregunta. Solo ADMIN.")
+    public ResponseEntity<PreguntaDTO> cambiarEstado(@PathVariable Integer id) {
+        return ResponseEntity.ok(preguntaService.cambiarEstadoActivo(id));
     }
 }

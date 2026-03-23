@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +14,8 @@ import com.eduardo.examen_backend.examenes.opciones.OpcionDTO;
 import com.eduardo.examen_backend.examenes.preguntas.Pregunta;
 import com.eduardo.examen_backend.examenes.preguntas.PreguntaDTO;
 import com.eduardo.examen_backend.examenes.preguntas.PreguntaRepository;
+import com.eduardo.examen_backend.roles.Rol;
+import com.eduardo.examen_backend.shared.exceptions.BadRequestException;
 import com.eduardo.examen_backend.shared.exceptions.NotFoundException;
 import com.eduardo.examen_backend.usuarios.Usuario;
 import com.eduardo.examen_backend.usuarios.UsuarioRepository;
@@ -66,8 +69,9 @@ public class ExamenServiceImpl implements ExamenService {
 
     @Override
     @Transactional
-    public ExamenDTO actualizarExamen(Integer id, ExamenDTO dto) {
+    public ExamenDTO actualizarExamen(Integer id, ExamenDTO dto, String correoLogueado) {
         Examen examen = buscarExamenOThrow(id);
+        verificarPermisos(examen, correoLogueado);
         examen.setTitulo(dto.getTitulo());
         examen.setDescripcion(dto.getDescripcion());
         if (dto.getActivo() != null) {
@@ -87,45 +91,51 @@ public class ExamenServiceImpl implements ExamenService {
 
     @Override
     @Transactional
-    public ExamenDTO cambiarEstadoActivo(Integer id) {
+    public ExamenDTO cambiarEstadoActivo(Integer id, String correoLogueado) {
         Examen examen = buscarExamenOThrow(id);
+        verificarPermisos(examen, correoLogueado);
         examen.setActivo(!examen.isActivo());
         return mapearADTO(examenRepository.save(examen));
     }
 
-    @Override
+@Override
     @Transactional
-    public ExamenDTO anhadirPreguntas(Integer idExamen, List<Integer> idsPreguntas) {
+    public ExamenDTO anhadirPreguntas(Integer idExamen, List<Integer> idsPreguntas, String correoLogueado) {
         Examen examen = buscarExamenOThrow(idExamen);
+        verificarPermisos(examen, correoLogueado);
         List<Pregunta> preguntas = preguntaRepository.findAllById(idsPreguntas);
-
         if (preguntas.size() != idsPreguntas.size()) {
-            throw new NotFoundException("Algunas de las preguntas proporcionadas no existen en el banco de datos.");
+            throw new NotFoundException("Algunas de las preguntas proporcionadas no existen en la base de datos.");
+        }
+        boolean hayPreguntasApagadas = preguntas.stream()
+            .anyMatch(p -> p.getActivo() != null && !p.getActivo());
+
+        if (hayPreguntasApagadas) {
+            throw new BadRequestException("Operación rechazada: Estás intentando añadir preguntas que han sido dadas de baja por un Administrador.");
         }
         examen.getPreguntas().addAll(preguntas);
-
-        log.info("Añadidas {} preguntas al Examen ID {}", preguntas.size(), idExamen);
+        log.info("[Autor: {}] Añadidas {} preguntas al Examen ID {}", correoLogueado, preguntas.size(), idExamen);
         return mapearADTO(examenRepository.save(examen));
     }
 
     @Override
     @Transactional
-    public ExamenDTO quitarPregunta(Integer idExamen, Integer idPregunta) {
+    public ExamenDTO quitarPreguntas(Integer idExamen, List<Integer> idsPreguntas, String correoLogueado) {
         Examen examen = buscarExamenOThrow(idExamen);
-        Pregunta pregunta = preguntaRepository.findById(idPregunta)
-                .orElseThrow(() -> new NotFoundException("La pregunta con ID " + idPregunta + " no existe."));
+        verificarPermisos(examen, correoLogueado); // Seguridad
 
-        examen.getPreguntas().remove(pregunta);
+        // Buscamos las preguntas en BD y las desvinculamos de golpe
+        List<Pregunta> preguntasAQuitar = preguntaRepository.findAllById(idsPreguntas);
+        examen.getPreguntas().removeAll(preguntasAQuitar);
+
+        log.info("[Autor: {}] Quitadas {} preguntas del Examen ID {}", correoLogueado, preguntasAQuitar.size(),
+                idExamen);
         return mapearADTO(examenRepository.save(examen));
-    }
-
-    private Examen buscarExamenOThrow(Integer id) {
-        return examenRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("El examen con ID " + id + " no existe."));
     }
 
     private ExamenDTO mapearADTO(Examen examen) {
-        Set<PreguntaDTO> preguntasDTO = examen.getPreguntas().stream().map(p -> {
+        Set<PreguntaDTO> preguntasDTO = examen.getPreguntas().stream().filter(p -> p.getActivo() != null && p.getActivo())
+            .map(p -> {
             List<OpcionDTO> opciones = p.getOpciones().stream().map(o -> OpcionDTO.builder().idOpcion(o.getIdOpcion())
                     .texto(o.getTexto()).esCorrecta(o.isEsCorrecta()).build()).toList();
 
@@ -144,8 +154,33 @@ public class ExamenServiceImpl implements ExamenService {
                 .descripcion(examen.getDescripcion())
                 .activo(examen.isActivo())
                 .idProfesor(examen.getProfesor() != null ? examen.getProfesor().getIdUsuario() : null)
-                .nombreProfesor(examen.getProfesor() != null ? examen.getProfesor().getNombreUsuario() + " " + examen.getProfesor().getApellidoUsuario() : "Profesor Desconocido")
+                .nombreProfesor(examen.getProfesor() != null
+                        ? examen.getProfesor().getNombreUsuario() + " " + examen.getProfesor().getApellidoUsuario()
+                        : "Profesor Desconocido")
                 .preguntas(preguntasDTO)
                 .build();
+    }
+
+    private void verificarPermisos(Examen examen, String correoLogueado) {
+        Usuario usuarioLogueado = usuarioRepository.findByCorreoUsuario(correoLogueado)
+                .orElseThrow(() -> new NotFoundException("Usuario no encontrado"));
+
+        boolean esAdmin = usuarioLogueado.getRoles().stream()
+                .anyMatch(rol -> rol.getNombreRol().toUpperCase().contains("ADMIN"));
+
+        log.warn("Usuario intentando modificar: {}. Roles encontrados en BD: {}. ¿Es Admin?: {}",
+                correoLogueado,
+                usuarioLogueado.getRoles().stream().map(Rol::getNombreRol).toList(),
+                esAdmin);
+
+        if (!esAdmin && !examen.getProfesor().getIdUsuario().equals(usuarioLogueado.getIdUsuario())) {
+            throw new AuthorizationDeniedException(
+                    "Acceso Denegado: Solo el creador del examen o un Administrador pueden modificarlo.");
+        }
+    }
+
+    private Examen buscarExamenOThrow(Integer idExamen) {
+        return examenRepository.findById(idExamen)
+                .orElseThrow(() -> new NotFoundException("El examen con ID " + idExamen + " no existe."));
     }
 }

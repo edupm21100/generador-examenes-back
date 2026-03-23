@@ -50,7 +50,7 @@ public class ExamenController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR', 'ALUMNO')")
-    @JsonView(ExamenViews.DiscreetExam.class)
+    @JsonView(ExamenViews.IndiscreetExam.class)
     @Operation(summary = "Obtener detalle del examen", description = "Devuelve el examen junto con todas sus preguntas y opciones.")
     public ResponseEntity<ExamenDTO> obtenerExamen(@PathVariable Integer id) {
         return ResponseEntity.ok(examenService.obtenerPorId(id));
@@ -69,33 +69,40 @@ public class ExamenController {
     @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR')")
     @JsonView(ExamenViews.DiscreetExam.class)
     @Operation(summary = "Actualizar examen", description = "Modifica título y descripción.")
-    public ResponseEntity<ExamenDTO> actualizarExamen(@PathVariable Integer id, @Valid @RequestBody ExamenDTO dto) {
-        return ResponseEntity.ok(examenService.actualizarExamen(id, dto));
+    public ResponseEntity<ExamenDTO> actualizarExamen(@PathVariable Integer id, @Valid @RequestBody ExamenDTO dto,
+            Principal principal) {
+        String correoLogueado = principal.getName();
+        return ResponseEntity.ok(examenService.actualizarExamen(id, dto, correoLogueado));
     }
 
     @PutMapping("/{id}/estado")
     @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR')")
     @JsonView(ExamenViews.DiscreetExam.class)
-    @Operation(summary = "Activar/Desactivar examen", description = "Cambia la visibilidad del examen para los alumnos.")
-    public ResponseEntity<ExamenDTO> cambiarEstado(@PathVariable Integer id) {
-        return ResponseEntity.ok(examenService.cambiarEstadoActivo(id));
+    @Operation(summary = "Activar/Desactivar examen", description = "Cambia la visibilidad del examen. Solo el dueño o Admin.")
+    public ResponseEntity<ExamenDTO> cambiarEstado(@PathVariable Integer id, Principal principal) {
+        return ResponseEntity.ok(examenService.cambiarEstadoActivo(id, principal.getName()));
     }
 
-    @PutMapping("/{idExamen}/preguntas")
+@PutMapping("/{idExamen}/preguntas")
     @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR')")
     @JsonView(ExamenViews.IndiscreetExam.class)
     @Operation(summary = "Añadir preguntas en lote", description = "Vincula un array de IDs de preguntas a este examen.")
     public ResponseEntity<ExamenDTO> anhadirPreguntas(
-            @PathVariable Integer idExamen,
-            @RequestBody List<Integer> idsPreguntas) {
-        return ResponseEntity.ok(examenService.anhadirPreguntas(idExamen, idsPreguntas));
+            @PathVariable Integer idExamen, 
+            @RequestBody List<Integer> idsPreguntas,
+            Principal principal) {
+        
+        return ResponseEntity.ok(examenService.anhadirPreguntas(idExamen, idsPreguntas, principal.getName()));
     }
 
-    @DeleteMapping("/{idExamen}/preguntas/{idPregunta}")
+    @DeleteMapping("/{idExamen}/preguntas")
     @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR')")
     @JsonView(ExamenViews.IndiscreetExam.class)
-    @Operation(summary = "Quitar pregunta manual", description = "Desvincula una pregunta del examen (no borra la pregunta de la BD).")
-    public ResponseEntity<ExamenDTO> quitarPregunta(@PathVariable Integer idExamen, @PathVariable Integer idPregunta) {
-        return ResponseEntity.ok(examenService.quitarPregunta(idExamen, idPregunta));
+    @Operation(summary = "Quitar preguntas en lote", description = "Desvincula un array de IDs de preguntas del examen.")
+    public ResponseEntity<ExamenDTO> quitarPreguntas(
+            @PathVariable Integer idExamen,
+            @RequestBody List<Integer> idsPreguntas,
+            Principal principal) {
+        return ResponseEntity.ok(examenService.quitarPreguntas(idExamen, idsPreguntas, principal.getName()));
     }
 }

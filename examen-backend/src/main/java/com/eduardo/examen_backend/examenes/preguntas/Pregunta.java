@@ -42,6 +42,10 @@ public class Pregunta {
     @Column(name = "enunciado", nullable = false, columnDefinition = "TEXT")
     private String enunciado;
 
+    @Column(name = "activo", nullable = false)
+    @Builder.Default
+    private Boolean activo = true;
+
     // Relación con Categoría (Geografía, Mates, etc.)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_categoria")

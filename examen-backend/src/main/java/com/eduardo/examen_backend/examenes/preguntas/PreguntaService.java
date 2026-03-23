@@ -45,5 +45,5 @@ public interface PreguntaService {
      * @param id Identificador de la pregunta a eliminar.
      * @throws com.eduardo.examen_backend.shared.exceptions.NotFoundException si el ID no existe.
      */
-    void eliminarPregunta(Integer id);
+    PreguntaDTO cambiarEstadoActivo(Integer id);
 }

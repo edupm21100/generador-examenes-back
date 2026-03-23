@@ -41,7 +41,7 @@ public interface ExamenService {
      * @param examenDTO Nuevos datos a aplicar.
      * @return Objeto {@link ExamenDTO} actualizado.
      */
-    ExamenDTO actualizarExamen(Integer id, ExamenDTO examenDTO);
+    ExamenDTO actualizarExamen(Integer id, ExamenDTO examenDTO, String correoLogueado);
 
     /**
      * Elimina físicamente una plantilla de examen.
@@ -54,7 +54,7 @@ public interface ExamenService {
      * @param id Identificador del examen.
      * @return Objeto {@link ExamenDTO} con el nuevo estado aplicado.
      */
-    ExamenDTO cambiarEstadoActivo(Integer id);
+    ExamenDTO cambiarEstadoActivo(Integer id, String correoLogueado);
 
     /**
      * Vincula una pregunta existente en el banco de preguntas a la plantilla de este examen.
@@ -63,7 +63,7 @@ public interface ExamenService {
      * @return Objeto {@link ExamenDTO} actualizado con la nueva pregunta en su lista.
      * @throws com.eduardo.examen_backend.shared.exceptions.DuplicateException si la pregunta ya estaba vinculada.
      */
-    ExamenDTO anhadirPreguntas(Integer idExamen, List<Integer> idsPreguntas);
+    ExamenDTO anhadirPreguntas(Integer idExamen, List<Integer> idsPreguntas, String correoLogueado);
 
     /**
      * Desvincula una pregunta de la plantilla del examen (No borra la pregunta del sistema).
@@ -71,5 +71,5 @@ public interface ExamenService {
      * @param idPregunta Identificador de la pregunta a retirar.
      * @return Objeto {@link ExamenDTO} actualizado.
      */
-    ExamenDTO quitarPregunta(Integer idExamen, Integer idPregunta);
+    ExamenDTO quitarPreguntas(Integer idExamen, List<Integer> idsPreguntas, String correoLogueado);
 }

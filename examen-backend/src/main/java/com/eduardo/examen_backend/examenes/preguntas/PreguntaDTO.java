@@ -47,4 +47,9 @@ public class PreguntaDTO {
     @Size(min = 2, message = "La pregunta debe tener al menos 2 opciones")
     @JsonView(PreguntaViews.IndiscreetQuestion.class)
     private List<OpcionDTO> opciones;
+
+    @Schema(description = "Indica si la pregunta está activa en el sistema", example = "true")
+    @Builder.Default
+    @JsonView(PreguntaViews.DiscreetQuestion.class)
+    private Boolean activo = true;
 }

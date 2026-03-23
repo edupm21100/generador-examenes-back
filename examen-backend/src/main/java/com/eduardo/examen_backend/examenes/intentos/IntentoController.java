@@ -31,7 +31,7 @@ public class IntentoController {
     private final IntentoService intentoService;
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('ALUMNO', 'PROFESOR')")
+    @PreAuthorize("hasAnyRole('ALUMNO', 'PROFESOR', 'ADMIN')")
     @JsonView(IntentoViews.IndiscreetTry.class)
     @Operation(summary = "Realizar un examen", description = "Envía las respuestas de un examen para ser evaluadas automáticamente.")
     public ResponseEntity<IntentoDTO> realizarExamen(@Valid @RequestBody IntentoDTO intentoDTO, Principal principal) {
@@ -40,7 +40,7 @@ public class IntentoController {
     }
 
     @GetMapping("/mis-notas")
-    @PreAuthorize("hasAnyRole('ALUMNO', 'PROFESOR')")
+    @PreAuthorize("hasAnyRole('ALUMNO', 'PROFESOR', 'ADMIN')")
     @JsonView(IntentoViews.IndiscreetTry.class)
     @Operation(summary = "Ver mi historial de exámenes", description = "Devuelve los intentos y notas del usuario autenticado.")
     public ResponseEntity<List<IntentoDTO>> obtenerMisIntentos(Principal principal) {

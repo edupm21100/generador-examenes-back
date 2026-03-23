@@ -57,6 +57,14 @@ public class IntentoServiceImpl implements IntentoService {
 
         Set<Integer> preguntasYaRespondidas = new HashSet<>();
 
+        List<Pregunta> preguntasActivas = examen.getPreguntas().stream()
+            .filter(p -> p.getActivo() != null && p.getActivo())
+            .toList();
+
+        if (preguntasActivas.isEmpty()) {
+            throw new BadRequestException("El examen no tiene preguntas activas, no se puede realizar.");
+        }
+
         // Motor de Autocorrección
         for (RespuestaAlumnoDTO respuestaDTO : dto.getRespuestas()) {
             
@@ -66,10 +74,10 @@ public class IntentoServiceImpl implements IntentoService {
             }
 
             // 2. Validar que la pregunta existe en ESTE examen
-            Pregunta preguntaReal = examen.getPreguntas().stream()
+            Pregunta preguntaReal = preguntasActivas.stream()
                 .filter(p -> p.getIdPregunta().equals(respuestaDTO.getIdPregunta()))
                 .findFirst()
-                .orElseThrow(() -> new BadRequestException("La pregunta ID " + respuestaDTO.getIdPregunta() + " no pertenece a este examen."));
+                .orElseThrow(() -> new BadRequestException("La pregunta ID " + respuestaDTO.getIdPregunta() + " no pertenece a este examen o ha sido desactivada."));
 
             Opcion opcionElegida = null;
             
@@ -95,7 +103,7 @@ public class IntentoServiceImpl implements IntentoService {
         }
 
         //CALCULO DE LA NOTA
-        double notaFinal = ((double) respuestasCorrectas / examen.getPreguntas().size()) * 10.0;
+        double notaFinal = ((double) respuestasCorrectas / preguntasActivas.size()) * 10.0;
         intento.setNota(Math.round(notaFinal * 100.0) / 100.0);
 
         // 5. Guardar (el CascadeType guardará las respuestas también)

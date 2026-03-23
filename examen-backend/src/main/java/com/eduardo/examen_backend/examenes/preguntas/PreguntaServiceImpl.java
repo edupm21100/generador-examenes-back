@@ -1,6 +1,7 @@
 package com.eduardo.examen_backend.examenes.preguntas;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,9 @@ import com.eduardo.examen_backend.shared.exceptions.BadRequestException;
 import com.eduardo.examen_backend.shared.exceptions.NotFoundException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PreguntaServiceImpl implements PreguntaService {
@@ -25,6 +28,7 @@ public class PreguntaServiceImpl implements PreguntaService {
     @Transactional(readOnly = true)
     public List<PreguntaDTO> obtenerTodas() {
         return preguntaRepository.findAll().stream()
+                .filter(p -> p.getActivo() != null && p.getActivo())
                 .map(this::mapearADTO)
                 .toList();
     }
@@ -32,7 +36,11 @@ public class PreguntaServiceImpl implements PreguntaService {
     @Override
     @Transactional(readOnly = true)
     public List<PreguntaDTO> obtenerPorCategoria(Integer idCategoria) {
+        if (!categoriaRepository.existsById(idCategoria)) {
+            throw new NotFoundException("La categoría con ID " + idCategoria + " no existe.");
+        }
         return preguntaRepository.findByCategoria_IdCategoria(idCategoria).stream()
+                .filter(p -> p.getActivo() != null && p.getActivo()) // Solo las activas
                 .map(this::mapearADTO)
                 .toList();
     }
@@ -74,16 +82,24 @@ public class PreguntaServiceImpl implements PreguntaService {
         // 5. Guardar (El CascadeType.ALL guarda la pregunta y sus opciones
         // automáticamente)
         Pregunta preguntaGuardada = preguntaRepository.save(pregunta);
+        log.info("Pregunta creada de categoría {}", preguntaGuardada.getCategoria().getNombre());
         return mapearADTO(preguntaGuardada);
     }
 
     @Override
     @Transactional
-    public void eliminarPregunta(Integer id) {
-        if (!preguntaRepository.existsById(id)) {
-            throw new NotFoundException("No se puede eliminar. La pregunta con ID " + id + " no existe.");
-        }
-        preguntaRepository.deleteById(id);
+    public PreguntaDTO cambiarEstadoActivo(Integer id) {
+        Pregunta pregunta = preguntaRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("La pregunta con ID " + id + " no existe."));
+        
+        boolean estadoActual = pregunta.getActivo() != null && pregunta.getActivo();
+        
+        pregunta.setActivo(!estadoActual);
+        
+        Pregunta preguntaGuardada = preguntaRepository.save(pregunta);
+        log.info("Pregunta ID {} ha cambiado su estado a: {}", id, Boolean.TRUE.equals(preguntaGuardada.getActivo()) ? "ACTIVA" : "DESACTIVADA");
+        
+        return mapearADTO(preguntaGuardada);
     }
 
     // --- Métodos Helper ---
@@ -94,13 +110,14 @@ public class PreguntaServiceImpl implements PreguntaService {
                         .texto(o.getTexto())
                         .esCorrecta(o.isEsCorrecta())
                         .build())
-                .toList();
+                        .toList();
 
         return PreguntaDTO.builder()
                 .idPregunta(pregunta.getIdPregunta())
                 .enunciado(pregunta.getEnunciado())
                 .idCategoria(pregunta.getCategoria().getIdCategoria())
                 .nombreCategoria(pregunta.getCategoria().getNombre())
+                .activo(pregunta.getActivo() != null ? pregunta.getActivo() : false)
                 .opciones(opcionesDTO)
                 .build();
     }

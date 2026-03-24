@@ -44,20 +44,22 @@ pipeline {
 
         stage('Despliegue Automático en Docker') {
             steps {
-                sh '''
-                # Comprobamos si Docker ya existe
-                if ! command -v docker &> /dev/null; then
-                    echo "Docker no está instalado. Instalando cliente de Docker..."
-                    curl -fsSL https://get.docker.com -o get-docker.sh
-                    sh get-docker.sh
-                else
-                    echo "Docker ya está instalado. Omitiendo descarga."
-                fi
-                
-                # Desplegamos la arquitectura lógica
-                docker compose down
-                docker compose up -d --build
-                '''
+                dir('examen-backend') {
+                    sh '''
+                    # Comprobamos si Docker ya existe (Sintaxis compatible con sh de Jenkins)
+                    if ! command -v docker > /dev/null 2>&1; then
+                        echo "Docker no está instalado. Instalando cliente de Docker..."
+                        curl -fsSL https://get.docker.com -o get-docker.sh
+                        sh get-docker.sh
+                    else
+                        echo "Docker ya está instalado. Omitiendo descarga."
+                    fi
+                    
+                    # Desplegamos la arquitectura lógica
+                    docker compose down
+                    docker compose up -d --build
+                    '''
+                }
             }
         }
     }

@@ -44,11 +44,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             final String jwt = authHeader.substring(7);
-
             String correoUsuario = jwtService.extractUsername(jwt);
 
             if (correoUsuario != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailService.loadUserByUsername(correoUsuario);
+
+                if (!userDetails.isEnabled()) {
+                    UnauthorizedException errorInactivo = new UnauthorizedException(
+                            "Acceso denegado: Su cuenta ha sido desactivada. Por favor, contacte con administración."
+                    );
+                    resolver.resolveException(request, response, null, errorInactivo);
+                    return;
+                }
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authToken);

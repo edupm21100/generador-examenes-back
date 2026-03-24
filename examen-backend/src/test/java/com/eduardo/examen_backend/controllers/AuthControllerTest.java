@@ -25,6 +25,7 @@ import java.util.Optional;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -80,7 +81,6 @@ class AuthControllerTest {
     }
 
     @Test
-    @WithMockUser
     void login_ConCredencialesValidas_DeberiaDevolver200YToken() throws Exception {
         LoginDTO loginDTO = new LoginDTO();
         loginDTO.setCorreoUsuario("admin@test.com");
@@ -89,16 +89,21 @@ class AuthControllerTest {
         Usuario mockUsuario = new Usuario();
         mockUsuario.setCorreoUsuario("admin@test.com");
         mockUsuario.setContrasenhaUsuario("hashed_password_in_db");
+        mockUsuario.setActivo(true);
+        when(usuarioRepository.findByCorreoUsuario(anyString()))
+                .thenReturn(Optional.of(mockUsuario));
 
-        when(usuarioRepository.findByCorreoUsuario("admin@test.com")).thenReturn(Optional.of(mockUsuario));
-        when(passwordEncoder.matches("MiPassword123", "hashed_password_in_db")).thenReturn(true);
-        when(jwtService.generateToken("admin@test.com")).thenReturn("un.token.falso.muy.largo");
+        when(passwordEncoder.matches(any(CharSequence.class), anyString()))
+                .thenReturn(true);
+
+        when(jwtService.generateToken(anyString()))
+                .thenReturn("un.token.falso.muy.largo");
 
         mockMvc.perform(post("/auth/login")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginDTO)))
-                .andExpect(status().isOk()) // 200 OK
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.token").value("un.token.falso.muy.largo"));
     }
 

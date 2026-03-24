@@ -9,20 +9,33 @@ spring:
       server:
         webmvc:
           routes:
-          - id: modulo-seguridad
-            uri: lb://EXAMEN-BACKEND
-            predicates:
-              - Path=/auth/**
-          - id: modulo-usuarios
-            uri: lb://EXAMEN-BACKEND
-            predicates:
-              - Path=/usuarios/**, /roles/**
-          - id: modulo-incidencias
-            uri: lb://EXAMEN-INCIDENCIAS
-            predicates:
-              - Path=/incidencias/**
+            - id: modulo-auth
+              uri: lb://MS-AUTH
+              predicates:
+                - Path=/auth/**
+                
+            - id: modulo-usuarios
+              uri: lb://MS-USUARIOS
+              predicates:
+                - Path=/usuarios/**
+                
+            - id: modulo-roles
+              uri: lb://MS-ROLES
+              predicates:
+                - Path=/roles/**
+                
+            - id: modulo-examenes
+              uri: lb://MS-EXAMENES
+              predicates:
+                - Path=/examenes/**, /intentos/**, /categorias/**, /preguntas/**
+                
+            - id: modulo-incidencias
+              uri: lb://MS-INCIDENCIAS
+              predicates:
+                - Path=/incidencias/**
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      # Usa el nombre del contenedor de eureka, no localhost
+      defaultZone: http://eureka:8761/eureka/

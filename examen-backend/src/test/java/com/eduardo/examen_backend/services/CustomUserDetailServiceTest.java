@@ -35,30 +35,27 @@ class CustomUserDetailServiceTest {
 
     @Test
     void loadUserByUsernameTestOK() {
-        // 1. Preparamos los datos
         String correoTest = "admin@test.com";
         
         Rol rolAdmin = new Rol();
         rolAdmin.setIdRol(1);
-        rolAdmin.setNombreRol("ADMIN"); // Sin el ROLE_ en la BD
+        rolAdmin.setNombreRol("ADMIN");
 
         Usuario usuarioBD = new Usuario();
         usuarioBD.setIdUsuario(1);
         usuarioBD.setCorreoUsuario(correoTest);
         usuarioBD.setContrasenhaUsuario("12345");
         usuarioBD.setRoles(Set.of(rolAdmin));
+        usuarioBD.setActivo(true);
 
         when(usuarioRepository.findByCorreoUsuario(correoTest)).thenReturn(Optional.of(usuarioBD));
 
-        // 2. Ejecutamos
         UserDetails resultado = customUserDetailService.loadUserByUsername(correoTest);
 
-        // 3. Verificamos
         assertNotNull(resultado, "El UserDetails no debe ser nulo");
         assertEquals(correoTest, resultado.getUsername(), "El username debe coincidir con el correo");
         assertEquals("12345", resultado.getPassword(), "La contraseña debe coincidir");
         
-        // Verificamos que Spring Security le ha añadido el prefijo "ROLE_" correctamente
         boolean tieneRolAdmin = resultado.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
         assertTrue(tieneRolAdmin, "Debería tener la autoridad ROLE_ADMIN mapeada");

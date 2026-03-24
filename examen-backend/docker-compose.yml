@@ -26,42 +26,6 @@ services:
     ports:
       - "8761:8761"
 
-  # 1. EL CONTENEDOR PRINCIPAL
-  backend_principal:
-    build: .
-    container_name: examen_backend_principal
-    restart: on-failure
-    depends_on:
-      db:
-        condition: service_healthy
-      eureka:
-        condition: service_started
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/examenes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      - SPRING_DATASOURCE_USERNAME=eduardo
-      - SPRING_DATASOURCE_PASSWORD=eduardopassword
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
-      - SPRING_APPLICATION_NAME=EXAMEN-BACKEND
-
-  # 2. EL CONTENEDOR DE INCIDENCIAS
-  backend_incidencias:
-    build: .
-    container_name: examen_backend_incidencias
-    restart: on-failure
-    depends_on:
-      db:
-        condition: service_healthy
-      eureka:
-        condition: service_started
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/examenes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      - SPRING_DATASOURCE_USERNAME=eduardo
-      - SPRING_DATASOURCE_PASSWORD=eduardopassword
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
-      - SPRING_APPLICATION_NAME=EXAMEN-INCIDENCIAS
-
   gateway:
     build: ../api-gateway
     container_name: examen_gateway
@@ -70,8 +34,86 @@ services:
       - "8082:8082"
     depends_on:
       - eureka
+
+  ms-auth:
+    build: ../ms-auth # Asegúrate de que esta carpeta exista con su Dockerfile
+    container_name: ms_auth
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
     environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/examenes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=eduardo
+      - SPRING_DATASOURCE_PASSWORD=eduardopassword
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_APPLICATION_NAME=MS-AUTH
+
+  ms-usuarios:
+    build: ../ms-usuarios
+    container_name: ms_usuarios
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/examenes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=eduardo
+      - SPRING_DATASOURCE_PASSWORD=eduardopassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_APPLICATION_NAME=MS-USUARIOS
+
+  ms-roles:
+    build: ../ms-roles
+    container_name: ms_roles
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/examenes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=eduardo
+      - SPRING_DATASOURCE_PASSWORD=eduardopassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_APPLICATION_NAME=MS-ROLES
+
+  ms-examenes:
+    build: ../ms-examenes
+    container_name: ms_examenes
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/examenes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=eduardo
+      - SPRING_DATASOURCE_PASSWORD=eduardopassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_APPLICATION_NAME=MS-EXAMENES
+
+  ms-incidencias:
+    build: ../ms-incidencias
+    container_name: ms_incidencias
+    restart: on-failure
+    depends_on:
+      db:
+        condition: service_healthy
+      eureka:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/examenes?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=eduardo
+      - SPRING_DATASOURCE_PASSWORD=eduardopassword
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
+      - SPRING_APPLICATION_NAME=MS-INCIDENCIAS
 
 volumes:
   mysql_data:

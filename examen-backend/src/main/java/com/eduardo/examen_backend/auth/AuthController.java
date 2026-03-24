@@ -62,6 +62,14 @@ public class AuthController {
         Usuario usuario = usuarioRepository.findByCorreoUsuario(loginDTO.getCorreoUsuario())
                 .orElseThrow(() -> new UnauthorizedException("Credenciales incorrectas"));
 
+        System.out.println("¿ESTÁ ACTIVO EL USUARIO EN EL CONTROLADOR?: " + usuario.isActivo());
+
+        if (!usuario.isActivo()) {
+            log.warn("Usuario: {} | Acción: Intento de login bloqueado (Cuenta inactiva)", loginDTO.getCorreoUsuario());
+            throw new UnauthorizedException(
+                    "Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.");
+        }
+
         if (!passwordEncoder.matches(loginDTO.getContrasenhaUsuario(), usuario.getContrasenhaUsuario())) {
             throw new UnauthorizedException("Credenciales incorrectas");
         }

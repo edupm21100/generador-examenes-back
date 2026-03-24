@@ -120,14 +120,19 @@ public class IntentoServiceImpl implements IntentoService {
             .stream().map(this::mapearADTO).toList();
     }
 
-    @Override
+@Override
     @Transactional(readOnly = true)
     public IntentoDTO obtenerDetalleIntento(Integer idIntento, String correoLogueado) {
         Intento intento = intentoRepository.findById(idIntento)
             .orElseThrow(() -> new NotFoundException("El intento no existe."));
 
-        // Seguridad extra: Un alumno no puede ver el examen de otro
-        if (!intento.getUsuario().getCorreoUsuario().equals(correoLogueado) && !intento.getUsuario().isAdmin()) {
+        Usuario visitante = usuarioRepository.findByCorreoUsuario(correoLogueado)
+            .orElseThrow(() -> new NotFoundException("Usuario visitante no encontrado."));
+
+        boolean esDuenho = intento.getUsuario().getCorreoUsuario().equals(correoLogueado);
+        boolean esAdmin = visitante.isAdmin();
+
+        if (!esDuenho && !esAdmin) {
             log.warn("[Alerta de Seguridad] El usuario {} intentó acceder al examen (Intento ID: {}) perteneciente a otro alumno.", 
                      correoLogueado, idIntento);
             throw new BadRequestException("No tienes permiso para ver este examen.");

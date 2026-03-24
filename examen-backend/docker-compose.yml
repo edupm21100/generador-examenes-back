@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+  # --- 1. INFRAESTRUCTURA CORE ---
   db:
     image: mysql:8.0.33
     container_name: examen_mysql
@@ -31,13 +30,14 @@ services:
     container_name: examen_gateway
     restart: on-failure
     ports:
-      - "8082:8082"
+      - "8082:8080" # Ajusta al puerto que exponga tu Gateway internamente
     depends_on:
       - eureka
 
-  ms-auth:
-    build: ../ms-auth # Asegúrate de que esta carpeta exista con su Dockerfile
-    container_name: ms_auth
+  # --- 2. SEPARACIÓN LÓGICA DEL MONOLITO ---
+  backend_auth:
+    build: .
+    container_name: ms_auth_logico
     restart: on-failure
     depends_on:
       db:
@@ -49,11 +49,11 @@ services:
       - SPRING_DATASOURCE_USERNAME=eduardo
       - SPRING_DATASOURCE_PASSWORD=eduardopassword
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
-      - SPRING_APPLICATION_NAME=MS-AUTH
+      - SPRING_APPLICATION_NAME=MS-AUTH # Nombre en Eureka
 
-  ms-usuarios:
-    build: ../ms-usuarios
-    container_name: ms_usuarios
+  backend_usuarios:
+    build: .
+    container_name: ms_usuarios_logico
     restart: on-failure
     depends_on:
       db:
@@ -67,9 +67,9 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
       - SPRING_APPLICATION_NAME=MS-USUARIOS
 
-  ms-roles:
-    build: ../ms-roles
-    container_name: ms_roles
+  backend_roles:
+    build: .
+    container_name: ms_roles_logico
     restart: on-failure
     depends_on:
       db:
@@ -83,9 +83,9 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
       - SPRING_APPLICATION_NAME=MS-ROLES
 
-  ms-examenes:
-    build: ../ms-examenes
-    container_name: ms_examenes
+  backend_examenes:
+    build: .
+    container_name: ms_examenes_logico
     restart: on-failure
     depends_on:
       db:
@@ -99,9 +99,9 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka:8761/eureka/
       - SPRING_APPLICATION_NAME=MS-EXAMENES
 
-  ms-incidencias:
-    build: ../ms-incidencias
-    container_name: ms_incidencias
+  backend_incidencias:
+    build: .
+    container_name: ms_incidencias_logico
     restart: on-failure
     depends_on:
       db:

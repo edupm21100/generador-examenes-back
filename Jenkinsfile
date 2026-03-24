@@ -45,18 +45,19 @@ pipeline {
         stage('Despliegue Automático en Docker') {
             steps {
                 sh '''
-                    if ! command -v docker &> /dev/null; then
-                        echo "Docker no está instalado. Instalando cliente de Docker..."
-                        curl -fsSL https://get.docker.com -o get-docker.sh
-                        sh get-docker.sh
-                    fi
-                '''
+                # Comprobamos si Docker ya existe
+                if ! command -v docker &> /dev/null; then
+                    echo "Docker no está instalado. Instalando cliente de Docker..."
+                    curl -fsSL https://get.docker.com -o get-docker.sh
+                    sh get-docker.sh
+                else
+                    echo "Docker ya está instalado. Omitiendo descarga."
+                fi
                 
-                dir('examen-backend') { 
-                    echo '¡Aprobado! Desplegando la nueva versión...'
-                    sh 'docker compose down'
-                    sh 'docker compose up -d --build'
-                }
+                # Desplegamos la arquitectura lógica
+                docker compose down
+                docker compose up -d --build
+                '''
             }
         }
     }

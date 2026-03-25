@@ -124,7 +124,6 @@ public class ExamenServiceImpl implements ExamenService {
         Examen examen = buscarExamenOThrow(idExamen);
         verificarPermisos(examen, correoLogueado); // Seguridad
 
-        // Buscamos las preguntas en BD y las desvinculamos de golpe
         List<Pregunta> preguntasAQuitar = preguntaRepository.findAllById(idsPreguntas);
         examen.getPreguntas().removeAll(preguntasAQuitar);
 

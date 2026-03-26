@@ -14,4 +14,6 @@ WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
 
+USER nonroot:nonroot
+
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -46,8 +46,6 @@ public class IntentoServiceImpl implements IntentoService {
         if (examen.getPreguntas().isEmpty()) {
             throw new BadRequestException("El examen no tiene preguntas, no se puede realizar.");
         }
-
-        // Crear el cascarón del Intento
         Intento intento = Intento.builder()
             .usuario(alumno)
             .examen(examen)
@@ -65,15 +63,12 @@ public class IntentoServiceImpl implements IntentoService {
             throw new BadRequestException("El examen no tiene preguntas activas, no se puede realizar.");
         }
 
-        // Motor de Autocorrección
         for (RespuestaAlumnoDTO respuestaDTO : dto.getRespuestas()) {
             
-            // 1. Validar trampa de duplicados
             if (!preguntasYaRespondidas.add(respuestaDTO.getIdPregunta())) {
                 throw new BadRequestException("Intento de fraude detectado: Se ha enviado más de una respuesta para la pregunta ID " + respuestaDTO.getIdPregunta());
             }
 
-            // 2. Validar que la pregunta existe en ESTE examen
             Pregunta preguntaReal = preguntasActivas.stream()
                 .filter(p -> p.getIdPregunta().equals(respuestaDTO.getIdPregunta()))
                 .findFirst()
@@ -81,7 +76,6 @@ public class IntentoServiceImpl implements IntentoService {
 
             Opcion opcionElegida = null;
             
-            // 3. Si el alumno marcó una opción (no la dejó en blanco)
             if (respuestaDTO.getIdOpcionSeleccionada() != null) {
                 opcionElegida = preguntaReal.getOpciones().stream()
                     .filter(o -> o.getIdOpcion().equals(respuestaDTO.getIdOpcionSeleccionada()))
@@ -93,7 +87,6 @@ public class IntentoServiceImpl implements IntentoService {
                 }
             }
 
-            // 4. Crear la respuesta y atarla al intento
             RespuestaAlumno respuestaAlumno = RespuestaAlumno.builder()
                 .pregunta(preguntaReal)
                 .opcionSeleccionada(opcionElegida)

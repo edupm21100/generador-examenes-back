@@ -15,7 +15,7 @@ pipeline {
             }
         }
         
-        stage('Auditoría de Calidad (SonarQube)') {
+    stage('Auditoría de Calidad (SonarQube)') {
             environment {
                 scannerHome = tool 'sonar-scanner'
             }
@@ -27,6 +27,8 @@ pipeline {
                         ${scannerHome}/bin/sonar-scanner \
                           -Dsonar.projectKey=examen-backend \
                           -Dsonar.projectName="Examen Backend" \
+                          -Dsonar.sources=src/main/java \
+                          -Dsonar.tests=src/test/java \
                           -Dsonar.java.binaries=target/classes
                         """
                     }

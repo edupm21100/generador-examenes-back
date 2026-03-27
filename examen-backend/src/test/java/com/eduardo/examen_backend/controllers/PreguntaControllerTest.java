@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Arrays;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.Import;
@@ -21,6 +22,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.eduardo.examen_backend.examenes.opciones.OpcionDTO;
 import com.eduardo.examen_backend.examenes.preguntas.PreguntaController;
 import com.eduardo.examen_backend.examenes.preguntas.PreguntaDTO;
 import com.eduardo.examen_backend.examenes.preguntas.PreguntaService;
@@ -41,7 +43,6 @@ class PreguntaControllerTest {
     @MockitoBean
     private PreguntaService preguntaService;
 
-    // Dependencias de seguridad requeridas por tu filtro JwtAuthenticationFilter
     @MockitoBean
     private com.eduardo.examen_backend.incidencias.IncidenciaRepository incidenciaRepository;
 
@@ -110,6 +111,31 @@ class PreguntaControllerTest {
         mockMvc.perform(patch("/preguntas/1/estado")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden()); // Ahora sí saltará el candado de seguridad y devolverá 403
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(roles = "ALUMNO")
+    void obtenerOpcionesAlumno_DeberiaDevolverOpcionesOcultandoLaSolucion() throws Exception {
+        OpcionDTO opcion1 = OpcionDTO.builder()
+                .idOpcion(1)
+                .texto("Madrid")
+                .esCorrecta(null)
+                .build();
+        
+        OpcionDTO opcion2 = OpcionDTO.builder()
+                .idOpcion(2)
+                .texto("París")
+                .esCorrecta(null)
+                .build();
+
+        when(preguntaService.obtenerOpcionesParaAlumno(1)).thenReturn(List.of(opcion1, opcion2));
+
+        mockMvc.perform(get("/preguntas/1/opciones"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(2)) // Debe haber 2 opciones
+                .andExpect(jsonPath("$[0].idOpcion").value(1)) // Comprobamos que viaja el ID para que el frontend pueda responder
+                .andExpect(jsonPath("$[0].texto").value("Madrid"))
+                .andExpect(jsonPath("$[0].esCorrecta").isEmpty()); 
     }
 }

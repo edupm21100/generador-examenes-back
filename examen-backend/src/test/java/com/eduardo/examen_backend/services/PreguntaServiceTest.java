@@ -3,6 +3,7 @@ package com.eduardo.examen_backend.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -249,5 +250,36 @@ class PreguntaServiceTest {
 
         assertEquals("La pregunta con ID 888 no existe.", excepcion.getMessage());
         verify(preguntaRepository, never()).save(any());
+    }
+
+    @Test
+    void obtenerOpcionesParaAlumno_DeberiaDevolverOpcionesSinSolucion() {
+        Opcion opcion1 = new Opcion();
+        opcion1.setIdOpcion(1);
+        opcion1.setTexto("Madrid");
+        opcion1.setEsCorrecta(true);
+
+        Opcion opcion2 = new Opcion();
+        opcion2.setIdOpcion(2);
+        opcion2.setTexto("París");
+        opcion2.setEsCorrecta(false);
+
+        Pregunta pregunta = new Pregunta();
+        pregunta.setIdPregunta(100);
+        pregunta.setActivo(true);
+        pregunta.setOpciones(List.of(opcion1, opcion2));
+
+        when(preguntaRepository.findById(100)).thenReturn(Optional.of(pregunta));
+
+        List<OpcionDTO> resultado = preguntaService.obtenerOpcionesParaAlumno(100);
+
+        assertNotNull(resultado);
+        assertEquals(2, resultado.size());
+        
+        assertEquals(1, resultado.get(0).getIdOpcion());
+        assertEquals("Madrid", resultado.get(0).getTexto());
+        
+        assertNull(resultado.get(0).getEsCorrecta(), "La opción correcta debe ocultarse devolviendo null");
+        assertNull(resultado.get(1).getEsCorrecta(), "Las opciones falsas también deben devolver null");
     }
 }

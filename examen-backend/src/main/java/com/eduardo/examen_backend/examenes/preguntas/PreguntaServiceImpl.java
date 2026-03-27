@@ -102,6 +102,26 @@ public class PreguntaServiceImpl implements PreguntaService {
         return mapearADTO(preguntaGuardada);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<OpcionDTO> obtenerOpcionesParaAlumno(Integer idPregunta) {
+        Pregunta pregunta = preguntaRepository.findById(idPregunta)
+                .orElseThrow(() -> new NotFoundException("La pregunta con ID " + idPregunta + " no existe."));
+
+        // Comprobamos que la pregunta esté activa (opcional, pero buena práctica)
+        if (pregunta.getActivo() == null || !pregunta.getActivo()) {
+            throw new BadRequestException("No se pueden consultar opciones de una pregunta inactiva.");
+        }
+
+        return pregunta.getOpciones().stream()
+                .map(o -> OpcionDTO.builder()
+                        .idOpcion(o.getIdOpcion())
+                        .texto(o.getTexto())
+                        .esCorrecta(null) 
+                        .build())
+                .toList();
+    }
+
     // --- Métodos Helper ---
     private PreguntaDTO mapearADTO(Pregunta pregunta) {
         List<OpcionDTO> opcionesDTO = pregunta.getOpciones().stream()

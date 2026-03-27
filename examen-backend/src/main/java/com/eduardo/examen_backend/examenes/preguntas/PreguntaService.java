@@ -2,6 +2,8 @@ package com.eduardo.examen_backend.examenes.preguntas;
 
 import java.util.List;
 
+import com.eduardo.examen_backend.examenes.opciones.OpcionDTO;
+
 /**
  * Interfaz que define las operaciones de negocio para la gestión del banco de Preguntas.
  * Gestiona automáticamente el ciclo de vida de las opciones (respuestas) asociadas.
@@ -46,4 +48,11 @@ public interface PreguntaService {
      * @throws com.eduardo.examen_backend.shared.exceptions.NotFoundException si el ID no existe.
      */
     PreguntaDTO cambiarEstadoActivo(Integer id);
+
+    /**
+     * Lista las opciones de una pregunta.
+     * @param id Identificador del examen del que se mostrarán las opciones.
+     * @throws com.eduardo.examen_backend.shared.exceptions.NotFoundException si el ID no existe.
+     */
+    List<OpcionDTO> obtenerOpcionesParaAlumno(Integer idPregunta);
 }

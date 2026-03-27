@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eduardo.examen_backend.examenes.opciones.OpcionDTO;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -68,5 +69,14 @@ public class PreguntaController {
     @Operation(summary = "Activar/Desactivar pregunta", description = "Cambia el estado lógico de la pregunta. Solo ADMIN.")
     public ResponseEntity<PreguntaDTO> cambiarEstado(@PathVariable Integer id) {
         return ResponseEntity.ok(preguntaService.cambiarEstadoActivo(id));
+    }
+
+    @GetMapping("/{id}/opciones")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR', 'ALUMNO')")
+    @Operation(summary = "Obtener opciones de una pregunta (Modo Alumno)", description = "Devuelve el listado de opciones de una pregunta pero oculta cuál es la correcta para evitar trampas en el frontend.")
+    @ApiResponse(responseCode = "200", description = "Opciones devueltas con la solución oculta")
+    @ApiResponse(responseCode = "404", description = "La pregunta no existe")
+    public ResponseEntity<List<OpcionDTO>> obtenerOpcionesAlumno(@PathVariable("id") Integer id) {
+        return ResponseEntity.ok(preguntaService.obtenerOpcionesParaAlumno(id));
     }
 }

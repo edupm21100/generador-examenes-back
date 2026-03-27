@@ -2,6 +2,7 @@ package com.eduardo.examen_backend.usuarios;
 
 import java.util.List;
 import java.security.Principal;
+import java.time.LocalDate;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,14 @@ import com.eduardo.examen_backend.auth.PasswordDTO;
 import com.eduardo.examen_backend.roles.RolDTO;
 import com.eduardo.examen_backend.roles.RolViews;
 import com.fasterxml.jackson.annotation.JsonView;
+
+import java.util.Map;
+import java.util.HashMap;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
+import com.eduardo.examen_backend.shared.services.PdfService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,9 +36,11 @@ import jakarta.validation.Valid;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final PdfService pdfService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, PdfService pdfService) {
         this.usuarioService = usuarioService;
+        this.pdfService = pdfService;
     }
 
     // CREAR USUARIO
@@ -128,5 +139,31 @@ public class UsuarioController {
     @ApiResponse(responseCode = "200", description = "Rol retirado correctamente")
     public ResponseEntity<UsuarioRolDTO> removeRol(@PathVariable Integer idUsuario, @PathVariable Integer idRol) {
         return ResponseEntity.ok(usuarioService.removeRol(idUsuario, idRol));
+    }
+
+    // EXPORTAR REPORTE PDF DE USUARIOS
+    @GetMapping("/reporte/pdf")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Exportar usuarios a PDF", description = "Genera y descarga un reporte oficial en formato PDF con la lista de todos los usuarios registrados activos e inactivos.")
+    @ApiResponse(responseCode = "200", description = "Documento PDF generado y devuelto exitosamente como archivo adjunto (application/pdf).")
+    @ApiResponse(responseCode = "403", description = "Acceso denegado: Solo los administradores pueden generar este reporte.")
+    @ApiResponse(responseCode = "500", description = "Error interno del servidor al procesar la plantilla HTML o generar el PDF.")
+    public ResponseEntity<byte[]> descargarReporteUsuarios() {
+        
+        List<UsuarioDTO> usuarios = usuarioService.findAll();
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("fecha", LocalDate.now().toString());
+        variables.put("listaUsuarios", usuarios);
+
+        byte[] pdfBytes = pdfService.generarPdfDesdeHtml("reporte_usuarios", variables);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "Reporte_Usuarios_" + LocalDate.now() + ".pdf");
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(pdfBytes);
     }
 }

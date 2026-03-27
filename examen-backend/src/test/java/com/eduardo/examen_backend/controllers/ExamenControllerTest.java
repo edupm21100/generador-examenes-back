@@ -2,6 +2,7 @@ package com.eduardo.examen_backend.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -11,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 import java.security.Principal;
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -40,7 +44,6 @@ class ExamenControllerTest {
     @MockitoBean
     private ExamenService examenService;
 
-    // Mockeamos todas las dependencias de seguridad y filtros que tenías en tu ejemplo
     @MockitoBean
     private com.eduardo.examen_backend.incidencias.IncidenciaRepository incidenciaRepository;
 
@@ -61,7 +64,7 @@ class ExamenControllerTest {
     void cambiarEstado_CuandoEsDueño_DeberiaDevolver200() throws Exception {
         ExamenDTO dtoSalida = new ExamenDTO();
         dtoSalida.setIdExamen(1);
-        dtoSalida.setActivo(true); // Simulamos que ahora está activo
+        dtoSalida.setActivo(true);
 
         Principal mockPrincipal = () -> "profesor@test.com";
 
@@ -177,5 +180,21 @@ class ExamenControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(ids)))
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    @WithMockUser(roles = "PROFESOR", username = "profe@test.com")
+    void descargarNotasExamen_DeberiaDevolverPdf() throws Exception {
+        byte[] pdfFalso = "PDF Notas".getBytes();
+        when(examenService.generarReporteNotasPdf(eq(1), anyString())).thenReturn(pdfFalso);
+
+        Principal mockPrincipal = () -> "profe@test.com";
+
+        mockMvc.perform(get("/examenes/1/intentos/reporte/pdf")
+                .principal(mockPrincipal))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_PDF))
+                .andExpect(header().exists(HttpHeaders.CONTENT_DISPOSITION))
+                .andExpect(content().bytes(pdfFalso));
     }
 }

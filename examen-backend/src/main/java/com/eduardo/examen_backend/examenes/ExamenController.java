@@ -1,9 +1,14 @@
 package com.eduardo.examen_backend.examenes;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -104,5 +109,19 @@ public class ExamenController {
             @RequestBody List<Integer> idsPreguntas,
             Principal principal) {
         return ResponseEntity.ok(examenService.quitarPreguntas(idExamen, idsPreguntas, principal.getName()));
+    }
+
+    @GetMapping("/{idExamen}/intentos/reporte/pdf")
+    @PreAuthorize("hasAnyRole('ADMIN', 'PROFESOR')")
+    @Operation(summary = "Exportar notas de un examen a PDF", description = "Genera un listado en PDF con todos los intentos y notas de un examen.")
+    public ResponseEntity<byte[]> descargarNotasExamen(@PathVariable Integer idExamen, Principal principal) {
+        
+        byte[] pdfBytes = examenService.generarReporteNotasPdf(idExamen, principal.getName());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "Notas_Examen_" + idExamen + ".pdf");
+
+        return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
 }

@@ -15,6 +15,7 @@ import java.security.Principal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -57,6 +58,9 @@ class UsuarioControllerTest {
 
     @MockitoBean
     private AuditoriaService auditoriaService;
+
+    @MockitoBean
+    private com.eduardo.examen_backend.shared.services.PdfService pdfService;
 
     @Test
     @WithMockUser(roles = "ADMIN")
@@ -248,4 +252,24 @@ class UsuarioControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].nombreRol").value("ADMIN"));
     }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void descargarReporteUsuarios_DeberiaDevolver200YArchivoPdf() throws Exception {
+        UsuarioDTO mockUsuario = new UsuarioDTO();
+        mockUsuario.setCorreoUsuario("test@test.com");
+        List<UsuarioDTO> listaFalsa = List.of(mockUsuario);
+        byte[] pdfFalso = "Contenido de un PDF falso".getBytes();
+
+        when(usuarioService.findAll()).thenReturn(listaFalsa);
+        when(pdfService.generarPdfDesdeHtml(eq("reporte_usuarios"), any())).thenReturn(pdfFalso);
+
+        mockMvc.perform(get("/usuarios/reporte/pdf"))
+                .andExpect(status().isOk()) // Debe ser 200 OK
+                .andExpect(content().contentType(MediaType.APPLICATION_PDF)) // Debe ser tipo PDF
+                .andExpect(header().exists(HttpHeaders.CONTENT_DISPOSITION)) // Debe forzar descarga
+                .andExpect(content().bytes(pdfFalso)); // El contenido debe coincidir
+    }
+
+    
 }

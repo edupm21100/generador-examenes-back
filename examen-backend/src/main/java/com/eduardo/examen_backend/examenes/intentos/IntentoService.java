@@ -32,4 +32,14 @@ public interface IntentoService {
      * @throws com.eduardo.examen_backend.shared.exceptions.BadRequestException si un alumno intenta ver el examen de otro.
      */
     IntentoDTO obtenerDetalleIntento(Integer idIntento, String correoLogueado);
+
+    /**
+     * Genera un reporte en formato PDF con los detalles, respuestas y calificación de un intento específico.
+     * Valida que el usuario solicitante sea el dueño del intento o un administrador.
+     *
+     * @param idIntento Identificador único del intento.
+     * @param correoLogueado Correo del usuario que solicita el documento.
+     * @return Array de bytes que representa el documento PDF.
+     */
+    byte[] generarReporteIntentoPdf(Integer idIntento, String correoLogueado);
 }

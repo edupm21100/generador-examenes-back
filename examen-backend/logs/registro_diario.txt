@@ -1,39 +1,9 @@
-2026-03-24 09:34:10 | Starting RolControllerTest using Java 21.0.10 with PID 22116 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:34:10 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:34:16 | Started RolControllerTest in 8.054 seconds (process running for 32.089)
-2026-03-24 09:34:17 | Recurso no encontrado en /roles/99: Rol no encontrado
-2026-03-24 09:34:17 | Recurso no encontrado en /roles: Rol no encontrado
-2026-03-24 09:34:17 | Recurso no encontrado en /roles/-1/usuarios: Rol no encontrado
-2026-03-24 09:34:17 | Starting AuthControllerTest using Java 21.0.10 with PID 22116 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:34:17 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:34:18 | Started AuthControllerTest in 1.216 seconds (process running for 34.741)
-2026-03-24 09:34:19 | Usuario: admin@test.com | Acción: Login exitoso en el sistema.
-2026-03-24 09:34:19 | Acceso no autorizado en /auth/login: Credenciales incorrectas
-2026-03-24 09:34:19 | Acceso no autorizado en /auth/login: Credenciales incorrectas
-2026-03-24 09:34:20 | Starting ExamenControllerTest using Java 21.0.10 with PID 22116 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:34:20 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:34:21 | Started ExamenControllerTest in 1.604 seconds (process running for 37.639)
-2026-03-24 09:34:22 | Recurso no encontrado en /examenes/999/estado: El examen no existe
-2026-03-24 09:34:22 | Starting IncidenciaControllerTest using Java 21.0.10 with PID 22116 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:34:22 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:34:24 | Started IncidenciaControllerTest in 1.896 seconds (process running for 40.019)
-2026-03-24 09:34:24 | Usuario: user@test.com | Intento de acceso denegado en /incidencias/5. Motivo: Access Denied
-2026-03-24 09:34:24 | Usuario: user@test.com | Intento de acceso denegado en /incidencias. Motivo: Access Denied
-2026-03-24 09:34:24 | Recurso no encontrado en /incidencias/99: No existe
-2026-03-24 09:34:24 | Starting IntentoControllerTest using Java 21.0.10 with PID 22116 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:34:24 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:34:25 | Started IntentoControllerTest in 1.08 seconds (process running for 41.812)
-2026-03-24 09:34:25 | Error de validación en /intentos: El ID del examen es obligatorio
-2026-03-24 09:34:26 | Starting PreguntaControllerTest using Java 21.0.10 with PID 22116 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:34:26 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:34:27 | Started PreguntaControllerTest in 1.604 seconds (process running for 43.751)
-2026-03-24 09:34:27 | Usuario: user | Intento de acceso denegado en /preguntas/1/estado. Motivo: Access Denied
-2026-03-24 09:34:28 | Starting UsuarioControllerTest using Java 21.0.10 with PID 22116 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:34:28 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:34:28 | Started UsuarioControllerTest in 0.946 seconds (process running for 44.91)
-2026-03-24 09:34:29 | Error en tiempo de ejecución en /usuarios/me/password: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+2026-03-27 08:46:43 | Starting IntentoControllerTest using Java 21.0.10 with PID 23216 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 08:46:43 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 08:47:01 | Started IntentoControllerTest in 19.899 seconds (process running for 27.622)
+2026-03-27 08:47:02 | Error en tiempo de ejecución en /intentos/1/reporte/pdf: Cannot invoke "java.security.Principal.getName()" because "principal" is null
 java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()" because "principal" is null
-	at com.eduardo.examen_backend.usuarios.UsuarioController.cambiarMiContrasenha(UsuarioController.java:89)
+	at com.eduardo.examen_backend.examenes.intentos.IntentoController.descargarReporteIntento(IntentoController.java:66)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252)
@@ -45,8 +15,8 @@ java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()
 	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963)
 	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866)
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000)
-	at org.springframework.web.servlet.FrameworkServlet.doPut(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:650)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:892)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:622)
 	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874)
 	at org.springframework.test.web.servlet.TestDispatcherServlet.service(TestDispatcherServlet.java:72)
 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710)
@@ -54,6 +24,9 @@ java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
 	at com.eduardo.examen_backend.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:41)
 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:66)
 	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
 	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
@@ -69,7 +42,7 @@ java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()
 	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
 	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:199)
-	at com.eduardo.examen_backend.controllers.UsuarioControllerTest.cambiarContrasenha_ConContrasenhaViejaIncorrecta_DeberiaDevolver400(UsuarioControllerTest.java:187)
+	at com.eduardo.examen_backend.controllers.IntentoControllerTest.descargarReporteIntento_DeberiaDevolverPdf(IntentoControllerTest.java:104)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)
@@ -146,49 +119,12 @@ java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:748)
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:443)
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:211)
-2026-03-24 09:34:29 | Recurso no encontrado en /usuarios/99: Usuario no encontrado
-2026-03-24 09:34:29 | Starting CategoriaControllerTest using Java 21.0.10 with PID 22116 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:34:29 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:34:30 | Started CategoriaControllerTest in 1.141 seconds (process running for 46.816)
-2026-03-24 09:34:31 | Usuario: user | Intento de acceso denegado en /categorias. Motivo: Access Denied
-2026-03-24 09:46:27 | Starting RolControllerTest using Java 21.0.10 with PID 6160 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:46:27 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:46:32 | Started RolControllerTest in 7.624 seconds (process running for 25.576)
-2026-03-24 09:46:33 | Recurso no encontrado en /roles/99: Rol no encontrado
-2026-03-24 09:46:33 | Recurso no encontrado en /roles: Rol no encontrado
-2026-03-24 09:46:33 | Recurso no encontrado en /roles/-1/usuarios: Rol no encontrado
-2026-03-24 09:46:33 | Starting AuthControllerTest using Java 21.0.10 with PID 6160 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:46:33 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:46:35 | Started AuthControllerTest in 1.479 seconds (process running for 28.433)
-2026-03-24 09:46:35 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 09:46:35 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 09:46:36 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 09:46:36 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 09:46:36 | Acceso no autorizado en /auth/login: Credenciales incorrectas
-2026-03-24 09:46:36 | Starting ExamenControllerTest using Java 21.0.10 with PID 6160 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:46:36 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:46:38 | Started ExamenControllerTest in 1.676 seconds (process running for 31.521)
-2026-03-24 09:46:38 | Recurso no encontrado en /examenes/999/estado: El examen no existe
-2026-03-24 09:46:38 | Starting IncidenciaControllerTest using Java 21.0.10 with PID 6160 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:46:38 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:46:41 | Started IncidenciaControllerTest in 3.043 seconds (process running for 35.054)
-2026-03-24 09:46:42 | Usuario: user@test.com | Intento de acceso denegado en /incidencias/5. Motivo: Access Denied
-2026-03-24 09:46:42 | Usuario: user@test.com | Intento de acceso denegado en /incidencias. Motivo: Access Denied
-2026-03-24 09:46:42 | Recurso no encontrado en /incidencias/99: No existe
-2026-03-24 09:46:43 | Starting IntentoControllerTest using Java 21.0.10 with PID 6160 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:46:43 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:46:44 | Started IntentoControllerTest in 1.752 seconds (process running for 37.537)
-2026-03-24 09:46:44 | Error de validación en /intentos: El ID del examen es obligatorio
-2026-03-24 09:46:44 | Starting PreguntaControllerTest using Java 21.0.10 with PID 6160 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:46:44 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:46:45 | Started PreguntaControllerTest in 1.342 seconds (process running for 39.107)
-2026-03-24 09:46:45 | Usuario: user | Intento de acceso denegado en /preguntas/1/estado. Motivo: Access Denied
-2026-03-24 09:46:46 | Starting UsuarioControllerTest using Java 21.0.10 with PID 6160 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:46:46 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:46:46 | Started UsuarioControllerTest in 0.638 seconds (process running for 40.035)
-2026-03-24 09:46:46 | Error en tiempo de ejecución en /usuarios/me/password: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+2026-03-27 08:49:56 | Starting ExamenControllerTest using Java 21.0.10 with PID 13340 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 08:49:56 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 08:50:06 | Started ExamenControllerTest in 10.522 seconds (process running for 13.381)
+2026-03-27 08:50:06 | Error en tiempo de ejecución en /examenes/1/intentos/reporte/pdf: Cannot invoke "java.security.Principal.getName()" because "principal" is null
 java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()" because "principal" is null
-	at com.eduardo.examen_backend.usuarios.UsuarioController.cambiarMiContrasenha(UsuarioController.java:89)
+	at com.eduardo.examen_backend.examenes.ExamenController.descargarNotasExamen(ExamenController.java:119)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252)
@@ -200,8 +136,8 @@ java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()
 	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963)
 	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866)
 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000)
-	at org.springframework.web.servlet.FrameworkServlet.doPut(FrameworkServlet.java:914)
-	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:650)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:892)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:622)
 	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874)
 	at org.springframework.test.web.servlet.TestDispatcherServlet.service(TestDispatcherServlet.java:72)
 	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710)
@@ -209,6 +145,9 @@ java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
 	at com.eduardo.examen_backend.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:41)
 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:66)
 	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
 	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
@@ -224,7 +163,7 @@ java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()
 	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
 	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
 	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:199)
-	at com.eduardo.examen_backend.controllers.UsuarioControllerTest.cambiarContrasenha_ConContrasenhaViejaIncorrecta_DeberiaDevolver400(UsuarioControllerTest.java:187)
+	at com.eduardo.examen_backend.controllers.ExamenControllerTest.descargarNotasExamen_DeberiaDevolverPdf(ExamenControllerTest.java:190)
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)
@@ -301,80 +240,625 @@ java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:748)
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:443)
 	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:211)
-2026-03-24 09:46:47 | Recurso no encontrado en /usuarios/99: Usuario no encontrado
-2026-03-24 09:46:47 | Starting CategoriaControllerTest using Java 21.0.10 with PID 6160 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:46:47 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:46:48 | Started CategoriaControllerTest in 1.066 seconds (process running for 41.839)
-2026-03-24 09:46:48 | Usuario: user | Intento de acceso denegado en /categorias. Motivo: Access Denied
-2026-03-24 09:47:52 | Starting AuthControllerTest using Java 21.0.10 with PID 16584 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:47:52 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:47:59 | Started AuthControllerTest in 8.51 seconds (process running for 12.384)
-2026-03-24 09:48:00 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 09:48:00 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 09:49:13 | Starting AuthControllerTest using Java 21.0.10 with PID 19664 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:49:13 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:49:20 | Started AuthControllerTest in 8.598 seconds (process running for 13.578)
-2026-03-24 09:49:21 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 09:49:21 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 09:52:27 | Starting AuthControllerTest using Java 21.0.10 with PID 20072 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:52:27 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:52:35 | Started AuthControllerTest in 9.169 seconds (process running for 12.403)
-2026-03-24 09:52:36 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 09:52:36 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 09:55:19 | Starting AuthControllerTest using Java 21.0.10 with PID 14212 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 09:55:19 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 09:55:27 | Started AuthControllerTest in 8.786 seconds (process running for 12.56)
-2026-03-24 09:55:27 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 09:55:27 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 10:08:48 | Starting AuthControllerTest using Java 21.0.10 with PID 14508 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:08:48 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:08:55 | Started AuthControllerTest in 8.609 seconds (process running for 11.423)
-2026-03-24 10:08:56 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 10:08:56 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 10:10:30 | Starting AuthControllerTest using Java 21.0.10 with PID 22436 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:10:30 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:10:36 | Started AuthControllerTest in 6.612 seconds (process running for 9.843)
-2026-03-24 10:15:44 | Starting AuthControllerTest using Java 21.0.10 with PID 14800 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:15:44 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:15:52 | Started AuthControllerTest in 8.892 seconds (process running for 13.233)
-2026-03-24 10:15:52 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 10:15:52 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 10:16:12 | Starting AuthControllerTest using Java 21.0.10 with PID 5852 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:16:12 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:16:19 | Started AuthControllerTest in 8.632 seconds (process running for 12.85)
-2026-03-24 10:16:20 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 10:16:20 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 10:21:08 | Starting AuthControllerTest using Java 21.0.10 with PID 22192 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:21:08 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:21:15 | Started AuthControllerTest in 8.693 seconds (process running for 13.061)
-2026-03-24 10:21:16 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 10:21:16 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 10:22:44 | Starting AuthControllerTest using Java 21.0.10 with PID 20792 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:22:44 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:22:51 | Started AuthControllerTest in 7.493 seconds (process running for 10.277)
-2026-03-24 10:22:52 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 10:22:52 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 10:28:22 | Starting AuthControllerTest using Java 21.0.10 with PID 23508 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:28:22 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:28:30 | Started AuthControllerTest in 9.0 seconds (process running for 12.668)
-2026-03-24 10:28:30 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 10:28:30 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 10:33:28 | Starting AuthControllerTest using Java 21.0.10 with PID 9204 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:33:28 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:33:36 | Started AuthControllerTest in 9.506 seconds (process running for 15.782)
-2026-03-24 10:33:37 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 10:33:37 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 10:34:02 | Starting AuthControllerTest using Java 21.0.10 with PID 13536 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:34:02 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:34:09 | Started AuthControllerTest in 8.9 seconds (process running for 14.114)
-2026-03-24 10:34:10 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 10:34:10 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 10:35:38 | Starting AuthControllerTest using Java 21.0.10 with PID 10928 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:35:38 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:35:46 | Started AuthControllerTest in 8.696 seconds (process running for 12.442)
-2026-03-24 10:35:47 | Usuario: admin@test.com | Acción: Intento de login bloqueado (Cuenta inactiva)
-2026-03-24 10:35:47 | Acceso no autorizado en /auth/login: Acceso denegado: Su cuenta está desactivada. Contacte con un Administrador.
-2026-03-24 10:41:37 | Starting AuthControllerTest using Java 21.0.10 with PID 9808 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
-2026-03-24 10:41:37 | No active profile set, falling back to 1 default profile: "default"
-2026-03-24 10:41:45 | Started AuthControllerTest in 8.573 seconds (process running for 11.752)
-2026-03-24 10:41:46 | Usuario: admin@test.com | Acción: Login exitoso en el sistema.
+2026-03-27 09:04:04 | Starting IntentoControllerTest using Java 21.0.10 with PID 26788 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:04:04 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:04:12 | Started IntentoControllerTest in 9.369 seconds (process running for 14.916)
+2026-03-27 09:04:12 | Error en tiempo de ejecución en /intentos/1/reporte/pdf: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+	at com.eduardo.examen_backend.examenes.intentos.IntentoController.descargarReporteIntento(IntentoController.java:66)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:892)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:622)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874)
+	at org.springframework.test.web.servlet.TestDispatcherServlet.service(TestDispatcherServlet.java:72)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710)
+	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at com.eduardo.examen_backend.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:41)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:66)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:199)
+	at com.eduardo.examen_backend.controllers.IntentoControllerTest.descargarReporteIntento_DeberiaDevolverPdf(IntentoControllerTest.java:104)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502)
+	at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:124)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:163)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:148)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:123)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:99)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:66)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:47)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:39)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invokeVoid(InterceptingExecutableInvoker.java:71)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$0(TestMethodTestDescriptor.java:219)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:215)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:157)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:176)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:36)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:52)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:58)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:246)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:218)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:179)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:108)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:66)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:157)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:65)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:125)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$2(InterceptingLauncher.java:57)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:56)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58)
+	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:81)
+	at org.eclipse.jdt.internal.junit6.runner.JUnit6TestReference.run(JUnit6TestReference.java:105)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:40)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:520)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:748)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:443)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:211)
+2026-03-27 09:05:54 | Starting IntentoControllerTest using Java 21.0.10 with PID 13848 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:05:54 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:06:02 | Started IntentoControllerTest in 9.307 seconds (process running for 13.971)
+2026-03-27 09:06:03 | Error en tiempo de ejecución en /intentos/1/reporte/pdf: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+	at com.eduardo.examen_backend.examenes.intentos.IntentoController.descargarReporteIntento(IntentoController.java:66)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000)
+	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:892)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:622)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874)
+	at org.springframework.test.web.servlet.TestDispatcherServlet.service(TestDispatcherServlet.java:72)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710)
+	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at com.eduardo.examen_backend.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:41)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:66)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:199)
+	at com.eduardo.examen_backend.controllers.IntentoControllerTest.descargarReporteIntento_DeberiaDevolverPdf(IntentoControllerTest.java:105)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502)
+	at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:124)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:163)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:148)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:123)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:99)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:66)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:47)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:39)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invokeVoid(InterceptingExecutableInvoker.java:71)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$0(TestMethodTestDescriptor.java:219)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:215)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:157)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:176)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:36)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:52)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:58)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:246)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:218)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:179)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:108)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:66)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:157)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:65)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:125)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$2(InterceptingLauncher.java:57)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:56)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58)
+	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:81)
+	at org.eclipse.jdt.internal.junit6.runner.JUnit6TestReference.run(JUnit6TestReference.java:105)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:40)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:520)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:748)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:443)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:211)
+2026-03-27 09:17:10 | Starting IntentoControllerTest using Java 21.0.10 with PID 22956 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:17:10 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:17:19 | Started IntentoControllerTest in 9.576 seconds (process running for 13.461)
+2026-03-27 09:18:48 | Starting ExamenControllerTest using Java 21.0.10 with PID 29140 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:18:48 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:18:56 | Started ExamenControllerTest in 8.895 seconds (process running for 12.554)
+2026-03-27 09:21:28 | Starting IntentoControllerTest using Java 21.0.10 with PID 21328 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:21:28 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:21:42 | Started IntentoControllerTest in 17.193 seconds (process running for 27.711)
+2026-03-27 09:21:44 | Error de validación en /intentos: El ID del examen es obligatorio
+2026-03-27 09:21:46 | Starting ExamenControllerTest using Java 21.0.10 with PID 21328 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:21:46 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:21:48 | Started ExamenControllerTest in 3.006 seconds (process running for 33.502)
+2026-03-27 09:21:49 | Recurso no encontrado en /examenes/999/estado: El examen no existe
+2026-03-27 09:21:50 | Starting AuthControllerTest using Java 21.0.10 with PID 21328 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:21:50 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:21:51 | Started AuthControllerTest in 2.194 seconds (process running for 36.883)
+2026-03-27 09:21:52 | Usuario: admin@test.com | Acción: Login exitoso en el sistema.
+2026-03-27 09:21:52 | Acceso no autorizado en /auth/login: Credenciales incorrectas
+2026-03-27 09:21:52 | Acceso no autorizado en /auth/login: Credenciales incorrectas
+2026-03-27 09:21:52 | Starting RolControllerTest using Java 21.0.10 with PID 21328 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:21:52 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:21:53 | Started RolControllerTest in 1.158 seconds (process running for 38.591)
+2026-03-27 09:21:53 | Recurso no encontrado en /roles/99: Rol no encontrado
+2026-03-27 09:21:53 | Recurso no encontrado en /roles: Rol no encontrado
+2026-03-27 09:21:54 | Recurso no encontrado en /roles/-1/usuarios: Rol no encontrado
+2026-03-27 09:21:54 | Starting IncidenciaControllerTest using Java 21.0.10 with PID 21328 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:21:54 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:21:57 | Started IncidenciaControllerTest in 2.893 seconds (process running for 42.15)
+2026-03-27 09:21:57 | Usuario: user@test.com | Intento de acceso denegado en /incidencias/5. Motivo: Access Denied
+2026-03-27 09:21:57 | Usuario: user@test.com | Intento de acceso denegado en /incidencias. Motivo: Access Denied
+2026-03-27 09:21:57 | Recurso no encontrado en /incidencias/99: No existe
+2026-03-27 09:21:57 | Starting PreguntaControllerTest using Java 21.0.10 with PID 21328 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:21:57 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:21:58 | Started PreguntaControllerTest in 1.164 seconds (process running for 43.961)
+2026-03-27 09:21:59 | Usuario: user | Intento de acceso denegado en /preguntas/1/estado. Motivo: Access Denied
+2026-03-27 09:21:59 | Starting UsuarioControllerTest using Java 21.0.10 with PID 21328 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:21:59 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:22:00 | Started UsuarioControllerTest in 0.881 seconds (process running for 45.227)
+2026-03-27 09:22:00 | Error en tiempo de ejecución en /usuarios/me/password: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+	at com.eduardo.examen_backend.usuarios.UsuarioController.cambiarMiContrasenha(UsuarioController.java:100)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000)
+	at org.springframework.web.servlet.FrameworkServlet.doPut(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:650)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874)
+	at org.springframework.test.web.servlet.TestDispatcherServlet.service(TestDispatcherServlet.java:72)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710)
+	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at com.eduardo.examen_backend.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:41)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:66)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:199)
+	at com.eduardo.examen_backend.controllers.UsuarioControllerTest.cambiarContrasenha_ConContrasenhaViejaIncorrecta_DeberiaDevolver400(UsuarioControllerTest.java:191)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502)
+	at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:124)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:163)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:148)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:123)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:99)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:66)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:47)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:39)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invokeVoid(InterceptingExecutableInvoker.java:71)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$0(TestMethodTestDescriptor.java:219)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:215)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:157)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:176)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:36)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:52)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:58)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:246)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:218)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:179)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:108)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:66)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:157)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:65)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:125)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$2(InterceptingLauncher.java:57)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:56)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58)
+	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:81)
+	at org.eclipse.jdt.internal.junit6.runner.JUnit6TestReference.run(JUnit6TestReference.java:105)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:40)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:520)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:748)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:443)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:211)
+2026-03-27 09:22:00 | Recurso no encontrado en /usuarios/99: Usuario no encontrado
+2026-03-27 09:22:02 | Starting CategoriaControllerTest using Java 21.0.10 with PID 21328 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 09:22:02 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 09:22:03 | Started CategoriaControllerTest in 1.817 seconds (process running for 48.348)
+2026-03-27 09:22:03 | Usuario: user | Intento de acceso denegado en /categorias. Motivo: Access Denied
+2026-03-27 09:22:04 | [Autor: Sistema/Anónimo] Ha DESACTIVADO al usuario objetivo con ID 1.
+2026-03-27 09:22:04 | Nuevo usuario registrado con éxito. Correo: null | ID asignado: 10
+2026-03-27 09:22:04 | [Autor: Sistema/Anónimo] Ha consultado los detalles del usuario con ID 2.
+2026-03-27 09:22:04 | [Autor: Sistema/Anónimo] Ha eliminado el rol 'null' (ID: 2) del usuario objetivo con ID 5.
+2026-03-27 09:22:04 | [Autor: Sistema/Anónimo] Ha consultado los detalles del usuario con ID -1.
+2026-03-27 09:22:04 | [Autor: Sistema/Anónimo] Ha consultado la lista de roles del usuario con ID 1.
+2026-03-27 09:22:04 | [Autor: Sistema/Anónimo] Ha consultado la lista completa de usuarios activos.
+2026-03-27 09:22:04 | [Autor: Sistema/Anónimo] Ha cambiado su propia contraseña exitosamente.
+2026-03-27 09:22:04 | [Autor: Sistema/Anónimo] Usuario actualizado con éxito. ID modificado: 1
+2026-03-27 09:22:04 | [Autor: Sistema/Anónimo] Ha añadido el rol 'null' (ID: 2) al usuario objetivo con ID 5.
+2026-03-27 09:22:06 | [Autor: profe@test.com] Nueva plantilla de examen creada con éxito. ID: 10
+2026-03-27 09:22:06 | Usuario intentando modificar: intruso@test.com. Roles encontrados en BD: [PROFESOR]. ¿Es Admin?: false
+2026-03-27 09:22:06 | Usuario intentando modificar: profesor@test.com. Roles encontrados en BD: [PROFESOR]. ¿Es Admin?: false
+2026-03-27 09:22:06 | Usuario intentando modificar: profe@test.com. Roles encontrados en BD: []. ¿Es Admin?: false
+2026-03-27 09:22:06 | Usuario intentando modificar: profe@test.com. Roles encontrados en BD: [PROFESOR]. ¿Es Admin?: false
+2026-03-27 09:22:06 | [Autor: profe@test.com] Añadidas 2 preguntas al Examen ID 1
+2026-03-27 09:22:07 | Pregunta ID 7 ha cambiado su estado a: ACTIVA
+2026-03-27 09:22:07 | Pregunta ID 5 ha cambiado su estado a: DESACTIVADA
+2026-03-27 09:22:07 | Pregunta creada de categoría Java
+2026-03-27 09:22:07 | [Autor: Sistema/Anónimo] Ha consultado el listado histórico completo de incidencias y errores.
+2026-03-27 09:22:07 | [Autor: Sistema/Anónimo] Ha consultado la traza y detalles de la incidencia con ID 5.
+2026-03-27 09:22:07 | [Autor: test@test.com] Ha consultado el listado histórico completo de incidencias y errores.
+2026-03-27 09:22:07 | [Autor: Sistema/Anónimo] Ha consultado la traza y detalles de la incidencia con ID 99.
+2026-03-27 09:22:07 | [Autor: Sistema/Anónimo] Ha actualizado el rol ID 2. Nombre anterior: 'VIEJO_NOMBRE' | Nombre nuevo: 'NUEVO_NOMBRE'
+2026-03-27 09:22:07 | [Autor: Sistema/Anónimo] Ha consultado los detalles del rol con ID 99.
+2026-03-27 09:22:07 | [Autor: Sistema/Anónimo] Ha creado un nuevo rol en el sistema: 'MODERADOR' con ID null
+2026-03-27 09:22:07 | [Autor: Sistema/Anónimo] Ha consultado el catálogo completo de roles activos.
+2026-03-27 09:22:07 | [Autor: Sistema/Anónimo] Ha DESACTIVADO el rol 'USER' (ID: 2).
+2026-03-27 09:22:07 | [Autor: Sistema/Anónimo] Ha consultado los detalles del rol con ID 1.
+2026-03-27 09:22:07 | [Autor: Sistema/Anónimo] Ha listado los usuarios que poseen el rol con ID 1.
+2026-03-27 09:22:07 | [Autor: alumno@test.com] Examen 'null' realizado y corregido con éxito. Nota final: 5.0/10
+2026-03-27 10:02:58 | Starting IntentoControllerTest using Java 21.0.10 with PID 16760 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 10:02:58 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 10:03:10 | Started IntentoControllerTest in 13.794 seconds (process running for 21.895)
+2026-03-27 10:03:11 | Error de validación en /intentos: El ID del examen es obligatorio
+2026-03-27 10:03:12 | Starting ExamenControllerTest using Java 21.0.10 with PID 16760 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 10:03:12 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 10:03:15 | Started ExamenControllerTest in 2.785 seconds (process running for 26.943)
+2026-03-27 10:03:16 | Recurso no encontrado en /examenes/999/estado: El examen no existe
+2026-03-27 10:03:17 | Starting AuthControllerTest using Java 21.0.10 with PID 16760 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 10:03:17 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 10:03:19 | Started AuthControllerTest in 3.09 seconds (process running for 31.829)
+2026-03-27 10:03:20 | Usuario: admin@test.com | Acción: Login exitoso en el sistema.
+2026-03-27 10:03:20 | Acceso no autorizado en /auth/login: Credenciales incorrectas
+2026-03-27 10:03:20 | Acceso no autorizado en /auth/login: Credenciales incorrectas
+2026-03-27 10:03:21 | Starting RolControllerTest using Java 21.0.10 with PID 16760 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 10:03:21 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 10:03:22 | Started RolControllerTest in 1.694 seconds (process running for 34.378)
+2026-03-27 10:03:22 | Recurso no encontrado en /roles/99: Rol no encontrado
+2026-03-27 10:03:22 | Recurso no encontrado en /roles: Rol no encontrado
+2026-03-27 10:03:23 | Recurso no encontrado en /roles/-1/usuarios: Rol no encontrado
+2026-03-27 10:03:23 | Starting IncidenciaControllerTest using Java 21.0.10 with PID 16760 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 10:03:23 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 10:03:25 | Started IncidenciaControllerTest in 2.066 seconds (process running for 37.173)
+2026-03-27 10:03:25 | Usuario: user@test.com | Intento de acceso denegado en /incidencias/5. Motivo: Access Denied
+2026-03-27 10:03:25 | Usuario: user@test.com | Intento de acceso denegado en /incidencias. Motivo: Access Denied
+2026-03-27 10:03:25 | Recurso no encontrado en /incidencias/99: No existe
+2026-03-27 10:03:25 | Starting PreguntaControllerTest using Java 21.0.10 with PID 16760 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 10:03:25 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 10:03:26 | Started PreguntaControllerTest in 0.948 seconds (process running for 38.606)
+2026-03-27 10:03:26 | Usuario: user | Intento de acceso denegado en /preguntas/1/estado. Motivo: Access Denied
+2026-03-27 10:03:27 | Starting UsuarioControllerTest using Java 21.0.10 with PID 16760 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 10:03:27 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 10:03:28 | Started UsuarioControllerTest in 1.065 seconds (process running for 39.962)
+2026-03-27 10:03:28 | Error en tiempo de ejecución en /usuarios/me/password: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+java.lang.NullPointerException: Cannot invoke "java.security.Principal.getName()" because "principal" is null
+	at com.eduardo.examen_backend.usuarios.UsuarioController.cambiarMiContrasenha(UsuarioController.java:100)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:252)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:184)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:117)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:934)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:853)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:86)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:963)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:866)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1000)
+	at org.springframework.web.servlet.FrameworkServlet.doPut(FrameworkServlet.java:914)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:650)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:874)
+	at org.springframework.test.web.servlet.TestDispatcherServlet.service(TestDispatcherServlet.java:72)
+	at jakarta.servlet.http.HttpServlet.service(HttpServlet.java:710)
+	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at com.eduardo.examen_backend.security.JwtAuthenticationFilter.doFilterInternal(JwtAuthenticationFilter.java:41)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.servlet.resource.ResourceUrlEncodingFilter.doFilter(ResourceUrlEncodingFilter.java:66)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:199)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+	at org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:160)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:127)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:199)
+	at com.eduardo.examen_backend.controllers.UsuarioControllerTest.cambiarContrasenha_ConContrasenhaViejaIncorrecta_DeberiaDevolver400(UsuarioControllerTest.java:191)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:701)
+	at org.junit.platform.commons.support.ReflectionSupport.invokeMethod(ReflectionSupport.java:502)
+	at org.junit.jupiter.engine.support.MethodReflectionUtils.invoke(MethodReflectionUtils.java:45)
+	at org.junit.jupiter.engine.execution.MethodInvocation.proceed(MethodInvocation.java:61)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$ValidatingInvocation.proceed(InvocationInterceptorChain.java:124)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.intercept(TimeoutExtension.java:163)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestableMethod(TimeoutExtension.java:148)
+	at org.junit.jupiter.engine.extension.TimeoutExtension.interceptTestMethod(TimeoutExtension.java:86)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker$ReflectiveInterceptorCall.lambda$ofVoidMethod$0(InterceptingExecutableInvoker.java:123)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.lambda$invoke$0(InterceptingExecutableInvoker.java:105)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain$InterceptedInvocation.proceed(InvocationInterceptorChain.java:99)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.proceed(InvocationInterceptorChain.java:66)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.chainAndInvoke(InvocationInterceptorChain.java:47)
+	at org.junit.jupiter.engine.execution.InvocationInterceptorChain.invoke(InvocationInterceptorChain.java:39)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:104)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invoke(InterceptingExecutableInvoker.java:98)
+	at org.junit.jupiter.engine.execution.InterceptingExecutableInvoker.invokeVoid(InterceptingExecutableInvoker.java:71)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$0(TestMethodTestDescriptor.java:219)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:215)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:157)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:70)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:176)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.invokeAll(SameThreadHierarchicalTestExecutorService.java:42)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$2(NodeTestTask.java:180)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$1(NodeTestTask.java:166)
+	at org.junit.platform.engine.support.hierarchical.Node.around(Node.java:138)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.lambda$executeRecursively$0(NodeTestTask.java:164)
+	at org.junit.platform.engine.support.hierarchical.ThrowableCollector.execute(ThrowableCollector.java:74)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.executeRecursively(NodeTestTask.java:163)
+	at org.junit.platform.engine.support.hierarchical.NodeTestTask.execute(NodeTestTask.java:116)
+	at org.junit.platform.engine.support.hierarchical.SameThreadHierarchicalTestExecutorService.submit(SameThreadHierarchicalTestExecutorService.java:36)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:52)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:58)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.executeEngine(EngineExecutionOrchestrator.java:246)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.failOrExecuteEngine(EngineExecutionOrchestrator.java:218)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:179)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:108)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.lambda$execute$0(EngineExecutionOrchestrator.java:66)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.withInterceptedStreams(EngineExecutionOrchestrator.java:157)
+	at org.junit.platform.launcher.core.EngineExecutionOrchestrator.execute(EngineExecutionOrchestrator.java:65)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:125)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:114)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58)
+	at org.junit.platform.launcher.core.InterceptingLauncher.lambda$execute$2(InterceptingLauncher.java:57)
+	at org.junit.platform.launcher.core.ClasspathAlignmentCheckingLauncherInterceptor.intercept(ClasspathAlignmentCheckingLauncherInterceptor.java:25)
+	at org.junit.platform.launcher.core.InterceptingLauncher.execute(InterceptingLauncher.java:56)
+	at org.junit.platform.launcher.core.DelegatingLauncher.execute(DelegatingLauncher.java:58)
+	at org.junit.platform.launcher.core.SessionPerRequestLauncher.execute(SessionPerRequestLauncher.java:81)
+	at org.eclipse.jdt.internal.junit6.runner.JUnit6TestReference.run(JUnit6TestReference.java:105)
+	at org.eclipse.jdt.internal.junit.runner.TestExecution.run(TestExecution.java:40)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:520)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.runTests(RemoteTestRunner.java:748)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.run(RemoteTestRunner.java:443)
+	at org.eclipse.jdt.internal.junit.runner.RemoteTestRunner.main(RemoteTestRunner.java:211)
+2026-03-27 10:03:28 | Recurso no encontrado en /usuarios/99: Usuario no encontrado
+2026-03-27 10:03:29 | Starting CategoriaControllerTest using Java 21.0.10 with PID 16760 (started by 6003626 in C:\Users\6003626\Documents\Programa de examenes\examen-backend)
+2026-03-27 10:03:29 | No active profile set, falling back to 1 default profile: "default"
+2026-03-27 10:03:30 | Started CategoriaControllerTest in 1.835 seconds (process running for 42.788)
+2026-03-27 10:03:31 | Usuario: user | Intento de acceso denegado en /categorias. Motivo: Access Denied
+2026-03-27 10:03:31 | [Autor: Sistema/Anónimo] Ha DESACTIVADO al usuario objetivo con ID 1.
+2026-03-27 10:03:31 | Nuevo usuario registrado con éxito. Correo: null | ID asignado: 10
+2026-03-27 10:03:31 | [Autor: Sistema/Anónimo] Ha consultado los detalles del usuario con ID 2.
+2026-03-27 10:03:31 | [Autor: Sistema/Anónimo] Ha eliminado el rol 'null' (ID: 2) del usuario objetivo con ID 5.
+2026-03-27 10:03:31 | [Autor: Sistema/Anónimo] Ha consultado los detalles del usuario con ID -1.
+2026-03-27 10:03:31 | [Autor: Sistema/Anónimo] Ha consultado la lista de roles del usuario con ID 1.
+2026-03-27 10:03:31 | [Autor: Sistema/Anónimo] Ha consultado la lista completa de usuarios activos.
+2026-03-27 10:03:31 | [Autor: Sistema/Anónimo] Ha cambiado su propia contraseña exitosamente.
+2026-03-27 10:03:31 | [Autor: Sistema/Anónimo] Usuario actualizado con éxito. ID modificado: 1
+2026-03-27 10:03:31 | [Autor: Sistema/Anónimo] Ha añadido el rol 'null' (ID: 2) al usuario objetivo con ID 5.
+2026-03-27 10:03:33 | [Autor: profe@test.com] Nueva plantilla de examen creada con éxito. ID: 10
+2026-03-27 10:03:33 | Usuario intentando modificar: intruso@test.com. Roles encontrados en BD: [PROFESOR]. ¿Es Admin?: false
+2026-03-27 10:03:33 | Usuario intentando modificar: profesor@test.com. Roles encontrados en BD: [PROFESOR]. ¿Es Admin?: false
+2026-03-27 10:03:33 | Usuario intentando modificar: profe@test.com. Roles encontrados en BD: []. ¿Es Admin?: false
+2026-03-27 10:03:33 | Usuario intentando modificar: profe@test.com. Roles encontrados en BD: [PROFESOR]. ¿Es Admin?: false
+2026-03-27 10:03:33 | [Autor: profe@test.com] Añadidas 2 preguntas al Examen ID 1
+2026-03-27 10:03:34 | Pregunta ID 7 ha cambiado su estado a: ACTIVA
+2026-03-27 10:03:34 | Pregunta ID 5 ha cambiado su estado a: DESACTIVADA
+2026-03-27 10:03:34 | Pregunta creada de categoría Java
+2026-03-27 10:03:34 | [Autor: Sistema/Anónimo] Ha consultado el listado histórico completo de incidencias y errores.
+2026-03-27 10:03:34 | [Autor: Sistema/Anónimo] Ha consultado la traza y detalles de la incidencia con ID 5.
+2026-03-27 10:03:34 | [Autor: test@test.com] Ha consultado el listado histórico completo de incidencias y errores.
+2026-03-27 10:03:34 | [Autor: Sistema/Anónimo] Ha consultado la traza y detalles de la incidencia con ID 99.
+2026-03-27 10:03:34 | [Autor: Sistema/Anónimo] Ha actualizado el rol ID 2. Nombre anterior: 'VIEJO_NOMBRE' | Nombre nuevo: 'NUEVO_NOMBRE'
+2026-03-27 10:03:34 | [Autor: Sistema/Anónimo] Ha consultado los detalles del rol con ID 99.
+2026-03-27 10:03:35 | [Autor: Sistema/Anónimo] Ha creado un nuevo rol en el sistema: 'MODERADOR' con ID null
+2026-03-27 10:03:35 | [Autor: Sistema/Anónimo] Ha consultado el catálogo completo de roles activos.
+2026-03-27 10:03:35 | [Autor: Sistema/Anónimo] Ha DESACTIVADO el rol 'USER' (ID: 2).
+2026-03-27 10:03:35 | [Autor: Sistema/Anónimo] Ha consultado los detalles del rol con ID 1.
+2026-03-27 10:03:35 | [Autor: Sistema/Anónimo] Ha listado los usuarios que poseen el rol con ID 1.
+2026-03-27 10:03:35 | [Autor: alumno@test.com] Examen 'null' realizado y corregido con éxito. Nota final: 5.0/10

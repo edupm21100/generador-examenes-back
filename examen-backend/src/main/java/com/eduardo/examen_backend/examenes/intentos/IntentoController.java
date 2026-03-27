@@ -3,7 +3,9 @@ package com.eduardo.examen_backend.examenes.intentos;
 import java.security.Principal;
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -53,5 +55,19 @@ public class IntentoController {
     @Operation(summary = "Ver detalle de un intento", description = "Muestra el examen completo corregido. Un alumno solo puede ver el suyo.")
     public ResponseEntity<IntentoDTO> obtenerDetalleIntento(@PathVariable Integer id, Principal principal) {
         return ResponseEntity.ok(intentoService.obtenerDetalleIntento(id, principal.getName()));
+    }
+
+    @GetMapping("/{id}/reporte/pdf")
+    @PreAuthorize("hasAnyRole('ALUMNO', 'PROFESOR', 'ADMIN')")
+    @Operation(summary = "Exportar intento a PDF", description = "Genera un PDF con las respuestas y la nota de un intento concreto.")
+    public ResponseEntity<byte[]> descargarReporteIntento(@PathVariable Integer id, Principal principal) {
+
+        byte[] pdfBytes = intentoService.generarReporteIntentoPdf(id, principal.getName());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "Intento_" + id + ".pdf");
+
+        return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
 }

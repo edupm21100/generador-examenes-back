@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -32,6 +34,7 @@ import com.eduardo.examen_backend.examenes.opciones.Opcion;
 import com.eduardo.examen_backend.examenes.preguntas.Pregunta;
 import com.eduardo.examen_backend.shared.exceptions.BadRequestException;
 import com.eduardo.examen_backend.shared.exceptions.NotFoundException;
+import com.eduardo.examen_backend.shared.services.PdfService;
 import com.eduardo.examen_backend.usuarios.Usuario;
 import com.eduardo.examen_backend.usuarios.UsuarioRepository;
 
@@ -52,6 +55,9 @@ class IntentoServiceTest {
 
     @InjectMocks
     private IntentoServiceImpl intentoService;
+
+    @Mock
+    private PdfService pdfService;
 
     @Test
     void realizarExamenTestOK_CalculoNotaCorrecto() {
@@ -76,11 +82,11 @@ class IntentoServiceTest {
         // 3. Preparar el JSON de entrada (Acierta la P1, falla la P2 -> Nota esperada: 5.0)
         RespuestaAlumnoDTO res1 = new RespuestaAlumnoDTO();
         res1.setIdPregunta(1);
-        res1.setIdOpcionSeleccionada(10); // Acierto
+        res1.setIdOpcionSeleccionada(10);
 
         RespuestaAlumnoDTO res2 = new RespuestaAlumnoDTO();
         res2.setIdPregunta(2);
-        res2.setIdOpcionSeleccionada(21); // Fallo
+        res2.setIdOpcionSeleccionada(21);
 
         IntentoDTO dtoEntrada = new IntentoDTO();
         dtoEntrada.setIdExamen(100);
@@ -90,7 +96,6 @@ class IntentoServiceTest {
         when(usuarioRepository.findByCorreoUsuario(correoLogueado)).thenReturn(Optional.of(alumno));
         when(examenRepository.findById(100)).thenReturn(Optional.of(examenActivo));
         
-        // Usamos ArgumentCaptor para "cazar" el intento justo antes de que se guarde y ver su nota
         ArgumentCaptor<Intento> captor = ArgumentCaptor.forClass(Intento.class);
         when(intentoRepository.save(captor.capture())).thenAnswer(invocation -> invocation.getArgument(0));
         
@@ -135,7 +140,6 @@ class IntentoServiceTest {
         Pregunta p1 = Pregunta.builder().idPregunta(1).activo(true).build();
         Examen examenActivo = Examen.builder().idExamen(100).activo(true).preguntas(Set.of(p1)).build();
 
-        // Trampa: Manda dos respuestas para la misma pregunta (ID 1)
         RespuestaAlumnoDTO res1 = new RespuestaAlumnoDTO(); res1.setIdPregunta(1);
         RespuestaAlumnoDTO res2 = new RespuestaAlumnoDTO(); res2.setIdPregunta(1);
 
@@ -163,5 +167,23 @@ class IntentoServiceTest {
             intentoService.realizarExamen("fantasma@test.com", dtoEntrada);
         });
         verify(examenRepository, never()).findById(any());
+    }
+
+    @Test
+    void generarReporteIntentoPdf_ConPermisos_DeberiaLlamarAPdfService() {
+        Usuario alumno = new Usuario();
+        alumno.setCorreoUsuario("alumno@test.com");
+        
+        Intento intento = new Intento();
+        intento.setUsuario(alumno);
+        
+        when(intentoRepository.findById(1)).thenReturn(Optional.of(intento));
+        when(usuarioRepository.findByCorreoUsuario("alumno@test.com")).thenReturn(Optional.of(alumno));
+        when(pdfService.generarPdfDesdeHtml(eq("reporte_intento"), anyMap())).thenReturn("PDF".getBytes());
+
+        byte[] resultado = intentoService.generarReporteIntentoPdf(1, "alumno@test.com");
+
+        assertNotNull(resultado);
+        verify(pdfService).generarPdfDesdeHtml(eq("reporte_intento"), anyMap());
     }
 }

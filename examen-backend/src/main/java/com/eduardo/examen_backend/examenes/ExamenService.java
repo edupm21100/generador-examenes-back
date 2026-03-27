@@ -72,4 +72,15 @@ public interface ExamenService {
      * @return Objeto {@link ExamenDTO} actualizado.
      */
     ExamenDTO quitarPreguntas(Integer idExamen, List<Integer> idsPreguntas, String correoLogueado);
+
+    /**
+     * Genera un acta oficial en formato PDF con todos los intentos y notas de un examen,
+     * ordenados de mayor a menor calificación.
+     * Valida que el usuario sea el profesor creador del examen o un administrador.
+     *
+     * @param idExamen Identificador único del examen.
+     * @param correoLogueado Correo del usuario que solicita el documento.
+     * @return Array de bytes que representa el documento PDF.
+     */
+    byte[] generarReporteNotasPdf(Integer idExamen, String correoLogueado);
 }

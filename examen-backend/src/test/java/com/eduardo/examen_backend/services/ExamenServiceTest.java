@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,12 +28,15 @@ import com.eduardo.examen_backend.examenes.ExamenDTO;
 import com.eduardo.examen_backend.examenes.ExamenRepository;
 import com.eduardo.examen_backend.examenes.ExamenServiceImpl;
 import com.eduardo.examen_backend.examenes.categorias.Categoria;
+import com.eduardo.examen_backend.examenes.intentos.IntentoRepository;
 import com.eduardo.examen_backend.examenes.preguntas.Pregunta;
 import com.eduardo.examen_backend.examenes.preguntas.PreguntaRepository;
 import com.eduardo.examen_backend.roles.Rol;
 import com.eduardo.examen_backend.usuarios.Usuario;
 import com.eduardo.examen_backend.usuarios.UsuarioRepository;
+
 import com.eduardo.examen_backend.shared.exceptions.NotFoundException;
+import com.eduardo.examen_backend.shared.services.PdfService;
 
 @ExtendWith(MockitoExtension.class)
 class ExamenServiceTest {
@@ -44,6 +49,12 @@ class ExamenServiceTest {
 
     @Mock
     private PreguntaRepository preguntaRepository;
+
+    @Mock
+    private IntentoRepository intentoRepository;
+
+    @Mock
+    private PdfService pdfService;
 
     @InjectMocks
     private ExamenServiceImpl examenService;
@@ -210,5 +221,27 @@ class ExamenServiceTest {
 
         assertNotNull(resultado);
         verify(examenRepository, times(1)).save(examenBD);
+    }
+
+    @Test
+    void generarReporteNotasPdf_ConPermisos_DeberiaLlamarAPdfService() {
+        Usuario profe = new Usuario();
+        profe.setIdUsuario(1);
+        profe.setRoles(Set.of());
+        
+        Examen examen = new Examen();
+        examen.setProfesor(profe);
+
+        when(examenRepository.findById(1)).thenReturn(Optional.of(examen));
+        when(usuarioRepository.findByCorreoUsuario("profe@test.com")).thenReturn(Optional.of(profe));
+        
+        when(intentoRepository.findByExamen_IdExamenOrderByNotaDesc(1)).thenReturn(List.of());
+        when(pdfService.generarPdfDesdeHtml(eq("reporte_notas_examen"), anyMap())).thenReturn("PDF".getBytes());
+
+        byte[] resultado = examenService.generarReporteNotasPdf(1, "profe@test.com");
+
+        // Assert
+        assertNotNull(resultado);
+        verify(pdfService).generarPdfDesdeHtml(eq("reporte_notas_examen"), anyMap());
     }
 }

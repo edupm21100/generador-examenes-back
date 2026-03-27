@@ -7,6 +7,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
@@ -116,46 +117,53 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
-@ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
-    public ResponseEntity<ErrorResponse> handleAccessDeniedException(Exception ex, HttpServletRequest request) { 
+    @ExceptionHandler({ AccessDeniedException.class, AuthorizationDeniedException.class })
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(Exception ex, HttpServletRequest request) {
         String usuario = "Anónimo";
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             usuario = SecurityContextHolder.getContext().getAuthentication().getName();
         }
-        log.warn("Usuario: {} | Intento de acceso denegado en {}. Motivo: {}", usuario, request.getRequestURI(), ex.getMessage());
-        
+        log.warn("Usuario: {} | Intento de acceso denegado en {}. Motivo: {}", usuario, request.getRequestURI(),
+                ex.getMessage());
+
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
                 HttpStatus.FORBIDDEN.getReasonPhrase(),
-                "Acceso Denegado: No tienes permisos para realizar esta acción."
-        );
-        
-        auditoriaService.registrarIncidencia(ex, request); 
+                "Acceso Denegado: No tienes permisos para realizar esta acción.");
+
+        auditoriaService.registrarIncidencia(ex, request);
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex,
+            HttpServletRequest request) {
         log.warn("Usuario: Desconocido | Acción: Intento de login fallido (Contraseña incorrecta)");
-        
+
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.UNAUTHORIZED.value(),
                 HttpStatus.UNAUTHORIZED.getReasonPhrase(),
-                "Credenciales inválidas. El correo o la contraseña no son correctos."
-        );
+                "Credenciales inválidas. El correo o la contraseña no son correctos.");
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<ErrorResponse> handleMissingBodyException(HttpMessageNotReadableException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleMissingBodyException(HttpMessageNotReadableException ex,
+            HttpServletRequest request) {
         log.warn("Petición sin body o JSON mal formado en {}: {}", request.getRequestURI(), ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                "El cuerpo de la petición (JSON) es obligatorio y no puede estar vacío o mal formado."
-        );
+                "El cuerpo de la petición (JSON) es obligatorio y no puede estar vacío o mal formado.");
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public class PdfGenerationException extends RuntimeException {
+
+        public PdfGenerationException(String mensaje, Throwable causa) {
+            super(mensaje, causa);
+        }
+    }
+
 }

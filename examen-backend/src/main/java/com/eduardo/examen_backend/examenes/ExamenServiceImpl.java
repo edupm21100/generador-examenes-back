@@ -1,6 +1,11 @@
 package com.eduardo.examen_backend.examenes;
 
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -10,6 +15,8 @@ import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.eduardo.examen_backend.examenes.intentos.Intento;
+import com.eduardo.examen_backend.examenes.intentos.IntentoRepository;
 import com.eduardo.examen_backend.examenes.opciones.OpcionDTO;
 import com.eduardo.examen_backend.examenes.preguntas.Pregunta;
 import com.eduardo.examen_backend.examenes.preguntas.PreguntaDTO;
@@ -17,6 +24,7 @@ import com.eduardo.examen_backend.examenes.preguntas.PreguntaRepository;
 import com.eduardo.examen_backend.roles.Rol;
 import com.eduardo.examen_backend.shared.exceptions.BadRequestException;
 import com.eduardo.examen_backend.shared.exceptions.NotFoundException;
+import com.eduardo.examen_backend.shared.services.PdfService;
 import com.eduardo.examen_backend.usuarios.Usuario;
 import com.eduardo.examen_backend.usuarios.UsuarioRepository;
 
@@ -122,7 +130,7 @@ public class ExamenServiceImpl implements ExamenService {
     @Transactional
     public ExamenDTO quitarPreguntas(Integer idExamen, List<Integer> idsPreguntas, String correoLogueado) {
         Examen examen = buscarExamenOThrow(idExamen);
-        verificarPermisos(examen, correoLogueado); // Seguridad
+        verificarPermisos(examen, correoLogueado);
 
         List<Pregunta> preguntasAQuitar = preguntaRepository.findAllById(idsPreguntas);
         examen.getPreguntas().removeAll(preguntasAQuitar);
@@ -130,6 +138,35 @@ public class ExamenServiceImpl implements ExamenService {
         log.info("[Autor: {}] Quitadas {} preguntas del Examen ID {}", correoLogueado, preguntasAQuitar.size(),
                 idExamen);
         return mapearADTO(examenRepository.save(examen));
+    }
+
+    private final IntentoRepository intentoRepository;
+    private final PdfService pdfService;
+
+    @Override
+    @Transactional(readOnly = true)
+    public byte[] generarReporteNotasPdf(Integer idExamen, String correoLogueado) {
+        Examen examen = buscarExamenOThrow(idExamen);
+        verificarPermisos(examen, correoLogueado);
+
+        List<Intento> todosLosIntentos = intentoRepository.findByExamen_IdExamenOrderByNotaDesc(idExamen);
+
+        List<Intento> intentosFiltrados = todosLosIntentos.stream()
+            .collect(Collectors.groupingBy(
+                intento -> intento.getUsuario().getIdUsuario(),
+                Collectors.maxBy(Comparator.comparing(Intento::getFechaRealizacion))
+            ))
+            .values().stream()
+            .map(Optional::get)
+            .sorted(Comparator.comparing(Intento::getNota).reversed())
+            .toList();
+
+        Map<String, Object> variables = new HashMap<>();
+        variables.put("examen", examen);
+        variables.put("listaIntentos", intentosFiltrados);
+        variables.put("fecha", LocalDate.now().toString());
+
+        return pdfService.generarPdfDesdeHtml("reporte_notas_examen", variables);
     }
 
     private ExamenDTO mapearADTO(Examen examen) {

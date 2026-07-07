@@ -25,7 +25,7 @@ graph TD
     MS_Examenes -.->|Registro| Eureka
     MS_Incidencias -.->|Registro| Eureka
     
-    subgraph Backends Lógicos (Instancias del Monolito)
+    subgraph BackendsLogicos ["Backends Lógicos (Instancias del Monolito)"]
         MS_Auth[MS-AUTH]
         MS_User[MS-USUARIOS]
         MS_Roles[MS-ROLES]
